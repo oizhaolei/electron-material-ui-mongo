@@ -1,9 +1,14 @@
-import React from 'react';
+import React, { useState } from 'react';
+import Store from 'electron-store';
+
 import clsx from 'clsx';
-import { createMuiTheme } from '@material-ui/core/styles';
+import {
+  ThemeProvider,
+  createMuiTheme,
+  makeStyles,
+  createStyles,
+} from '@material-ui/core/styles';
 import * as colors from '@material-ui/core/colors';
-import { makeStyles, createStyles, Theme } from '@material-ui/core/styles';
-import { ThemeProvider } from '@material-ui/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Drawer from '@material-ui/core/Drawer';
 import Box from '@material-ui/core/Box';
@@ -12,6 +17,7 @@ import Toolbar from '@material-ui/core/Toolbar';
 import List from '@material-ui/core/List';
 import Typography from '@material-ui/core/Typography';
 import Divider from '@material-ui/core/Divider';
+import Badge from '@material-ui/core/Badge';
 import Container from '@material-ui/core/Container';
 import { Link } from 'react-router-dom';
 import MenuIcon from '@material-ui/icons/Menu';
@@ -19,36 +25,20 @@ import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import IconButton from '@material-ui/core/IconButton';
 import HomeIcon from '@material-ui/icons/Home';
 import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
+import NotificationsIcon from '@material-ui/icons/Notifications';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
+import Brightness7Icon from '@material-ui/icons/Brightness7';
+import Brightness4Icon from '@material-ui/icons/Brightness4';
 
+import Copyright from '../components/Copyright';
+import { MainListItems, SecondaryListItems } from './listItems';
+
+const store = new Store();
 const drawerWidth = 240;
 
-const theme = createMuiTheme({
-  typography: {
-    fontFamily: [
-      'Noto Sans JP',
-      'Lato',
-      '游ゴシック Medium',
-      '游ゴシック体',
-      'Yu Gothic Medium',
-      'YuGothic',
-      'ヒラギノ角ゴ ProN',
-      'Hiragino Kaku Gothic ProN',
-      'メイリオ',
-      'Meiryo',
-      'ＭＳ Ｐゴシック',
-      'MS PGothic',
-      'sans-serif',
-    ].join(','),
-  },
-  palette: {
-    primary: { main: colors.blue[800] }, // テーマの色
-  },
-});
-
-const useStyles = makeStyles((theme: Theme) =>
+const useStyles = makeStyles((theme) =>
   createStyles({
     root: {
       display: 'flex',
@@ -120,45 +110,48 @@ const useStyles = makeStyles((theme: Theme) =>
       paddingTop: theme.spacing(4),
       paddingBottom: theme.spacing(4),
     },
-    paper: {
-      padding: theme.spacing(2),
-      display: 'flex',
-      overflow: 'auto',
-      flexDirection: 'column',
-    },
     link: {
       textDecoration: 'none',
-      color: theme.palette.text.secondary,
+      color: 'inherit',
     },
   })
 );
 
-const Copyright = () => {
-  return (
-    <Typography variant="body2" color="textSecondary" align="center">
-      {'Copyright © '}
-      <Link color="inherit" to="/">
-        管理画面
-      </Link>{' '}
-      {new Date().getFullYear()}
-      {'.'}
-    </Typography>
-  );
-};
-
-export interface GenericTemplateProps {
-  children: React.ReactNode;
-  title: string;
-}
-
-const GenericTemplate: React.FC<GenericTemplateProps> = ({ children, title }) => {
+const GenericTemplate = ({ children, title }) => {
   const classes = useStyles();
-  const [open, setOpen] = React.useState(true);
+
+  // theme
+  const [darkMode, setDarkMode] = useState(store.get('darkMode'));
+  const handleDarkModeOn = () => {
+    store.set('darkMode', true);
+    setDarkMode(true);
+  };
+  const handleDarkModeOff = () => {
+    store.set('darkMode', false);
+    setDarkMode(false);
+  };
+
+  const theme = createMuiTheme({
+    palette: {
+      primary: {
+        main: colors.blue[800],
+      },
+      secondary: {
+        main: colors.blue[400],
+      },
+      type: darkMode ? 'dark' : 'light',
+    },
+  });
+
+  // menu open
+  const [open, setOpen] = useState(store.get('open'));
   const handleDrawerOpen = () => {
     setOpen(true);
+    store.set('open', true);
   };
   const handleDrawerClose = () => {
     setOpen(false);
+    store.set('open', false);
   };
 
   return (
@@ -191,6 +184,20 @@ const GenericTemplate: React.FC<GenericTemplateProps> = ({ children, title }) =>
             >
               管理画面
             </Typography>
+            <IconButton color="inherit">
+              <Badge badgeContent={4} color="secondary">
+                <NotificationsIcon />
+              </Badge>
+            </IconButton>
+            {darkMode ? (
+              <IconButton color="inherit" onClick={handleDarkModeOff}>
+                <Brightness7Icon />
+              </IconButton>
+            ) : (
+              <IconButton color="inherit" onClick={handleDarkModeOn}>
+                <Brightness4Icon />
+              </IconButton>
+            )}
           </Toolbar>
         </AppBar>
         <Drawer
@@ -223,6 +230,14 @@ const GenericTemplate: React.FC<GenericTemplateProps> = ({ children, title }) =>
                 <ListItemText primary="商品ページ" />
               </ListItem>
             </Link>
+          </List>
+          <Divider />
+          <List>
+            <MainListItems />
+          </List>
+          <Divider />
+          <List>
+            <SecondaryListItems />
           </List>
         </Drawer>
         <main className={classes.content}>
