@@ -1,4 +1,6 @@
 import React from 'react';
+import Store from 'electron-store';
+
 import clsx from 'clsx';
 import { makeStyles } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -22,6 +24,8 @@ import { mainListItems, secondaryListItems } from './listItems';
 import Chart from './Chart';
 import Deposits from './Deposits';
 import Orders from './Orders';
+
+const store = new Store();
 
 function Copyright() {
   return (
@@ -119,12 +123,14 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Dashboard() {
   const classes = useStyles();
-  const [open, setOpen] = React.useState(true);
+  const [open, setOpen] = React.useState(store.get('open'));
   const handleDrawerOpen = () => {
     setOpen(true);
+    store.set('open', true);
   };
   const handleDrawerClose = () => {
     setOpen(false);
+    store.set('open', false);
   };
   const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
 

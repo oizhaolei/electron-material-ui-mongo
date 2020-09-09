@@ -14,6 +14,8 @@ import path from 'path';
 import { app, BrowserWindow } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
+import windowStateKeeper from 'electron-window-state';
+
 import MenuBuilder from './menu';
 
 export default class AppUpdater {
@@ -56,21 +58,27 @@ const createWindow = async () => {
     await installExtensions();
   }
 
-  mainWindow = new BrowserWindow({
-    show: false,
-    width: 1024,
-    height: 728,
-    webPreferences:
-      (process.env.NODE_ENV === 'development' ||
-        process.env.E2E_BUILD === 'true') &&
-      process.env.ERB_SECURE !== 'true'
-        ? {
-            nodeIntegration: true,
-          }
-        : {
-            preload: path.join(__dirname, 'dist/renderer.prod.js'),
-          },
+  const dev = (process.env.NODE_ENV === 'development' || process.env.E2E_BUILD === 'true') && process.env.ERB_SECURE !== 'true';
+  const mainWindowState = windowStateKeeper({
+    defaultWidth: 1024,
+    defaultHeight: 728,
   });
+
+  const opts = {
+    show: false,
+    x: mainWindowState.x,
+    y: mainWindowState.y,
+    width: mainWindowState.width,
+    height: mainWindowState.height,
+    webPreferences: dev
+      ? {
+          nodeIntegration: true,
+        } : {
+        preload: path.join(__dirname, 'dist/renderer.prod.js'),
+      },
+  };
+  mainWindow = new BrowserWindow(opts);
+  mainWindowState.manage(mainWindow);
 
   mainWindow.loadURL(`file://${__dirname}/app.html`);
 
