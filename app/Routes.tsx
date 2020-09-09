@@ -6,6 +6,9 @@ import App from './containers/App';
 import Dashboard from './containers/Dashboard';
 import Checkout from './containers/Checkout';
 
+import ProductPage from './containers/ProductPage';
+import HomePage from './containers/HomePage';
+
 // Lazily load routes and code split with webpack
 const LazyCounterPage = React.lazy(() =>
   import(/* webpackChunkName: "CounterPage" */ './containers/CounterPage')
@@ -21,9 +24,11 @@ export default function Routes() {
   return (
     <App>
       <Switch>
-        <Route path="/" component={Dashboard} />
-        <Route path="/checkout" component={Checkout} />
-        <Route path={routes.COUNTER} component={CounterPage} />
+        <Route path="/products" component={ProductPage} exact />
+        <Route path="/" component={HomePage} exact />
+        {/* <Route path="/checkout" component={Checkout} /> */}
+        {/* <Route path={routes.COUNTER} component={CounterPage} /> */}
+        {/* <Route path="/" component={Dashboard} /> */}
       </Switch>
     </App>
   );

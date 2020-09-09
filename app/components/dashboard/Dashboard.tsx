@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Store from 'electron-store';
 
 import clsx from 'clsx';
@@ -123,7 +123,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Dashboard() {
   const classes = useStyles();
-  const [open, setOpen] = React.useState(store.get('open'));
+  const [open, setOpen] = useState(store.get('open'));
   const handleDrawerOpen = () => {
     setOpen(true);
     store.set('open', true);
