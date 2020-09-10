@@ -11,6 +11,7 @@
 import 'core-js/stable';
 import 'regenerator-runtime/runtime';
 import path from 'path';
+import fs from 'fs-extra';
 import { app, BrowserWindow } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
@@ -27,6 +28,8 @@ export default class AppUpdater {
 }
 
 let mainWindow: BrowserWindow | null = null;
+const dbPath = path.resolve(app.getPath('home'), '.personal.db');
+fs.ensureDirSync(dbPath);
 
 if (process.env.NODE_ENV === 'production') {
   const sourceMapSupport = require('source-map-support');
@@ -58,7 +61,11 @@ const createWindow = async () => {
     await installExtensions();
   }
 
-  const dev = (process.env.NODE_ENV === 'development' || process.env.E2E_BUILD === 'true') && process.env.ERB_SECURE !== 'true';
+  const dev =
+    (process.env.NODE_ENV === 'development' ||
+      process.env.E2E_BUILD === 'true') &&
+    process.env.ERB_SECURE !== 'true';
+
   const mainWindowState = windowStateKeeper({
     defaultWidth: 1024,
     defaultHeight: 728,
@@ -70,17 +77,17 @@ const createWindow = async () => {
     y: mainWindowState.y,
     width: mainWindowState.width,
     height: mainWindowState.height,
-    webPreferences: dev
-      ? {
-          nodeIntegration: true,
-        } : {
-        preload: path.join(__dirname, 'dist/renderer.prod.js'),
-      },
+    webPreferences: {
+      nodeIntegration: dev ? true : undefined,
+      preload: dev ? undefined : path.join(__dirname, 'dist/renderer.prod.js'),
+    },
   };
   mainWindow = new BrowserWindow(opts);
   mainWindowState.manage(mainWindow);
 
-  mainWindow.loadURL(`file://${__dirname}/app.html`);
+  mainWindow.loadURL(
+    `file://${__dirname}/app.html?dbPath=${encodeURIComponent(dbPath)}`
+  );
 
   // @TODO: Use 'ready-to-show' event
   //        https://github.com/electron/electron/blob/master/docs/api/browser-window.md#using-ready-to-show-event

@@ -1,6 +1,7 @@
-import React from 'react';
-import { makeStyles, createStyles } from '@material-ui/core/styles';
+import React, { useState, useEffect } from 'react';
+import fs from 'fs';
 
+import { makeStyles, createStyles } from '@material-ui/core/styles';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
@@ -13,6 +14,12 @@ import LayersIcon from '@material-ui/icons/Layers';
 import AssignmentIcon from '@material-ui/icons/Assignment';
 
 import { Link } from 'react-router-dom';
+
+const getFiles = (source) =>
+  fs
+    .readdirSync(source, { withFileTypes: true })
+    .filter((dirent) => dirent.isFile())
+    .map((dirent) => dirent.name);
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -28,12 +35,14 @@ export const MainListItems = () => {
 
   return (
     <>
-      <ListItem button>
-        <ListItemIcon>
-          <DashboardIcon />
-        </ListItemIcon>
-        <ListItemText primary="Dashboard" />
-      </ListItem>
+      <Link to="/checkout" className={classes.link}>
+        <ListItem button>
+          <ListItemIcon>
+            <DashboardIcon />
+          </ListItemIcon>
+          <ListItemText primary="Dashboard" />
+        </ListItem>
+      </Link>
       <Link to="/products" className={classes.link}>
         <ListItem button>
           <ListItemIcon>
@@ -42,12 +51,14 @@ export const MainListItems = () => {
           <ListItemText primary="Orders" />
         </ListItem>
       </Link>
-      <ListItem button>
-        <ListItemIcon>
-          <PeopleIcon />
-        </ListItemIcon>
-        <ListItemText primary="Customers" />
-      </ListItem>
+      <Link to="/counter" className={classes.link}>
+        <ListItem button>
+          <ListItemIcon>
+            <PeopleIcon />
+          </ListItemIcon>
+          <ListItemText primary="Customers" />
+        </ListItem>
+      </Link>
       <ListItem button>
         <ListItemIcon>
           <BarChartIcon />
@@ -64,26 +75,31 @@ export const MainListItems = () => {
   );
 };
 
-export const SecondaryListItems = () => (
-  <>
-    <ListSubheader inset>Saved reports</ListSubheader>
-    <ListItem button>
-      <ListItemIcon>
-        <AssignmentIcon />
-      </ListItemIcon>
-      <ListItemText primary="Current month" />
-    </ListItem>
-    <ListItem button>
-      <ListItemIcon>
-        <AssignmentIcon />
-      </ListItemIcon>
-      <ListItemText primary="Last quarter" />
-    </ListItem>
-    <ListItem button>
-      <ListItemIcon>
-        <AssignmentIcon />
-      </ListItemIcon>
-      <ListItemText primary="Year-end sale" />
-    </ListItem>
-  </>
-);
+export const SecondaryListItems = () => {
+  const classes = useStyles();
+  const [tables, setTables] = useState([]);
+
+  useEffect(() => {
+    const dbPath = decodeURIComponent(
+      global.location.search.match(/^\?dbPath=(.*)$/)[1]
+    );
+    const docs = getFiles(dbPath);
+    setTables(docs);
+  }, []);
+
+  return (
+    <>
+      <ListSubheader inset>Tables</ListSubheader>
+      {tables.map((record) => (
+        <Link key={record} to={`/table/${record}`} className={classes.link}>
+          <ListItem button>
+            <ListItemIcon>
+              <AssignmentIcon />
+            </ListItemIcon>
+            <ListItemText primary={record} />
+          </ListItem>
+        </Link>
+      ))}
+    </>
+  );
+};

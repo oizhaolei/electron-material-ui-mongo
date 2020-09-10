@@ -1,14 +1,16 @@
 import React from 'react';
-import Link from '@material-ui/core/Link';
+import { shell } from 'electron';
+
+import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 
 export default function Copyright() {
   return (
     <Typography variant="body2" color="textSecondary" align="center">
       {'Copyright © '}
-      <Link color="inherit" href="https://www.as-cube.com/">
+      <Button onClick={() => shell.openExternal('https://www.as-cube.com/')}>
         株式会社ASCUBE
-      </Link>
+      </Button>
       {new Date().getFullYear()}
     </Typography>
   );

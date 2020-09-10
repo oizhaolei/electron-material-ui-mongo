@@ -182,7 +182,7 @@ const GenericTemplate = ({ children, title }) => {
               noWrap
               className={classes.title}
             >
-              管理画面
+              パソナールDB
             </Typography>
             <IconButton color="inherit">
               <Badge badgeContent={4} color="secondary">
@@ -233,11 +233,11 @@ const GenericTemplate = ({ children, title }) => {
           </List>
           <Divider />
           <List>
-            <MainListItems />
+            <SecondaryListItems />
           </List>
           <Divider />
           <List>
-            <SecondaryListItems />
+            <MainListItems />
           </List>
         </Drawer>
         <main className={classes.content}>

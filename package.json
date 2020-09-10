@@ -282,6 +282,7 @@
     "electron-store": "^6.0.0",
     "electron-updater": "^4.3.1",
     "electron-window-state": "^5.0.3",
+    "fs-extra": "^9.0.1",
     "history": "^4.7.2",
     "nedb": "^1.8.0",
     "react": "^16.13.1",

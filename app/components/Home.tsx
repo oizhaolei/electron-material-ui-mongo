@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Datastore from 'nedb';
+import path from 'path';
+
 import Button from '@material-ui/core/Button';
 
 import styles from './Home.css';
@@ -11,8 +13,8 @@ export default function Home(): JSX.Element {
   useEffect(() => {
     // init db
     const db = new Datastore({
-      // filename: './datafile',
-      // autoload: true,
+      filename: path.resolve('/Users/zhaolei/.personal.db', 'blood1'),
+      autoload: true,
     });
 
     [...Array(5)].forEach((_, i) => {
