@@ -44,12 +44,12 @@ export const MainListItems = () => {
           <ListItemText primary="Orders" />
         </ListItem>
       </Link>
-      <Link to="/counter" className={classes.link}>
+      <Link to="/test" className={classes.link}>
         <ListItem button>
           <ListItemIcon>
             <PeopleIcon />
           </ListItemIcon>
-          <ListItemText primary="Customers" />
+          <ListItemText primary="Test" />
         </ListItem>
       </Link>
       <ListItem button>

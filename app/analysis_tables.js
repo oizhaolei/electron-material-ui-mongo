@@ -3,30 +3,21 @@
  */
 import Datastore from 'nedb';
 import path from 'path';
-import fs from 'fs';
 
-export const getFiles = (source) =>
-  fs
-    .readdirSync(source, { withFileTypes: true })
-    .filter((dirent) => dirent.isFile())
-    .map((dirent) => dirent.name);
+import { getFiles } from './utils/utils';
 
 const dbPath = '/Users/zhaolei/.personal.db';
 
 const sdb = new Datastore({
   filename: path.resolve(dbPath, '_system'),
-});
-sdb.loadDatabase((err) => {
-  console.log('sdb.loadDatabase:', err);
+  autoload: true,
 });
 
 const analysisTable = (table) => {
   const db = new Datastore({
     filename: path.resolve(dbPath, table),
+    autoload: true,
   });
-db.loadDatabase((err) => {
-  console.log('db.loadDatabase:', err, table);
-});
 
   db.find({}, (err, docs) => {
     console.log(table, 'docs:', docs);
