@@ -1,25 +1,60 @@
-import React from 'react';
-
-import clsx from 'clsx';
-import { makeStyles } from '@material-ui/core/styles';
-import Grid from '@material-ui/core/Grid';
-import Paper from '@material-ui/core/Paper';
-
-import Chart from '../components/dashboard/Chart';
-import Deposits from '../components/dashboard/Deposits';
-import Orders from '../components/dashboard/Orders';
+import React, { useState } from 'react';
+import MaterialTable from 'material-table';
 
 import GenericTemplate from '../templates/GenericTemplate';
 
-const useStyles = makeStyles((theme) => ({
-}));
+export default function TablePage({ match }) {
+  const { table } = match.params;
 
-export default function Dashboard({ match }) {
-  const classes = useStyles();
+  const [columns, setColumns] = useState([]);
+  const [data, setData] = useState([]);
+
+  // useEffect(() => {
+  //   const dbPath = decodeURIComponent(
+  //     global.location.search.match(/^\?dbPath=(.*)$/)[1]
+  //   );
+  //     console.log('dbPath:', dbPath);
+  //   const sdb = new Datastore({
+  //     filename: path.resolve(dbPath, '_system'),
+  //     autoload: true,
+  //   });
+  //   sdb.find(
+  //     { table },
+  //     {
+  //       title: 1,
+  //       field: 1,
+  //     },
+  //     (err, doc) => {
+  //       console.log('doc:', doc);
+  //       if (doc) {
+  //         setColumns(doc.definition);
+  //       }
+  //     });
+  //   const db = new Datastore({
+  //     filename: path.resolve(dbPath, table),
+  //     autoload: true,
+  //   });
+  //   db.find({}, (err, docs) => {
+  //     console.log('docs:', docs);
+  //     setData(docs);
+  //   });
+  // }, [table]);
 
   return (
-    <GenericTemplate title="Dashboard">
-      Table: {match.params.table}
+    <GenericTemplate title={table}>
+      <MaterialTable
+        title={table}
+        columns={columns}
+        data={data}
+        cellEditable={{
+          onCellEditApproved: (newValue, oldValue, rowData, columnDef) => {
+            return new Promise((resolve, reject) => {
+              console.log('newValue: ' + newValue);
+              setTimeout(resolve, 1000);
+            });
+          },
+        }}
+      />
     </GenericTemplate>
   );
 }

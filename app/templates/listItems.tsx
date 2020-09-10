@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import fs from 'fs';
 
 import { makeStyles, createStyles } from '@material-ui/core/styles';
 import ListItem from '@material-ui/core/ListItem';
@@ -14,12 +13,6 @@ import LayersIcon from '@material-ui/icons/Layers';
 import AssignmentIcon from '@material-ui/icons/Assignment';
 
 import { Link } from 'react-router-dom';
-
-const getFiles = (source) =>
-  fs
-    .readdirSync(source, { withFileTypes: true })
-    .filter((dirent) => dirent.isFile())
-    .map((dirent) => dirent.name);
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -80,11 +73,7 @@ export const SecondaryListItems = () => {
   const [tables, setTables] = useState([]);
 
   useEffect(() => {
-    const dbPath = decodeURIComponent(
-      global.location.search.match(/^\?dbPath=(.*)$/)[1]
-    );
-    const docs = getFiles(dbPath);
-    setTables(docs);
+    setTables([]);
   }, []);
 
   return (

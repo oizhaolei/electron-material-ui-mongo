@@ -2,11 +2,12 @@
 import React from 'react';
 import { Switch, Route } from 'react-router-dom';
 import App from './containers/App';
-import Checkout from './containers/Checkout';
 
+import Checkout from './containers/Checkout';
 import ProductPage from './containers/ProductPage';
 import TablePage from './containers/TablePage';
 import HomePage from './containers/HomePage';
+import Test from './components/Home';
 
 // Lazily load routes and code split with webpack
 const LazyCounterPage = React.lazy(() =>
@@ -26,7 +27,7 @@ export default function Routes() {
         <Route path="/products" component={ProductPage} exact />
         <Route path="/checkout" component={Checkout} exact />
         <Route path="/table/:table" component={TablePage} exact />
-        <Route path="/counter" component={CounterPage} exact />
+        <Route path="/counter" component={Test} exact />
         <Route path="/" component={HomePage} exact />
       </Switch>
     </App>

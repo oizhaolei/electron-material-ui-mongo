@@ -18,6 +18,7 @@ import log from 'electron-log';
 import windowStateKeeper from 'electron-window-state';
 
 import MenuBuilder from './menu';
+import ipc from './ipc';
 
 export default class AppUpdater {
   constructor() {
@@ -30,6 +31,9 @@ export default class AppUpdater {
 let mainWindow: BrowserWindow | null = null;
 const dbPath = path.resolve(app.getPath('home'), '.personal.db');
 fs.ensureDirSync(dbPath);
+
+// IPC
+ipc({ dbPath });
 
 if (process.env.NODE_ENV === 'production') {
   const sourceMapSupport = require('source-map-support');
@@ -85,9 +89,7 @@ const createWindow = async () => {
   mainWindow = new BrowserWindow(opts);
   mainWindowState.manage(mainWindow);
 
-  mainWindow.loadURL(
-    `file://${__dirname}/app.html?dbPath=${encodeURIComponent(dbPath)}`
-  );
+  mainWindow.loadURL(`file://${__dirname}/app.html`);
 
   // @TODO: Use 'ready-to-show' event
   //        https://github.com/electron/electron/blob/master/docs/api/browser-window.md#using-ready-to-show-event
