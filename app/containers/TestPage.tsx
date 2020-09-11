@@ -15,7 +15,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function Home() {
+export default function TestPage() {
   const classes = useStyles();
   const [text, setText] = useState('');
 
@@ -25,7 +25,7 @@ export default function Home() {
       setText(arg);
     });
 
-    ipcRenderer.on('dbPath', (event, arg) => {
+    ipcRenderer.on('dbpath', (event, arg) => {
       console.log(arg);
       setText(arg);
     });
@@ -39,6 +39,18 @@ export default function Home() {
       console.log(arg);
       setText(JSON.stringify(arg));
     });
+
+    ipcRenderer.on('find', (event, arg) => {
+      console.log(arg);
+      setText(JSON.stringify(arg));
+    });
+    return () => {
+      ipcRenderer.removeAllListeners('asynchronous-reply');
+      ipcRenderer.removeAllListeners('dbpath');
+      ipcRenderer.removeAllListeners('tables');
+      ipcRenderer.removeAllListeners('analysis');
+      ipcRenderer.removeAllListeners('find');
+    };
   }, []);
 
   return (
@@ -54,7 +66,7 @@ export default function Home() {
         <Button
           variant="contained"
           color="primary"
-          onClick={() => ipcRenderer.send('dbPath')}
+          onClick={() => ipcRenderer.send('dbpath')}
         >
           Db Path
         </Button>
@@ -71,6 +83,16 @@ export default function Home() {
           onClick={() => ipcRenderer.send('analysis', 'blood.table')}
         >
           Analysis "blood.table"
+        </Button>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() =>
+            ipcRenderer.send('find', {
+              table: 'blood.table',
+            })}
+        >
+          Find "blood.table"
         </Button>
         <Typography variant="body1" gutterBottom>
           {text}

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { ipcRenderer } from 'electron';
 
 import { makeStyles, createStyles } from '@material-ui/core/styles';
 import ListItem from '@material-ui/core/ListItem';
@@ -73,7 +74,14 @@ export const SecondaryListItems = () => {
   const [tables, setTables] = useState([]);
 
   useEffect(() => {
-    setTables([]);
+    ipcRenderer.on('tables', (event, arg) => {
+      setTables(arg);
+    });
+    ipcRenderer.send('tables');
+
+    return () => {
+      ipcRenderer.removeAllListeners('tables');
+    };
   }, []);
 
   return (
