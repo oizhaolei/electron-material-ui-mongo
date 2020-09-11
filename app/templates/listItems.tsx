@@ -74,13 +74,14 @@ export const SecondaryListItems = () => {
   const [tables, setTables] = useState([]);
 
   useEffect(() => {
-    ipcRenderer.on('tables', (event, arg) => {
+    const tablesListener = (event, arg) => {
       setTables(arg);
-    });
+    };
+    ipcRenderer.on('tables', tablesListener);
     ipcRenderer.send('tables');
 
     return () => {
-      ipcRenderer.removeAllListeners('tables');
+      ipcRenderer.removeListener('tables', tablesListener);
     };
   }, []);
 

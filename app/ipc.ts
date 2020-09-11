@@ -82,6 +82,7 @@ export default function ipc(ipcMain, { dbpath }) {
   // analysis
   ipcMain.on('analysis', async (event, arg) => {
     const analysisTable = async (table) => {
+      // TODO: all rows
       const db = dbs(table);
       const docs = await find(db, {});
 
@@ -95,9 +96,12 @@ export default function ipc(ipcMain, { dbpath }) {
 
       return definition;
     };
-    const definition = await analysisTable(arg);
+    const tables = arg
+      ? [arg]
+      : getFiles(dbpath).filter((t) => !t.startsWith('__'));
+    const definitions = await Promise.all(tables.map((t) => analysisTable(t)));
 
-    event.reply('analysis', definition);
+    event.reply('analysis', definitions);
   });
 
   // db.find

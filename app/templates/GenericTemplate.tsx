@@ -121,7 +121,7 @@ const GenericTemplate = ({ children, title }) => {
   const classes = useStyles();
 
   // theme
-  const [darkMode, setDarkMode] = useState(store.get('darkMode'));
+  const [darkMode, setDarkMode] = useState(store.get('darkMode', false));
   const handleDarkModeOn = () => {
     store.set('darkMode', true);
     setDarkMode(true);
@@ -144,7 +144,7 @@ const GenericTemplate = ({ children, title }) => {
   });
 
   // menu open
-  const [open, setOpen] = useState(store.get('open'));
+  const [open, setOpen] = useState(store.get('open', true));
   const handleDrawerOpen = () => {
     setOpen(true);
     store.set('open', true);
@@ -242,7 +242,7 @@ const GenericTemplate = ({ children, title }) => {
         </Drawer>
         <main className={classes.content}>
           <div className={classes.appBarSpacer} />
-          <Container maxWidth="lg" className={classes.container}>
+          <Container maxWidth={false} className={classes.container}>
             <Typography
               component="h2"
               variant="h5"

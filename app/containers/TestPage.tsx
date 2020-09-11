@@ -20,36 +20,41 @@ export default function TestPage() {
   const [text, setText] = useState('');
 
   useEffect(() => {
-    ipcRenderer.on('asynchronous-reply', (event, arg) => {
+    const replyListener = (event, arg) => {
       console.log(arg);
       setText(arg);
-    });
+    };
+    ipcRenderer.on('asynchronous-reply', replyListener);
 
-    ipcRenderer.on('dbpath', (event, arg) => {
+    const dbpathListener = (event, arg) => {
       console.log(arg);
       setText(arg);
-    });
+    };
+    ipcRenderer.on('dbpath', dbpathListener);
 
-    ipcRenderer.on('tables', (event, arg) => {
+    const tablesListener = (event, arg) => {
       console.log(arg);
       setText(arg.join());
-    });
+    };
+    ipcRenderer.on('tables', tablesListener);
 
-    ipcRenderer.on('analysis', (event, arg) => {
+    const analysisListener = (event, arg) => {
       console.log(arg);
       setText(JSON.stringify(arg));
-    });
+    };
+    ipcRenderer.on('analysis', analysisListener);
 
-    ipcRenderer.on('find', (event, arg) => {
+    const findListener = (event, arg) => {
       console.log(arg);
       setText(JSON.stringify(arg));
-    });
+    };
+    ipcRenderer.on('find', findListener);
     return () => {
-      ipcRenderer.removeAllListeners('asynchronous-reply');
-      ipcRenderer.removeAllListeners('dbpath');
-      ipcRenderer.removeAllListeners('tables');
-      ipcRenderer.removeAllListeners('analysis');
-      ipcRenderer.removeAllListeners('find');
+      ipcRenderer.removeListener('asynchronous-reply', replyListener);
+      ipcRenderer.removeListener('dbpath', dbpathListener);
+      ipcRenderer.removeListener('tables', tablesListener);
+      ipcRenderer.removeListener('analysis', analysisListener);
+      ipcRenderer.removeListener('find', findListener);
     };
   }, []);
 
@@ -80,19 +85,19 @@ export default function TestPage() {
         <Button
           variant="contained"
           color="primary"
-          onClick={() => ipcRenderer.send('analysis', 'blood.table')}
+          onClick={() => ipcRenderer.send('analysis')}
         >
-          Analysis "blood.table"
+          Analysis All
         </Button>
         <Button
           variant="contained"
           color="primary"
           onClick={() =>
             ipcRenderer.send('find', {
-              table: 'blood.table',
+              table: 'projects',
             })}
         >
-          Find "blood.table"
+          Find: projects
         </Button>
         <Typography variant="body1" gutterBottom>
           {text}
