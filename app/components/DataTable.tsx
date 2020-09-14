@@ -18,6 +18,7 @@ export default function DataTable({ table, query }) {
 
   useEffect(() => {
     const findListener = (event, { schema, records }) => {
+      console.log('schema, records:', schema, records);
       setColumns(schema);
       setData(records);
     };
@@ -48,24 +49,24 @@ export default function DataTable({ table, query }) {
         },
       }}
       onChangeRowsPerPage={handleChangeRowsPerPage}
-      /* actions={[ */
-      /*   { */
-      /*     icon: 'settings', */
-      /*     tooltip: 'Settingg', */
-      /*     isFreeAction: true, */
-      /*     onClick: console.log, */
-      /*   }, */
-      /* ]} */
-      /* components={{ */
-      /*   Toolbar: (props) => ( */
-      /*     <div> */
-      /*       <MTableToolbar {...props} /> */
-      /*       <div style={{ padding: '0px 10px' }}> */
-      /*         <Button variant="contained">Default</Button> */
-      /*       </div> */
-      /*     </div> */
-      /*   ), */
-      /* }} */
+      actions={[
+        {
+          icon: 'add',
+          tooltip: 'Add',
+          isFreeAction: true,
+          onClick: console.log,
+        },
+      ]}
+      components={{
+        Toolbar: (props) => (
+          <div>
+            <MTableToolbar {...props} />
+            <div style={{ padding: '0px 10px' }}>
+              <Button variant="contained">Default</Button>
+            </div>
+          </div>
+        ),
+      }}
     />
   );
 }

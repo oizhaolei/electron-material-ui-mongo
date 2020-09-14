@@ -36,7 +36,7 @@ export default function Dashboard() {
   const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
 
   return (
-    <GenericTemplate title="Dashboard">
+    <GenericTemplate title="Dashboard" id="dashboard">
       <Grid container spacing={3}>
         {/* Chart */}
         <Grid item xs={12} md={8} lg={9}>

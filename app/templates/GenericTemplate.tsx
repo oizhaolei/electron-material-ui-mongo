@@ -117,7 +117,7 @@ const useStyles = makeStyles((theme) =>
   })
 );
 
-const GenericTemplate = ({ children, title }) => {
+const GenericTemplate = ({ children, title, id }) => {
   const classes = useStyles();
 
   // theme
@@ -137,7 +137,7 @@ const GenericTemplate = ({ children, title }) => {
         main: colors.blue[800],
       },
       secondary: {
-        main: colors.blue[400],
+        main: colors.orange[200],
       },
       type: darkMode ? 'dark' : 'light',
     },
@@ -223,7 +223,7 @@ const GenericTemplate = ({ children, title }) => {
           </List>
           <Divider />
           <List>
-            <SecondaryListItems />
+            <SecondaryListItems current={id} />
           </List>
           <Divider />
           <List>

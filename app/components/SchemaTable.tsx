@@ -11,6 +11,8 @@ export default function DataTable({ table, query }) {
   const [columns, setColumns] = useState([
     { title: 'title', field: 'title' },
     { title: 'field', field: 'field' },
+    { title: 'type', field: 'type' },
+    { title: 'align', field: 'align' },
   ]);
   const [data, setData] = useState([]);
   const [pageSize, setPageSize] = useState(store.get('pageSize', 5));
@@ -51,24 +53,24 @@ export default function DataTable({ table, query }) {
         },
       }}
       onChangeRowsPerPage={handleChangeRowsPerPage}
-      /* actions={[ */
-      /*   { */
-      /*     icon: 'settings', */
-      /*     tooltip: 'Settingg', */
-      /*     isFreeAction: true, */
-      /*     onClick: console.log, */
-      /*   }, */
-      /* ]} */
-      /* components={{ */
-      /*   Toolbar: (props) => ( */
-      /*     <div> */
-      /*       <MTableToolbar {...props} /> */
-      /*       <div style={{ padding: '0px 10px' }}> */
-      /*         <Button variant="contained">Default</Button> */
-      /*       </div> */
-      /*     </div> */
-      /*   ), */
-      /* }} */
+      actions={[
+        {
+          icon: 'add',
+          tooltip: 'Add',
+          isFreeAction: true,
+          onClick: console.log,
+        },
+      ]}
+    /* components={{ */
+    /*   Toolbar: (props) => ( */
+    /*     <div> */
+    /*       <MTableToolbar {...props} /> */
+    /*       <div style={{ padding: '0px 10px' }}> */
+    /*         <Button variant="contained">Default</Button> */
+    /*       </div> */
+    /*     </div> */
+    /*   ), */
+    /* }} */
     />
   );
 }

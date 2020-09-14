@@ -66,8 +66,8 @@ export default function Checkout() {
   };
 
   return (
-    <GenericTemplate title="Checkout">
-      <Paper className={classes.paper} >
+    <GenericTemplate title="Checkout" id="checkout">
+      <Paper className={classes.paper}>
         <Typography component="h1" variant="h4" align="center">
           Checkout
         </Typography>

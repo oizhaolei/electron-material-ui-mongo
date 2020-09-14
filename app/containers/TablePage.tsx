@@ -8,6 +8,9 @@ import Box from '@material-ui/core/Box';
 import GenericTemplate from '../templates/GenericTemplate';
 import DataTable from '../components/DataTable';
 import SchemaTable from '../components/SchemaTable';
+import ExportTable from '../components/ExportTable';
+import ImportTable from '../components/ImportTable';
+import SettingTable from '../components/SettingTable';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -59,8 +62,8 @@ export default function TablePage({ match }) {
   };
 
   return (
-    <GenericTemplate title={table}>
-      <Paper square>
+    <GenericTemplate title={table} id={table}>
+      <Paper square key={table}>
         <Tabs
           value={tab}
           onChange={handleChange}
@@ -81,13 +84,13 @@ export default function TablePage({ match }) {
           <SchemaTable table={table} />
         </TabPanel>
         <TabPanel value={tab} index={2}>
-          Item Three
+          <ExportTable table={table} />
         </TabPanel>
         <TabPanel value={tab} index={3}>
-          Item Four
+          <ImportTable table={table} />
         </TabPanel>
         <TabPanel value={tab} index={4}>
-          Item Five
+          <SettingTable table={table} />
         </TabPanel>
       </Paper>
     </GenericTemplate>

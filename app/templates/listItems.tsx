@@ -72,7 +72,8 @@ export const MainListItems = () => {
   );
 };
 
-export const SecondaryListItems = () => {
+export const SecondaryListItems = ({ current }) => {
+  console.log('current:', current);
   const classes = useStyles();
   const [tables, setTables] = useState([]);
 
@@ -93,7 +94,7 @@ export const SecondaryListItems = () => {
       <ListSubheader inset>Tables</ListSubheader>
       {tables.map((record) => (
         <Link key={record} to={`/table/${record}`} className={classes.link}>
-          <ListItem button>
+          <ListItem button selected={current === record}>
             <ListItemIcon>
               <AssignmentIcon />
             </ListItemIcon>

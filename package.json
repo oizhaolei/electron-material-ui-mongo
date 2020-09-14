@@ -287,6 +287,7 @@
     "fs-extra": "^9.0.1",
     "history": "^4.7.2",
     "material-table": "^1.69.0",
+    "material-ui-dropzone": "^3.4.0",
     "nedb": "^1.8.0",
     "react": "^16.13.1",
     "react-code-input": "^3.10.0",

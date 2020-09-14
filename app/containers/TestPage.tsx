@@ -59,7 +59,7 @@ export default function TestPage() {
   }, []);
 
   return (
-    <GenericTemplate title="Test">
+    <GenericTemplate title="Test" id="test">
       <div className={classes.root}>
         <Button
           variant="contained"

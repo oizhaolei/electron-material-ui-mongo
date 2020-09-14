@@ -51,9 +51,56 @@ const remove = (db, query, options) => {
   });
 };
 
+const getType = (field, row) => {
+  const cell = row[field];
+  if (cell) {
+    if (typeof cell === 'number') {
+      return 'numeric';
+    }
+    if (typeof cell === 'boolean') {
+      return 'boolean';
+    }
+  }
+
+  return undefined;
+};
+
+const getAlign = (field, row) => {
+  const cell = row[field];
+  if (cell) {
+    if (typeof cell === 'number') {
+      return 'right';
+    }
+    if (typeof cell === 'boolean') {
+      return 'center';
+    }
+  }
+
+  return 'left';
+};
+
+const genDefinition = (table, docs) => {
+  if (!docs || docs.length === 0) {
+    return [];
+  }
+  const allFields = [...new Set(docs.map((doc) => Object.keys(doc)).flat())];
+  return allFields.map((f) => ({
+    table,
+    title: f,
+    field: f,
+    type: getType(f, docs[0]),
+    align: getAlign(f, docs[0]),
+  }));
+};
+
 export default function ipc(ipcMain, { dbpath }) {
-  const sdb = new Datastore({
-    filename: path.resolve(dbpath, '__system'),
+  const systemDb = new Datastore({
+    filename: path.resolve(dbpath, '__tables'),
+    autoload: true,
+  });
+
+  const schemaDb = new Datastore({
+    filename: path.resolve(dbpath, '__schema'),
     autoload: true,
   });
 
@@ -62,6 +109,18 @@ export default function ipc(ipcMain, { dbpath }) {
       filename: path.resolve(dbpath, t),
       autoload: true,
     });
+
+  const analysisSchema = async (table) => {
+    // TODO: all rows
+    const db = dbs(table);
+    const docs = await find(db, {});
+
+    const definition = genDefinition(table, docs);
+    await remove(schemaDb, { table }, { multi: true });
+    await Promise.all(definition.map((def) => insert(schemaDb, def)));
+
+    return definition;
+  };
 
   // ping
   ipcMain.on('asynchronous-message', (event) => {
@@ -74,6 +133,16 @@ export default function ipc(ipcMain, { dbpath }) {
   });
 
   // tables
+  ipcMain.on('add_table', async (event, { _id, name, title, icon }) => {
+    const newTable = await update(
+      systemDb,
+      { _id },
+      { name, title, icon },
+      { upsert: true }
+    );
+    event.reply('add_table', newTable);
+  });
+
   ipcMain.on('tables', (event) => {
     const tables = getFiles(dbpath).filter((t) => !t.startsWith('__'));
     event.reply('tables', tables);
@@ -81,32 +150,17 @@ export default function ipc(ipcMain, { dbpath }) {
 
   // analysis
   ipcMain.on('analysis', async (event, arg) => {
-    const analysisTable = async (table) => {
-      // TODO: all rows
-      const db = dbs(table);
-      const docs = await find(db, {});
-
-      const definition = Object.keys(docs[0]).map((f) => ({
-        table,
-        title: f,
-        field: f,
-      }));
-      await remove(sdb, { table }, { multi: true });
-      await Promise.all(definition.map((def) => insert(sdb, def)));
-
-      return definition;
-    };
     const tables = arg
       ? [arg]
       : getFiles(dbpath).filter((t) => !t.startsWith('__'));
-    const definitions = await Promise.all(tables.map((t) => analysisTable(t)));
+    const definitions = await Promise.all(tables.map((t) => analysisSchema(t)));
 
     event.reply('analysis', definitions);
   });
 
   // db.find
   ipcMain.on('find', async (event, { table, query = {} }) => {
-    const schema = await find(sdb, { table });
+    const schema = await find(schemaDb, { table });
 
     const db = dbs(table);
     const records = await find(db, query);

@@ -38,7 +38,7 @@ const ProductPage: React.FC = () => {
   const classes = useStyles();
 
   return (
-    <GenericTemplate title="商品ページ">
+    <GenericTemplate title="商品ページ" id="product">
       <TableContainer component={Paper}>
         <Table className={classes.table}>
           <TableHead>

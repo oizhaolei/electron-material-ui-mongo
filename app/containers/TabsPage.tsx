@@ -57,7 +57,7 @@ export default function SimpleTabs() {
   };
 
   return (
-    <GenericTemplate title="Tabs">
+    <GenericTemplate title="Tabs" id="tabs">
       <Paper square>
         <Tabs
           value={value}
