@@ -40,7 +40,7 @@ const ProductPage: React.FC = () => {
   return (
     <GenericTemplate title="商品ページ">
       <TableContainer component={Paper}>
-        <Table className={classes.table} aria-label="simple table">
+        <Table className={classes.table}>
           <TableHead>
             <TableRow>
               <TableCell>商品名</TableCell>

@@ -17,7 +17,7 @@ import Toolbar from '@material-ui/core/Toolbar';
 import List from '@material-ui/core/List';
 import Typography from '@material-ui/core/Typography';
 import Divider from '@material-ui/core/Divider';
-import Badge from '@material-ui/core/Badge';
+import Tooltip from '@material-ui/core/Tooltip';
 import Container from '@material-ui/core/Container';
 import { Link } from 'react-router-dom';
 import MenuIcon from '@material-ui/icons/Menu';
@@ -25,7 +25,7 @@ import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import IconButton from '@material-ui/core/IconButton';
 import HomeIcon from '@material-ui/icons/Home';
 import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
-import NotificationsIcon from '@material-ui/icons/Notifications';
+import AttachFileIcon from '@material-ui/icons/AttachFile';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
@@ -166,7 +166,6 @@ const GenericTemplate = ({ children, title }) => {
             <IconButton
               edge="start"
               color="inherit"
-              aria-label="open drawer"
               onClick={handleDrawerOpen}
               className={clsx(
                 classes.menuButton,
@@ -184,20 +183,19 @@ const GenericTemplate = ({ children, title }) => {
             >
               パソナールDB
             </Typography>
-            <IconButton color="inherit">
-              <Badge badgeContent={4} color="secondary">
-                <NotificationsIcon />
-              </Badge>
-            </IconButton>
-            {darkMode ? (
-              <IconButton color="inherit" onClick={handleDarkModeOff}>
-                <Brightness7Icon />
+            <Tooltip title="Add csv/excel file">
+              <IconButton color="inherit">
+                <AttachFileIcon />
               </IconButton>
-            ) : (
-              <IconButton color="inherit" onClick={handleDarkModeOn}>
-                <Brightness4Icon />
+            </Tooltip>
+            <Tooltip title="Toggle dard/light theme">
+              <IconButton
+                color="inherit"
+                onClick={darkMode ? handleDarkModeOff : handleDarkModeOn}
+              >
+                {darkMode ? <Brightness7Icon /> : <Brightness4Icon />}
               </IconButton>
-            )}
+            </Tooltip>
           </Toolbar>
         </AppBar>
         <Drawer
@@ -220,14 +218,6 @@ const GenericTemplate = ({ children, title }) => {
                   <HomeIcon />
                 </ListItemIcon>
                 <ListItemText primary="トップページ" />
-              </ListItem>
-            </Link>
-            <Link to="/products" className={classes.link}>
-              <ListItem button>
-                <ListItemIcon>
-                  <ShoppingCartIcon />
-                </ListItemIcon>
-                <ListItemText primary="商品ページ" />
               </ListItem>
             </Link>
           </List>

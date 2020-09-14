@@ -1,13 +1,12 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { makeStyles, Theme } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
+import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
 
 import GenericTemplate from '../templates/GenericTemplate';
-import DataTable from '../components/DataTable';
-import SchemaTable from '../components/SchemaTable';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -19,7 +18,7 @@ function TabPanel(props: TabPanelProps) {
   const { children, value, index, ...other } = props;
 
   return (
-    <span
+    <div
       role="tabpanel"
       hidden={value !== index}
       id={`simple-tabpanel-${index}`}
@@ -28,10 +27,10 @@ function TabPanel(props: TabPanelProps) {
     >
       {value === index && (
         <Box p={3}>
-          {children}
+          <Typography>{children}</Typography>
         </Box>
       )}
-    </span>
+    </div>
   );
 }
 
@@ -49,20 +48,19 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 }));
 
-export default function TablePage({ match }) {
+export default function SimpleTabs() {
   const classes = useStyles();
-  const { table } = match.params;
-  const [tab, setTab] = useState(0);
+  const [value, setValue] = React.useState(0);
 
-  const handleChange = (event, newValue) => {
-    setTab(newValue);
+  const handleChange = (event: React.ChangeEvent<{}>, newValue: number) => {
+    setValue(newValue);
   };
 
   return (
-    <GenericTemplate title={table}>
+    <GenericTemplate title="Tabs">
       <Paper square>
         <Tabs
-          value={tab}
+          value={value}
           onChange={handleChange}
           aria-label="simple tabs example"
           indicatorColor="primary"
@@ -72,22 +70,18 @@ export default function TablePage({ match }) {
           <Tab label="Structure" {...a11yProps(1)} />
           <Tab label="Export" {...a11yProps(2)} />
           <Tab label="Import" {...a11yProps(3)} />
-          <Tab label="Setting" {...a11yProps(4)} />
         </Tabs>
-        <TabPanel value={tab} index={0}>
-          <DataTable table={table} />
+        <TabPanel value={value} index={0}>
+          Item One
         </TabPanel>
-        <TabPanel value={tab} index={1}>
-          <SchemaTable table={table} />
+        <TabPanel value={value} index={1}>
+          Item Two
         </TabPanel>
-        <TabPanel value={tab} index={2}>
+        <TabPanel value={value} index={2}>
           Item Three
         </TabPanel>
-        <TabPanel value={tab} index={3}>
+        <TabPanel value={value} index={3}>
           Item Four
-        </TabPanel>
-        <TabPanel value={tab} index={4}>
-          Item Five
         </TabPanel>
       </Paper>
     </GenericTemplate>
