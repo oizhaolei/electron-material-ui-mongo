@@ -29,7 +29,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const PINCODE_LENGTH = 6;
+const PINCODE_LENGTH = 4;
 
 export default function SignIn({ history }) {
   const classes = useStyles();
@@ -42,7 +42,7 @@ export default function SignIn({ history }) {
           <LockOutlinedIcon />
         </Avatar>
         <Typography component="h1" variant="h5">
-          Sign in
+          Input Pincode to Login
         </Typography>
         <ReactCodeInput
           type="password"

@@ -92,7 +92,7 @@ export default function ImportTable({ table }) {
           <SearchIcons onChange={setTableIcon} />
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose} color="primary">
+          <Button onClick={handleClose}>
             Cancel
           </Button>
           <Button onClick={handleClose} color="primary">

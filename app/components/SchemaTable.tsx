@@ -41,6 +41,7 @@ export default function DataTable({ table, query }) {
       title={table}
       options={{
         pageSize,
+        selection: true,
       }}
       columns={columns}
       data={data}
@@ -58,6 +59,11 @@ export default function DataTable({ table, query }) {
           icon: 'add',
           tooltip: 'Add',
           isFreeAction: true,
+          onClick: console.log,
+        },
+        {
+          icon: 'delete',
+          tooltip: 'Delete',
           onClick: console.log,
         },
       ]}

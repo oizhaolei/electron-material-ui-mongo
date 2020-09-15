@@ -1,9 +1,14 @@
+import { app, ipcMain } from 'electron';
+
 import Datastore from 'nedb';
+import fs from 'fs';
 import path from 'path';
+import archiver from 'archiver';
+import { Parser } from 'json2csv';
 
 import { getFiles } from './utils/utils';
 
-const find = (db, query) => {
+const find = (db, query = {}) => {
   return new Promise((resolve, reject) => {
     db.find(query, (err, doc) => {
       if (err) {
@@ -93,7 +98,38 @@ const genDefinition = (table, docs) => {
   }));
 };
 
-export default function ipc(ipcMain, { dbpath }) {
+const writeCSV = (file, rows) => {
+  const fields = genDefinition('', rows).map((f) => f.field);
+  const opts = { fields };
+
+  const parser = new Parser(opts);
+  const csv = parser.parse(rows);
+  console.log(csv);
+  fs.writeFileSync(file, csv);
+};
+
+const snapshot = (dbpath) => {
+  const output = fs.createWriteStream(
+    path.resolve(dbpath, '..', `personaldb-${new Date().getDate()}.zip`)
+  );
+  const archive = archiver('zip');
+  output.on('close', () => {
+    console.log(archive.pointer() + ' total bytes');
+    console.log('archiver has been finalized and the output file descriptor has closed.');
+  });
+
+  archive.on('error', (err) => {
+    throw err;
+  });
+
+  archive.pipe(output);
+
+  // append files from a sub-directory and naming it `new-subdir` within the archive (see docs for more options):
+  archive.directory(dbpath, false);
+  archive.finalize();
+};
+
+export default function ipc({ dbpath }) {
   const systemDb = new Datastore({
     filename: path.resolve(dbpath, '__tables'),
     autoload: true,
@@ -110,8 +146,8 @@ export default function ipc(ipcMain, { dbpath }) {
       autoload: true,
     });
 
+  // all rows
   const analysisSchema = async (table) => {
-    // TODO: all rows
     const db = dbs(table);
     const docs = await find(db, {});
 
@@ -121,6 +157,13 @@ export default function ipc(ipcMain, { dbpath }) {
 
     return definition;
   };
+
+  // snapshot at startup
+  snapshot(dbpath);
+  // analysis at startup
+  // getFiles(dbpath)
+  //   .filter((t) => !t.startsWith('__'))
+  //   .map((t) => analysisSchema(t));
 
   // ping
   ipcMain.on('asynchronous-message', (event) => {
@@ -133,14 +176,14 @@ export default function ipc(ipcMain, { dbpath }) {
   });
 
   // tables
-  ipcMain.on('add_table', async (event, { _id, name, title, icon }) => {
+  ipcMain.on('add-table', async (event, { _id, name, title, icon }) => {
     const newTable = await update(
       systemDb,
       { _id },
       { name, title, icon },
       { upsert: true }
     );
-    event.reply('add_table', newTable);
+    event.reply('add-table', newTable);
   });
 
   ipcMain.on('tables', (event) => {
@@ -186,5 +229,17 @@ export default function ipc(ipcMain, { dbpath }) {
     const db = dbs(table);
     const numAffected = await update(db, query, doc, options);
     event.reply('update', { numAffected });
+  });
+
+  // db.update
+  ipcMain.on('export-csv', async (event, table) => {
+    const db = dbs(table);
+    const records = await find(db);
+    const file = path.resolve(
+      app.getPath('downloads'),
+      `${table}-${new Date().getDate()}.csv`
+    );
+    writeCSV(file, records);
+    event.reply('export-csv', file);
   });
 }
