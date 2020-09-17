@@ -3,51 +3,33 @@
 *  Functions
 ** TODO create table
 ** TODO import csv to table
-** add/remove row
-** edit cell
-** add/remove/rename fields
-** flex search
-** export to csv
+
+** DONE flex search: filtering
+** DONE export to csv
 ** DONE pincode page
-   CLOSED: [2020-09-14 Mon 11:43]
-   :LOGBOOK:
-   - State "DONE"       from "NEXT"       [2020-09-14 Mon 11:43]
-   :END:
 ** auto version upgrade
 ** import xlsx to table
 ** export to xlsx
-** db backup
-** snapshot at startup
-** analysis when schema changes
+** DONE db backup
+** DONE snapshot at startup
+** DONE analysis when schema changes
+** i18n
 
-Table:
-detail modal dialog
-single row/multi row
-OK:filtering
+** Data Table:
+*** detail modal dialog
+*** single row/multi row
+*** add/remove row
+*** edit cell
+
+** schema Table:
+*** add
+*** rename
+*** remove
+*** change type
 
 * memo
-** DONE sqlitee => nedb
-   CLOSED: [2020-09-09 Wed 17:15]
-   :LOGBOOK:
-   - State "DONE"       from "NEXT"       [2020-09-09 Wed 17:15]
-   :END:
-** DONE electron
-   CLOSED: [2020-09-09 Wed 17:16]
-   :LOGBOOK:
-   - State "DONE"       from "NEXT"       [2020-09-09 Wed 17:16]
-   :END:
+** DONE sqlite => nedb
+** DONE electron framework
 ** DONE ag-grid => material-table
-   CLOSED: [2020-09-14 Mon 11:42]
-   :LOGBOOK:
-   - State "DONE"       from "NEXT"       [2020-09-14 Mon 11:42]
-   :END:
 ** DONE meterial ui
-   CLOSED: [2020-09-09 Wed 17:16]
-   :LOGBOOK:
-   - State "DONE"       from "NEXT"       [2020-09-09 Wed 17:16]
-   :END:
-** DONE dnd
-   CLOSED: [2020-09-15 Tue 23:36]
-   :LOGBOOK:
-   - State "DONE"       from "NEXT"       [2020-09-15 Tue 23:36]
-   :END:
+** DONE dnd to import

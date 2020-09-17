@@ -84,12 +84,12 @@ const getAlign = (field, row) => {
   return 'left';
 };
 
-const genDefinition = (table, docs) => {
+const genTableDefinition = (table, docs) => {
   if (!docs || docs.length === 0) {
     return [];
   }
-  const allFields = [...new Set(docs.map((doc) => Object.keys(doc)).flat())];
-  return allFields.map((f) => ({
+  const uniqFields = [...new Set(docs.map((doc) => Object.keys(doc)).flat())];
+  return uniqFields.map((f) => ({
     table,
     title: f,
     field: f,
@@ -99,7 +99,7 @@ const genDefinition = (table, docs) => {
 };
 
 const writeCSV = (file, rows) => {
-  const fields = genDefinition('', rows).map((f) => f.field);
+  const fields = genTableDefinition('', rows).map((f) => f.field);
   const opts = { fields };
 
   const parser = new Parser(opts);
@@ -151,7 +151,7 @@ export default function ipc({ dbpath }) {
     const db = dbs(table);
     const docs = await find(db, {});
 
-    const definition = genDefinition(table, docs);
+    const definition = genTableDefinition(table, docs);
     await remove(schemaDb, { table }, { multi: true });
     await Promise.all(definition.map((def) => insert(schemaDb, def)));
 

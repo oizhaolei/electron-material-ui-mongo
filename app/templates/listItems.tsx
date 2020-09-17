@@ -11,8 +11,12 @@ import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
 import PeopleIcon from '@material-ui/icons/People';
 import BarChartIcon from '@material-ui/icons/BarChart';
 import AssignmentIcon from '@material-ui/icons/Assignment';
+import * as mui from '@material-ui/icons';
 
 import { Link } from 'react-router-dom';
+
+const allIcons = Object.keys(mui);
+console.log('allIcons:', allIcons);
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -72,6 +76,10 @@ export const MainListItems = () => {
   );
 };
 
+const getRandomInt = (max) => {
+  return Math.floor(Math.random() * Math.floor(max));
+};
+
 export const SecondaryListItems = ({ current }) => {
   console.log('current:', current);
   const classes = useStyles();
@@ -79,7 +87,10 @@ export const SecondaryListItems = ({ current }) => {
 
   useEffect(() => {
     const tablesListener = (event, arg) => {
-      setTables(arg);
+      setTables(arg.map((t) => ({
+        icon: mui[allIcons[getRandomInt(allIcons.length)]],
+        table: t,
+      })));
     };
     ipcRenderer.on('tables', tablesListener);
     ipcRenderer.send('tables');
@@ -93,12 +104,12 @@ export const SecondaryListItems = ({ current }) => {
     <>
       <ListSubheader inset>Tables</ListSubheader>
       {tables.map((record) => (
-        <Link key={record} to={`/table/${record}`} className={classes.link}>
-          <ListItem button selected={current === record}>
+        <Link key={record.table} to={`/table/${record.table}`} className={classes.link}>
+          <ListItem button selected={current === record.table}>
             <ListItemIcon>
-              <AssignmentIcon />
+              <record.icon />
             </ListItemIcon>
-            <ListItemText primary={record} />
+            <ListItemText primary={record.table} />
           </ListItem>
         </Link>
       ))}

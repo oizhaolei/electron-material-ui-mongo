@@ -8,7 +8,6 @@ import {
   makeStyles,
   createStyles,
 } from '@material-ui/core/styles';
-import * as colors from '@material-ui/core/colors';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Drawer from '@material-ui/core/Drawer';
 import Box from '@material-ui/core/Box';
@@ -24,8 +23,7 @@ import MenuIcon from '@material-ui/icons/Menu';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import IconButton from '@material-ui/core/IconButton';
 import HomeIcon from '@material-ui/icons/Home';
-import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
-import AttachFileIcon from '@material-ui/icons/AttachFile';
+import SystemUpdateAltIcon from '@material-ui/icons/SystemUpdateAlt';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
@@ -189,17 +187,17 @@ const GenericTemplate = ({ children, title, id }) => {
             >
               パソナールDB
             </Typography>
-            <Tooltip title="Add csv/excel file">
-              <IconButton color="inherit">
-                <AttachFileIcon />
-              </IconButton>
-            </Tooltip>
             <Tooltip title="Toggle dard/light theme">
               <IconButton
                 color="inherit"
                 onClick={darkMode ? handleDarkModeOff : handleDarkModeOn}
               >
                 {darkMode ? <Brightness7Icon /> : <Brightness4Icon />}
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="System Update">
+              <IconButton color="inherit">
+                <SystemUpdateAltIcon />
               </IconButton>
             </Tooltip>
           </Toolbar>
