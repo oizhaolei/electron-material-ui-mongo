@@ -1,49 +1,69 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Checkbox from '@material-ui/core/Checkbox';
+
+import SearchIcons from '../SearchIcons';
 
 export default function PaymentForm() {
-  return (
+  const [open, setOpen] = useState(false);
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+    return (
     <>
       <Typography variant="h6" gutterBottom>
-        Payment method
+        Table Title, Icon
       </Typography>
       <Grid container spacing={3}>
-        <Grid item xs={12} md={6}>
-          <TextField required id="cardName" label="Name on card" fullWidth autoComplete="cc-name" />
-        </Grid>
-        <Grid item xs={12} md={6}>
+      <Grid item xs={12}>
           <TextField
-            required
-            id="cardNumber"
-            label="Card number"
+            id="title"
+            name="title"
+            label="Table Title"
             fullWidth
-            autoComplete="cc-number"
-          />
-        </Grid>
-        <Grid item xs={12} md={6}>
-          <TextField required id="expDate" label="Expiry date" fullWidth autoComplete="cc-exp" />
-        </Grid>
-        <Grid item xs={12} md={6}>
-          <TextField
-            required
-            id="cvv"
-            label="CVV"
-            helperText="Last three digits on signature strip"
-            fullWidth
-            autoComplete="cc-csc"
+            value={tableTitle}
+            onChange={(event) => setTableTitle(event.target.value)}
+            onBlur={() => ipcRenderer.send('table-post', { table, doc: { title: tableTitle }})}
           />
         </Grid>
         <Grid item xs={12}>
-          <FormControlLabel
-            control={<Checkbox color="secondary" name="saveCard" value="yes" />}
-            label="Remember credit card details for next time"
-          />
+          <Button
+            variant="outlined"
+            onClick={handleClickOpen}
+            startIcon={<Icon>{tableIcon || 'ac_unit'}</Icon>}
+          >
+            Change Icon...
+          </Button>
         </Grid>
       </Grid>
-    </>
+
+      <Dialog
+        disableBackdropClick
+        disableEscapeKeyDown
+        open={open}
+        onClose={handleClose}
+      >
+        <DialogTitle>Fill the form</DialogTitle>
+        <DialogContent>
+          <SearchIcons onChange={(icon) => {
+            setTableIcon(icon);
+            ipcRenderer.send('table-post', { table, doc: { icon }})
+          }} />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose}>
+            Cancel
+          </Button>
+          <Button onClick={handleClose} color="primary">
+            Ok
+          </Button>
+        </DialogActions>
+      </Dialog>
+          </>
   );
 }

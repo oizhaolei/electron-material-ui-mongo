@@ -175,15 +175,15 @@ export default function ipc({ dbpath }) {
     event.reply('dbpath', dbpath);
   });
 
-  // tables
-  ipcMain.on('add-table', async (event, { _id, name, title, icon }) => {
+  // tables: add / update
+  ipcMain.on('table-post', async (event, { table, doc }) => {
     const newTable = await update(
       systemDb,
-      { _id },
-      { name, title, icon },
+      { table },
+      { table, ...doc },
       { upsert: true }
     );
-    event.reply('add-table', newTable);
+    event.reply('table-post', newTable);
   });
 
   ipcMain.on('tables', (event) => {
@@ -236,7 +236,7 @@ export default function ipc({ dbpath }) {
     const db = dbs(table);
     const records = await find(db);
     const file = path.resolve(
-      app.getPath('downloads'),
+      app.getPath('home'),
       `${table}-${new Date().getDate()}.csv`
     );
     writeCSV(file, records);

@@ -23,12 +23,13 @@ import MenuIcon from '@material-ui/icons/Menu';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import IconButton from '@material-ui/core/IconButton';
 import HomeIcon from '@material-ui/icons/Home';
-import SystemUpdateAltIcon from '@material-ui/icons/SystemUpdateAlt';
+import NotificationsIcon from '@material-ui/icons/Notifications';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import Brightness7Icon from '@material-ui/icons/Brightness7';
 import Brightness4Icon from '@material-ui/icons/Brightness4';
+import Badge from '@material-ui/core/Badge';
 
 import Copyright from '../components/Copyright';
 import { MainListItems, SecondaryListItems } from './listItems';
@@ -196,9 +197,11 @@ const GenericTemplate = ({ children, title, id }) => {
               </IconButton>
             </Tooltip>
             <Tooltip title="System Update">
+            <Badge color="secondary" variant="dot">
               <IconButton color="inherit">
-                <SystemUpdateAltIcon />
+                <NotificationsIcon />
               </IconButton>
+              </Badge>
             </Tooltip>
           </Toolbar>
         </AppBar>

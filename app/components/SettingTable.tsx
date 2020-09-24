@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { ipcRenderer } from 'electron';
 
 import { makeStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
@@ -28,13 +29,23 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function ImportTable({ table }) {
+export default function SettingTable({ table }) {
   const classes = useStyles();
 
   const [tableName, setTableName] = useState(table);
   const [tableTitle, setTableTitle] = useState(table);
   const [open, setOpen] = useState(false);
   const [tableIcon, setTableIcon] = useState('');
+
+  useEffect(() => {
+    const tableListener = (event, args) => {
+      console.log('table-post:', args);
+    };
+    ipcRenderer.on('table-post', tableListener);
+    return () => {
+      ipcRenderer.removeListener('table-post', tableListener);
+    };
+  }, [table]);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -56,7 +67,7 @@ export default function ImportTable({ table }) {
             fullWidth
             value={tableName}
             onChange={(event) => setTableName(event.target.value)}
-            onBlur={console.log}
+            onBlur={() => ipcRenderer.send('table-post', { table, doc: { table: tableName }})}
           />
         </Grid>
         <Grid item xs={12}>
@@ -67,7 +78,7 @@ export default function ImportTable({ table }) {
             fullWidth
             value={tableTitle}
             onChange={(event) => setTableTitle(event.target.value)}
-            onBlur={console.log}
+            onBlur={() => ipcRenderer.send('table-post', { table, doc: { title: tableTitle }})}
           />
         </Grid>
         <Grid item xs={12}>
@@ -89,7 +100,10 @@ export default function ImportTable({ table }) {
       >
         <DialogTitle>Fill the form</DialogTitle>
         <DialogContent>
-          <SearchIcons onChange={setTableIcon} />
+          <SearchIcons onChange={(icon) => {
+            setTableIcon(icon);
+            ipcRenderer.send('table-post', { table, doc: { icon }})
+          }} />
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose}>

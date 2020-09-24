@@ -9,7 +9,7 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Snackbar from '@material-ui/core/Snackbar';
 
-import MaterialTable, { MTableToolbar } from 'material-table';
+import MaterialTable from 'material-table';
 
 import DetailForm from './DetailForm';
 

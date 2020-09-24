@@ -281,6 +281,7 @@
     "@reduxjs/toolkit": "^1.4.0",
     "archiver": "^5.0.2",
     "connected-react-router": "^6.6.1",
+    "csvtojson": "^2.0.10",
     "electron-debug": "^3.1.0",
     "electron-log": "^4.2.2",
     "electron-store": "^6.0.0",

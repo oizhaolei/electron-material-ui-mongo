@@ -1,7 +1,10 @@
-# MUTE
+# UI
 
 *  Functions
 ** TODO create table
+
+default path: ~/.personal.db/
+
 ** TODO import csv to table
 
 ** DONE flex search: filtering
@@ -11,7 +14,9 @@
 ** import xlsx to table
 ** export to xlsx
 ** DONE db backup
-** DONE snapshot at startup
+*** DONE snapshot at startup
+ save to: ~/personaldb-xx.zip
+
 ** DONE analysis when schema changes
 ** i18n
 
@@ -33,3 +38,5 @@
 ** DONE ag-grid => material-table
 ** DONE meterial ui
 ** DONE dnd to import
+** DONE dark theme
+** TODO Win/Macos/Linux

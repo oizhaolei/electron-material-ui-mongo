@@ -2,17 +2,17 @@ import React, { useState, useEffect } from 'react';
 import { ipcRenderer } from 'electron';
 import Store from 'electron-store';
 
-import Button from '@material-ui/core/Button';
-import MaterialTable, { MTableToolbar } from 'material-table';
+import MaterialTable from 'material-table';
 
 const store = new Store();
 
 export default function DataTable({ table, query }) {
   const [columns, setColumns] = useState([
-    { title: 'title', field: 'title' },
-    { title: 'field', field: 'field' },
-    { title: 'type', field: 'type' },
-    { title: 'align', field: 'align' },
+    { title: 'Title', field: 'title' },
+    { title: 'Field', field: 'field' },
+    { title: 'Type', field: 'type' },
+    { title: 'Align', field: 'align' },
+    { title: 'PK', field: 'pk' },
   ]);
   const [data, setData] = useState([]);
   const [pageSize, setPageSize] = useState(store.get('pageSize', 5));
