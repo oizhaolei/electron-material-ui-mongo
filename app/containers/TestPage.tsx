@@ -26,11 +26,11 @@ export default function TestPage() {
     };
     ipcRenderer.on('asynchronous-reply', replyListener);
 
-    const dbpathListener = (event, arg) => {
+    const uriListener = (event, arg) => {
       console.log(arg);
       setText(arg);
     };
-    ipcRenderer.on('dbpath', dbpathListener);
+    ipcRenderer.on('uri', uriListener);
 
     const tablesListener = (event, arg) => {
       console.log(arg);
@@ -51,7 +51,7 @@ export default function TestPage() {
     ipcRenderer.on('find', findListener);
     return () => {
       ipcRenderer.removeListener('asynchronous-reply', replyListener);
-      ipcRenderer.removeListener('dbpath', dbpathListener);
+      ipcRenderer.removeListener('uri', uriListener);
       ipcRenderer.removeListener('tables', tablesListener);
       ipcRenderer.removeListener('analysis', analysisListener);
       ipcRenderer.removeListener('find', findListener);
@@ -71,9 +71,9 @@ export default function TestPage() {
         <Button
           variant="contained"
           color="primary"
-          onClick={() => ipcRenderer.send('dbpath')}
+          onClick={() => ipcRenderer.send('uri')}
         >
-          Db Path
+          Mongo URI
         </Button>
         <Button
           variant="contained"

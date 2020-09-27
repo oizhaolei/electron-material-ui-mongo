@@ -33,7 +33,7 @@ default path: ~/.personal.db/
 *** change type
 
 * memo
-** DONE sqlite => nedb
+** DONE sqlite => nedb => mongo
 ** DONE electron framework
 ** DONE ag-grid => material-table
 ** DONE meterial ui
