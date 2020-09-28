@@ -15,9 +15,8 @@ import DetailForm from './DetailForm';
 
 const store = new Store();
 
-export default function DataTable({ table, query }) {
+export default function DataTable({ table }) {
   const [columns, setColumns] = useState([]);
-  const [data, setData] = useState([]);
   const [pageSize, setPageSize] = useState(store.get('pageSize', 5));
 
   const [detailOpen, setDetailOpen] = useState(false);
@@ -48,20 +47,18 @@ export default function DataTable({ table, query }) {
   };
 
   useEffect(() => {
-    const findListener = (event, { schema, records }) => {
-      console.log('schema, records:', schema, records);
+    const schemaListener = (event, { schema }) => {
+      console.log('schema:', schema);
       setColumns(schema);
-      setData(records);
     };
-    ipcRenderer.on('find', findListener);
-    ipcRenderer.send('find', {
+    ipcRenderer.on('schema', schemaListener);
+    ipcRenderer.send('schema', {
       table,
-      query,
     });
     return () => {
-      ipcRenderer.removeListener('find', findListener);
+      ipcRenderer.removeListener('schema', schemaListener);
     };
-  }, [table, query]);
+  }, [table]);
 
   return (
     <>
@@ -73,7 +70,23 @@ export default function DataTable({ table, query }) {
           filtering: true,
         }}
         columns={columns}
-        data={data}
+        data={(query) =>
+          new Promise((resolve, reject) => {
+            const options = {
+              limit: query.pageSize,
+              skip: query.page + query.pageSize,
+              page: query.page,
+            };
+            const results = ipcRenderer.sendSync('findSync', {
+              table,
+              options,
+            });
+
+            resolve({
+              ...results,
+            })
+          })
+        }
         cellEditable={{
           onCellEditApproved: (newValue, oldValue, rowData, columnDef) => {
             return new Promise((resolve, reject) => {

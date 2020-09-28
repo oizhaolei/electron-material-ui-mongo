@@ -5,7 +5,7 @@ import TextField from '@material-ui/core/TextField';
 
 import SearchIcons from '../SearchIcons';
 
-export default function PaymentForm() {
+export default function EtcForm() {
   const [open, setOpen] = useState(false);
   const handleClickOpen = () => {
     setOpen(true);
@@ -28,7 +28,7 @@ export default function PaymentForm() {
             fullWidth
             value={tableTitle}
             onChange={(event) => setTableTitle(event.target.value)}
-            onBlur={() => ipcRenderer.send('table-post', { table, doc: { title: tableTitle }})}
+            onBlur={() => ipcRenderer.send('schema-post', { table, doc: { title: tableTitle }})}
           />
         </Grid>
         <Grid item xs={12}>
@@ -52,7 +52,7 @@ export default function PaymentForm() {
         <DialogContent>
           <SearchIcons onChange={(icon) => {
             setTableIcon(icon);
-            ipcRenderer.send('table-post', { table, doc: { icon }})
+            ipcRenderer.send('schema-post', { table, doc: { icon }})
           }} />
         </DialogContent>
         <DialogActions>

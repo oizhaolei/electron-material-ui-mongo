@@ -7,6 +7,7 @@ import ListItemText from '@material-ui/core/ListItemText';
 import GridOnIcon from '@material-ui/icons/GridOn';
 
 import { DropzoneArea } from 'material-ui-dropzone';
+import DataTable from '../DataTable';
 
 const products = [
   { name: 'Product 1', desc: 'A nice thing', price: '$9.99' },
@@ -51,11 +52,7 @@ export default function Review() {
           </Typography>
         </ListItem>
       </List>
-      <DropzoneArea
-        acceptedFiles={['text/csv']}
-        dropzoneText={'Drag and drop an CSV here or click'}
-        onChange={(files) => console.log('Files:', files)}
-      />
+      {/* <DataTable /> */}
     </>
   );
 }

@@ -39,11 +39,11 @@ export default function SettingTable({ table }) {
 
   useEffect(() => {
     const tableListener = (event, args) => {
-      console.log('table-post:', args);
+      console.log('schema-post:', args);
     };
-    ipcRenderer.on('table-post', tableListener);
+    ipcRenderer.on('schema-post', tableListener);
     return () => {
-      ipcRenderer.removeListener('table-post', tableListener);
+      ipcRenderer.removeListener('schema-post', tableListener);
     };
   }, [table]);
 
@@ -67,7 +67,7 @@ export default function SettingTable({ table }) {
             fullWidth
             value={tableName}
             onChange={(event) => setTableName(event.target.value)}
-            onBlur={() => ipcRenderer.send('table-post', { table, doc: { table: tableName }})}
+            onBlur={() => ipcRenderer.send('schema-post', { table, doc: { table: tableName }})}
           />
         </Grid>
         <Grid item xs={12}>
@@ -78,7 +78,7 @@ export default function SettingTable({ table }) {
             fullWidth
             value={tableTitle}
             onChange={(event) => setTableTitle(event.target.value)}
-            onBlur={() => ipcRenderer.send('table-post', { table, doc: { title: tableTitle }})}
+            onBlur={() => ipcRenderer.send('schema-post', { table, doc: { title: tableTitle }})}
           />
         </Grid>
         <Grid item xs={12}>
@@ -102,7 +102,7 @@ export default function SettingTable({ table }) {
         <DialogContent>
           <SearchIcons onChange={(icon) => {
             setTableIcon(icon);
-            ipcRenderer.send('table-post', { table, doc: { icon }})
+            ipcRenderer.send('schema-post', { table, doc: { icon }})
           }} />
         </DialogContent>
         <DialogActions>

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import Store from 'electron-store';
 
+import { useTranslation } from 'react-i18next';
 import clsx from 'clsx';
 import {
   ThemeProvider,
@@ -29,6 +30,8 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import Brightness7Icon from '@material-ui/icons/Brightness7';
 import Brightness4Icon from '@material-ui/icons/Brightness4';
+import TranslateIcon from '@material-ui/icons/Translate';
+import InvertColorsIcon from '@material-ui/icons/InvertColors';
 import Badge from '@material-ui/core/Badge';
 
 import Copyright from '../components/Copyright';
@@ -119,6 +122,15 @@ const useStyles = makeStyles((theme) =>
 const GenericTemplate = ({ children, title, id }) => {
   const classes = useStyles();
 
+  const { t, i18n } = useTranslation();
+  const changeLanguage = () => {
+    const getCurrentLng = i18n.language || window.localStorage.i18nextLng || '';
+
+    i18n.changeLanguage(getCurrentLng === 'ja' ? 'en' : 'ja');
+  };
+  const changeColor = () => {
+  };
+
   // theme
   const [darkMode, setDarkMode] = useState(store.get('darkMode', false));
   const handleDarkModeOn = () => {
@@ -186,8 +198,13 @@ const GenericTemplate = ({ children, title, id }) => {
               noWrap
               className={classes.title}
             >
-              パソナールDB
+              {t('パソナールDB')}
             </Typography>
+            <Tooltip title="Toggle en/ja language">
+              <IconButton color="inherit" onClick={() => changeLanguage()}>
+                <TranslateIcon />
+              </IconButton>
+            </Tooltip>
             <Tooltip title="Toggle dard/light theme">
               <IconButton
                 color="inherit"
@@ -196,11 +213,18 @@ const GenericTemplate = ({ children, title, id }) => {
                 {darkMode ? <Brightness7Icon /> : <Brightness4Icon />}
               </IconButton>
             </Tooltip>
+            <Tooltip title="Change Colors">
+              <Link to="/color" className={classes.link}>
+                <IconButton color="inherit" onClick={() => changeColor()}>
+                  <InvertColorsIcon />
+                </IconButton>
+              </Link>
+            </Tooltip>
             <Tooltip title="System Update">
-            <Badge color="secondary" variant="dot">
-              <IconButton color="inherit">
-                <NotificationsIcon />
-              </IconButton>
+              <Badge color="secondary" variant="dot">
+                <IconButton color="inherit">
+                  <NotificationsIcon />
+                </IconButton>
               </Badge>
             </Tooltip>
           </Toolbar>

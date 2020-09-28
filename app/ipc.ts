@@ -1,5 +1,4 @@
-import { app, ipcMain } from 'electron';
-
+import { app, ipcMain, shell } from 'electron';
 import path from 'path';
 
 import Mdb from './mdb';
@@ -22,9 +21,9 @@ export default function ipc() {
   });
 
   // tables: add / update
-  ipcMain.on('table-post', async (event, { table, doc }) => {
-    const newSchema = await mdb.createSchema(table, doc);
-    event.reply('table-post', newSchema);
+  ipcMain.on('schema-post', async (event, { table, definition, etc }) => {
+    const newSchema = await mdb.createSchema(table, definition, etc);
+    event.reply('schema-post', newSchema);
   });
 
   ipcMain.on('tables', async (event) => {
@@ -42,13 +41,29 @@ export default function ipc() {
     event.reply('analysis', definitions);
   });
 
+  // db.schema
+  ipcMain.on('schema', async (event, { table }) => {
+    const schema = await mdb.getSchema(table);
+    event.reply('schema', { schema });
+  });
+
   // db.find
   ipcMain.on('find', async (event, { table, filter = {}, projection, options }) => {
-    const schema = await mdb.getSchema(table);
-
     const SchemaModel = await mdb.getSchemaModel(table);
     const records = await SchemaModel.find(filter, projection, options);
-    event.reply('find', { schema, records });
+    event.reply('find', { records });
+  });
+
+  // db.findSync
+  ipcMain.on('findSync', async (event, { table, filter = {}, projection, options }) => {
+    const SchemaModel = await mdb.getSchemaModel(table);
+    const data = await SchemaModel.find(filter, projection, options);
+    const totalCount = await SchemaModel.countDocuments(filter);
+    event.returnValue = {
+      data,
+      page: options.page,
+      totalCount,
+    };
   });
 
   // db.insert
@@ -80,6 +95,7 @@ export default function ipc() {
       `${table}-${new Date().getDate()}.csv`
     );
     mdb.writeCSV(table, file);
+    shell.showItemInFolder(file);
     event.reply('export-csv', file);
   });
 }

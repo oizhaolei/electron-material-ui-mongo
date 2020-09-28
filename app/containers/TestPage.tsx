@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ipcRenderer } from 'electron';
+import { useTranslation } from 'react-i18next';
 
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
@@ -18,6 +19,13 @@ const useStyles = makeStyles((theme) => ({
 export default function TestPage() {
   const classes = useStyles();
   const [text, setText] = useState('');
+  const { t, i18n } = useTranslation();
+
+  const changeLanguage = () => {
+    const getCurrentLng = i18n.language || window.localStorage.i18nextLng || '';
+
+    i18n.changeLanguage(getCurrentLng === 'ja' ? 'en' : 'ja');
+  };
 
   useEffect(() => {
     const replyListener = (event, arg) => {
@@ -44,6 +52,12 @@ export default function TestPage() {
     };
     ipcRenderer.on('analysis', analysisListener);
 
+    const postSchemaListener = (event, arg) => {
+      console.log('postSchemaListener', arg);
+      setText(JSON.stringify(arg));
+    };
+    ipcRenderer.on('schema-post', postSchemaListener);
+
     const findListener = (event, arg) => {
       console.log(arg);
       setText(JSON.stringify(arg));
@@ -54,6 +68,7 @@ export default function TestPage() {
       ipcRenderer.removeListener('uri', uriListener);
       ipcRenderer.removeListener('tables', tablesListener);
       ipcRenderer.removeListener('analysis', analysisListener);
+      ipcRenderer.removeListener('schema-post', postSchemaListener);
       ipcRenderer.removeListener('find', findListener);
     };
   }, []);
@@ -67,6 +82,13 @@ export default function TestPage() {
           onClick={() => ipcRenderer.send('asynchronous-message', 'ping')}
         >
           Ping
+        </Button>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => changeLanguage()}
+        >
+          i18n:{t('hello')}
         </Button>
         <Button
           variant="contained"
@@ -93,9 +115,42 @@ export default function TestPage() {
           variant="contained"
           color="primary"
           onClick={() =>
+            ipcRenderer.send('schema-post', {
+              table: 'patients',
+              definition: {
+                name: {
+                  type: 'String',
+                },
+                age: {
+                  type: 'String',
+                },
+                sex: {
+                  type: 'String',
+                },
+              },
+              etc: {
+                label: 'Patients',
+                icon: 'Person',
+                suggests: {
+                  sex: ['male', 'female'],
+                },
+                foreighTable: {
+                  name: 'symptoms.patient',
+                },
+              },
+            })
+          }
+        >
+          Post Schema
+        </Button>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() =>
             ipcRenderer.send('find', {
               table: 'projects',
-            })}
+            })
+          }
         >
           Find: projects
         </Button>

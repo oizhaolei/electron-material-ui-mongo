@@ -3,12 +3,13 @@ import React from 'react';
 import { Switch, Route } from 'react-router-dom';
 import App from './containers/App';
 
-import Checkout from './containers/Checkout';
+import SchemaWizard from './containers/SchemaWizard';
 import ProductPage from './containers/ProductPage';
 import TablePage from './containers/TablePage';
 import HomePage from './containers/HomePage';
 import TestPage from './containers/TestPage';
 import TabsPage from './containers/TabsPage';
+import Color from './containers/ColorPage';
 import SignIn from './containers/SignIn';
 
 // Lazily load routes and code split with webpack
@@ -27,11 +28,12 @@ export default function Routes() {
     <App>
       <Switch>
         <Route path="/products" component={ProductPage} exact />
-        <Route path="/checkout" component={Checkout} exact />
+        <Route path="/schema-wizard" component={SchemaWizard} exact />
         <Route path="/table/:table" component={TablePage} exact />
         <Route path="/test" component={TestPage} exact />
         <Route path="/tabs" component={TabsPage} exact />
         <Route path="/pincode" component={SignIn} exact />
+        <Route path="/color" component={Color} exact />
         <Route path="/" component={HomePage} exact />
       </Switch>
     </App>

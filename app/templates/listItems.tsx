@@ -10,7 +10,6 @@ import DashboardIcon from '@material-ui/icons/Dashboard';
 import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
 import PeopleIcon from '@material-ui/icons/People';
 import BarChartIcon from '@material-ui/icons/BarChart';
-import AssignmentIcon from '@material-ui/icons/Assignment';
 import * as mui from '@material-ui/icons';
 
 import { Link } from 'react-router-dom';
@@ -32,12 +31,12 @@ export const MainListItems = () => {
 
   return (
     <>
-      <Link to="/checkout" className={classes.link}>
+      <Link to="/schema-wizard" className={classes.link}>
         <ListItem button>
           <ListItemIcon>
             <DashboardIcon />
           </ListItemIcon>
-          <ListItemText primary="Checkout" />
+          <ListItemText primary="Create Table" />
         </ListItem>
       </Link>
       <Link to="/tabs" className={classes.link}>
@@ -81,7 +80,6 @@ const getRandomInt = (max) => {
 };
 
 export const SecondaryListItems = ({ current }) => {
-  console.log('current:', current);
   const classes = useStyles();
   const [tables, setTables] = useState([]);
 
@@ -104,12 +102,12 @@ export const SecondaryListItems = ({ current }) => {
     <>
       <ListSubheader inset>Tables</ListSubheader>
       {tables.map((record) => (
-        <Link key={record.table} to={`/table/${record.table}`} className={classes.link}>
-          <ListItem button selected={current === record.table}>
+        <Link key={record.name} to={`/table/${record.name}`} className={classes.link}>
+          <ListItem button selected={current === record.name}>
             <ListItemIcon>
               <record.icon />
             </ListItemIcon>
-            <ListItemText primary={record.table} />
+            <ListItemText primary={record.name} />
           </ListItem>
         </Link>
       ))}

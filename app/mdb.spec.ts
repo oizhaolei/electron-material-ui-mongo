@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 
-import Mdb from './mdb';
-import config from './config';
+import Mdb from '../app/mdb';
+import config from '../app/config';
 
 mongoose.set('debug', (coll, method, query, doc, options) => {
   console.log(`${coll}.${method}.(${JSON.stringify(query)})`, JSON.stringify(doc), options || '');
@@ -17,19 +17,23 @@ const main = async () => {
     {
       name: {
         type: 'String',
-        ft: 'symptoms.patient', // foreign table
       },
       age: {
         type: 'String',
       },
       sex: {
         type: 'String',
-        suggest: ['male', 'female'], // like enum, but NOT strictable
       },
     },
     {
       label: 'Patients',
       icon: 'Person',
+      suggests: {
+        sex: ['male', 'female'],
+      },
+      foreighTable: {
+        name: 'symptoms.patient',
+      },
     }
   );
   const symptomSchema = await mdb.createSchema(
@@ -43,12 +47,16 @@ const main = async () => {
       },
       patient: {
         type: 'String',
-        fk: 'patients.name', // foreign key
       },
     },
     {
       label: 'Symptoms',
       icon: 'Camera',
+      suggests: {
+      },
+      foreighKey: {
+        patient: 'patients.patient',
+      },
     }
   );
 

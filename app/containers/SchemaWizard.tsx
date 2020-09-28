@@ -8,9 +8,10 @@ import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 
 import GenericTemplate from '../templates/GenericTemplate';
-import AddressForm from '../components/checkout/AddressForm';
-import PaymentForm from '../components/checkout/PaymentForm';
-import Review from '../components/checkout/Review';
+import NameForm from '../components/schema/NameForm';
+import EtcForm from '../components/schema/EtcForm';
+import CSVImport from '../components/schema/CSVImport';
+import Review from '../components/schema/Review';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -38,22 +39,25 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const steps = ['Shipping address', 'Payment details', 'Review your order'];
+const steps = ['Table Name', 'Title, Icon', 'Upload Data', 'Summary'];
+const stepActions = ['Check Name', 'Next', 'Create Table', 'Finish'];
 
 function getStepContent(step) {
   switch (step) {
     case 0:
-      return <AddressForm />;
+      return <NameForm />;
     case 1:
-      return <PaymentForm />;
+      return <EtcForm />;
     case 2:
+      return <CSVImport />;
+    case 3:
       return <Review />;
     default:
       throw new Error('Unknown step');
   }
 }
 
-export default function Checkout() {
+export default function SchemaWizard() {
   const classes = useStyles();
   const [activeStep, setActiveStep] = useState(0);
 
@@ -66,10 +70,10 @@ export default function Checkout() {
   };
 
   return (
-    <GenericTemplate title="Checkout" id="checkout">
+    <GenericTemplate title="Create Table" id="create-wizard">
       <Paper className={classes.paper}>
         <Typography component="h1" variant="h4" align="center">
-          Checkout
+        Create Table
         </Typography>
         <Stepper activeStep={activeStep} className={classes.stepper}>
           {steps.map((label) => (
@@ -104,7 +108,7 @@ export default function Checkout() {
                   onClick={handleNext}
                   className={classes.button}
                 >
-                  {activeStep === steps.length - 1 ? 'Place order' : 'Next'}
+                  {stepActions[activeStep]}
                 </Button>
               </div>
             </>
