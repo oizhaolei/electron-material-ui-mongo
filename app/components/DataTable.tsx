@@ -49,7 +49,10 @@ export default function DataTable({ table }) {
   useEffect(() => {
     const schemaListener = (event, { schema }) => {
       console.log('schema:', schema);
-      setColumns(schema);
+      setColumns(Object.keys(schema.definition).map((k) => ({
+        title: k,
+        field: k,
+      })));
     };
     ipcRenderer.on('schema', schemaListener);
     ipcRenderer.send('schema', {

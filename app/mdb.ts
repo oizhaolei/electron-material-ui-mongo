@@ -21,18 +21,18 @@ const getSuggest = (field, rows) => {
   return undefined;
 };
 
-const genTableDefinition = (docs) => {
+export const genTableDefinition = (docs) => {
   if (!docs || docs.length === 0) {
     return [];
   }
   let uniqFields = [...new Set(docs.map((doc) => Object.keys(doc)).flat())];
   uniqFields = uniqFields.map((f) => ({
-    name:[f],
+    name: [f],
     type: getType(f, docs[0]),
   }));
   uniqFields = uniqFields.reduce((r, v) => {
     r[v.name] = {
-      type: v.type
+      type: v.type,
     };
     return r;
   }, {});
@@ -47,8 +47,8 @@ export default class Mdb {
       label: String,
       icon: String,
       suggests: mongoose.Schema.Types.Mixed,
-      foreighTable: mongoose.Schema.Types.Mixed,
-      foreighKey: mongoose.Schema.Types.Mixed,
+      foreighTables: mongoose.Schema.Types.Mixed,
+      foreighKeys: mongoose.Schema.Types.Mixed,
     }, {
       timestamps: true,
       toObject: {
@@ -78,7 +78,7 @@ export default class Mdb {
     }, {
       upsert: true,
       new: true,
-    });
+    }).lean();
     return schemaDoc;
   }
 
@@ -108,7 +108,7 @@ export default class Mdb {
 
   async writeCSV(table, file) {
     const SchemaModel = await this.getSchemaModel(table);
-    const rows = await SchemaModel.find();
+    const rows = await SchemaModel.find().lean();
 
     const fields = genTableDefinition(rows).map((f) => f.field);
     const opts = { fields: Object.keys(fields) };
@@ -117,12 +117,12 @@ export default class Mdb {
     const csv = parser.parse(rows);
     console.log(csv);
     fs.writeFileSync(file, csv);
-  };
+  }
 
   // all rows
   async analysisSchema(table, save = false) {
     const SchemaModel = await this.getSchemaModel(table);
-    const rows = await SchemaModel.find();
+    const rows = await SchemaModel.find().lean();
 
     const definition = genTableDefinition(rows);
     if (save) {
@@ -130,12 +130,13 @@ export default class Mdb {
     }
 
     return definition;
-  };
+  }
 
   async getSchemas() {
-    const schemas = await this.SchemaModel.find();
+    const schemas = await this.SchemaModel.find().lean();
     return schemas;
   }
+
   async getTables() {
     const schemas = await this.getSchemas();
     return schemas.map((s) => s.table);
@@ -144,14 +145,14 @@ export default class Mdb {
   async getSchema(table) {
     const schema = await this.SchemaModel.findOne({
       table,
-    });
+    }).lean();
     return schema;
   }
 
   async getSchemaModel(table) {
     const schemaData = await this.SchemaModel.findOne({
       table,
-    });
+    }).lean();
     const sampleSchema = new mongoose.Schema(schemaData.definition, {
       timestamps: true,
       toObject: {

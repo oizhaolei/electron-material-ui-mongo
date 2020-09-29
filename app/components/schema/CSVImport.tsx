@@ -1,20 +1,41 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { ipcRenderer } from 'electron';
+
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
-import GridOnIcon from '@material-ui/icons/GridOn';
+import Icon from '@material-ui/core/Icon';
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 import { DropzoneArea } from 'material-ui-dropzone';
+import MaterialTable from 'material-table';
 
-const products = [
-  { name: 'Product 1', desc: 'A nice thing', price: '$9.99' },
-  { name: 'Product 2', desc: 'Another thing', price: '$3.45' },
-  { name: 'Product 3', desc: 'Something else', price: '$6.51' },
-  { name: 'Product 4', desc: 'Best thing of all', price: '$14.11' },
-  { name: 'Shipping', desc: '', price: 'Free' },
-];
+const SchemaTable = ({ data }) => {
+  const columns = [
+    { title: 'Title', field: 'title' },
+    { title: 'Field', field: 'field' },
+    { title: 'Type', field: 'type' },
+    { title: 'Align', field: 'align' },
+    { title: 'PK', field: 'pk' },
+  ];
+  return (
+    <MaterialTable
+      title="Schema"
+      columns={columns}
+      data={data}
+    />
+  )};
+
+const DataTable = ({ columns, data }) => {
+  return (
+    <MaterialTable
+      title="Data"
+      columns={columns}
+      data={data}
+    />
+  )};
 
 const useStyles = makeStyles((theme) => ({
   listItem: {
@@ -28,34 +49,68 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function CSVImport() {
+export default function CSVImport({ dataState, onChange }) {
+  const [loading, setLoading] = useState(false);
   const classes = useStyles();
+
+  useEffect(() => {
+    const csvReadListener = (event, { definition, data }) => {
+      setLoading(false);
+      onChange({
+        definition,
+        data,
+      });
+    };
+    ipcRenderer.on('csv-read', csvReadListener);
+
+    return () => {
+      ipcRenderer.removeListener('csv-read', csvReadListener);
+    };
+  }, []);
 
   return (
     <>
+      {loading && <CircularProgress />}
       <Typography variant="h6" gutterBottom>
-        Data
-        <GridOnIcon />
+        <Icon>{dataState.icon}</Icon>
       </Typography>
       <List disablePadding>
         <ListItem className={classes.listItem}>
           <ListItemText primary="Name" />
           <Typography variant="table name" className={classes.total}>
-            XX
+            {dataState.table}
           </Typography>
         </ListItem>
         <ListItem className={classes.listItem}>
-          <ListItemText primary="Title" />
+          <ListItemText primary="Label" />
           <Typography variant="table table" className={classes.total}>
-            YY
+          {dataState.label}
           </Typography>
         </ListItem>
       </List>
       <DropzoneArea
         acceptedFiles={['text/csv']}
         dropzoneText={'Drag and drop an CSV here or click'}
-        onChange={(files) => console.log('Files:', files)}
+        onChange={(files) => {
+          if (files && files.length > 0) {
+            setLoading(true);
+            ipcRenderer.send('csv-read', files[0]);
+          }
+        }}
       />
+      {dataState.definition && Object.keys(dataState.definition).length > 0 && (
+        <SchemaTable data={dataState.data} />
+      )}
+
+      {dataState.data && dataState.data.length > 0 && (
+        <DataTable
+          columns={Object.keys(dataState.definition).map((k) => ({
+            title: k,
+            field: k,
+          }))}
+          data={dataState.data}
+        />
+      )}
     </>
   );
 }

@@ -18,7 +18,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function TestPage() {
   const classes = useStyles();
-  const [text, setText] = useState('');
+  const [text, setText] = useState();
   const { t, i18n } = useTranslation();
 
   const changeLanguage = () => {
@@ -40,11 +40,11 @@ export default function TestPage() {
     };
     ipcRenderer.on('uri', uriListener);
 
-    const tablesListener = (event, arg) => {
+    const schemasListener = (event, arg) => {
       console.log(arg);
       setText(arg.join());
     };
-    ipcRenderer.on('tables', tablesListener);
+    ipcRenderer.on('schemas', schemasListener);
 
     const analysisListener = (event, arg) => {
       console.log(arg);
@@ -66,7 +66,7 @@ export default function TestPage() {
     return () => {
       ipcRenderer.removeListener('asynchronous-reply', replyListener);
       ipcRenderer.removeListener('uri', uriListener);
-      ipcRenderer.removeListener('tables', tablesListener);
+      ipcRenderer.removeListener('schemas', schemasListener);
       ipcRenderer.removeListener('analysis', analysisListener);
       ipcRenderer.removeListener('schema-post', postSchemaListener);
       ipcRenderer.removeListener('find', findListener);
@@ -78,42 +78,42 @@ export default function TestPage() {
       <div className={classes.root}>
         <Button
           variant="contained"
-          color="primary"
+          color="secondary"
           onClick={() => ipcRenderer.send('asynchronous-message', 'ping')}
         >
           Ping
         </Button>
         <Button
           variant="contained"
-          color="primary"
+          color="secondary"
           onClick={() => changeLanguage()}
         >
           i18n:{t('hello')}
         </Button>
         <Button
           variant="contained"
-          color="primary"
+          color="secondary"
           onClick={() => ipcRenderer.send('uri')}
         >
           Mongo URI
         </Button>
         <Button
           variant="contained"
-          color="primary"
-          onClick={() => ipcRenderer.send('tables')}
+          color="secondary"
+          onClick={() => ipcRenderer.send('schemas')}
         >
-          Tables
+          Schemas
         </Button>
         <Button
           variant="contained"
-          color="primary"
+          color="secondary"
           onClick={() => ipcRenderer.send('analysis')}
         >
           Analysis All
         </Button>
         <Button
           variant="contained"
-          color="primary"
+          color="secondary"
           onClick={() =>
             ipcRenderer.send('schema-post', {
               table: 'patients',
@@ -134,7 +134,7 @@ export default function TestPage() {
                 suggests: {
                   sex: ['male', 'female'],
                 },
-                foreighTable: {
+                foreighTables: {
                   name: 'symptoms.patient',
                 },
               },
@@ -145,7 +145,7 @@ export default function TestPage() {
         </Button>
         <Button
           variant="contained"
-          color="primary"
+          color="secondary"
           onClick={() =>
             ipcRenderer.send('find', {
               table: 'projects',

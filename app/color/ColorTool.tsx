@@ -14,8 +14,12 @@ import { capitalize } from '@material-ui/core/utils';
 import ColorDemo from './ColorDemo';
 
 const defaults = {
-  primary: '#2196f3',
-  secondary: '#f50057',
+  primary: {
+    main: '#2196f3',
+  },
+  secondary: {
+    main: '#f50057',
+  },
 };
 const hues = Object.keys(colors).slice(1, 17);
 const shades = [
@@ -81,14 +85,13 @@ const styles = (theme) => ({
   },
 });
 
-function ColorTool(props) {
-  const { classes } = props;
+function ColorTool({ classes, onChange }) {
   const theme = useTheme();
   const [state, setState] = React.useState({
-    primary: defaults.primary,
-    secondary: defaults.secondary,
-    primaryInput: defaults.primary,
-    secondaryInput: defaults.secondary,
+    primary: defaults.primary.main,
+    secondary: defaults.secondary.main,
+    primaryInput: defaults.primary.main,
+    secondaryInput: defaults.secondary.main,
     primaryHue: 'blue',
     secondaryHue: 'pink',
     primaryShade: 4,
@@ -158,20 +161,7 @@ function ColorTool(props) {
       secondary: { main: state.secondary },
     };
 
-    // dispatch({
-    //   type: 'CHANGE',
-    //   payload: { paletteColors },
-    // });
-
-    // document.cookie = `paletteColors=${JSON.stringify(
-    //   paletteColors,
-    // )};path=/;max-age=31536000`;
-  };
-
-  const handleResetDocsColors = () => {
-    // dispatch({ type: 'RESET_COLORS' });
-
-    // document.cookie = 'paletteColors=;path=/;max-age=0';
+    onChange(paletteColors);
   };
 
   const colorBar = (color) => {
@@ -286,14 +276,7 @@ function ColorTool(props) {
       </Grid>
       <Grid item xs={12}>
         <Button variant="contained" onClick={handleChangeDocsColors}>
-          Set Docs Colors
-        </Button>
-        <Button
-          variant="outlined"
-          onClick={handleResetDocsColors}
-          className={classes.button}
-        >
-          Reset Docs Colors
+          Set Colors
         </Button>
       </Grid>
     </Grid>

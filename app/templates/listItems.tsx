@@ -10,12 +10,9 @@ import DashboardIcon from '@material-ui/icons/Dashboard';
 import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
 import PeopleIcon from '@material-ui/icons/People';
 import BarChartIcon from '@material-ui/icons/BarChart';
-import * as mui from '@material-ui/icons';
+import Icon from '@material-ui/core/Icon';
 
 import { Link } from 'react-router-dom';
-
-const allIcons = Object.keys(mui);
-console.log('allIcons:', allIcons);
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -75,26 +72,19 @@ export const MainListItems = () => {
   );
 };
 
-const getRandomInt = (max) => {
-  return Math.floor(Math.random() * Math.floor(max));
-};
-
 export const SecondaryListItems = ({ current }) => {
   const classes = useStyles();
   const [tables, setTables] = useState([]);
 
   useEffect(() => {
-    const tablesListener = (event, arg) => {
-      setTables(arg.map((t) => ({
-        icon: mui[allIcons[getRandomInt(allIcons.length)]],
-        table: t,
-      })));
+    const schemasListener = (event, arg) => {
+      setTables(arg);
     };
-    ipcRenderer.on('tables', tablesListener);
-    ipcRenderer.send('tables');
+    ipcRenderer.on('schemas', schemasListener);
+    ipcRenderer.send('schemas');
 
     return () => {
-      ipcRenderer.removeListener('tables', tablesListener);
+      ipcRenderer.removeListener('schemas', schemasListener);
     };
   }, []);
 
@@ -102,12 +92,16 @@ export const SecondaryListItems = ({ current }) => {
     <>
       <ListSubheader inset>Tables</ListSubheader>
       {tables.map((record) => (
-        <Link key={record.name} to={`/table/${record.name}`} className={classes.link}>
-          <ListItem button selected={current === record.name}>
+        <Link
+          key={record.table}
+          to={`/table/${record.table}`}
+          className={classes.link}
+        >
+          <ListItem button selected={current === record.table}>
             <ListItemIcon>
-              <record.icon />
+              <Icon>{record.icon}</Icon>
             </ListItemIcon>
-            <ListItemText primary={record.name} />
+            <ListItemText primary={record.label} />
           </ListItem>
         </Link>
       ))}

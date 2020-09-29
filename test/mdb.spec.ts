@@ -31,7 +31,7 @@ const main = async () => {
       suggests: {
         sex: ['male', 'female'],
       },
-      foreighTable: {
+      foreighTables: {
         name: 'symptoms.patient',
       },
     }
@@ -54,7 +54,7 @@ const main = async () => {
       icon: 'Camera',
       suggests: {
       },
-      foreighKey: {
+      foreighKeys: {
         patient: 'patients.patient',
       },
     }

@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Store from 'electron-store';
+import { ipcRenderer } from 'electron';
 
 import { useTranslation } from 'react-i18next';
 import clsx from 'clsx';
@@ -128,35 +129,30 @@ const GenericTemplate = ({ children, title, id }) => {
 
     i18n.changeLanguage(getCurrentLng === 'ja' ? 'en' : 'ja');
   };
-  const changeColor = () => {
-  };
 
   // theme
-  const [darkMode, setDarkMode] = useState(store.get('darkMode', false));
-  const handleDarkModeOn = () => {
-    store.set('darkMode', true);
-    setDarkMode(true);
+  const [darkMode, setDarkMode] = useState(store.get('darkMode', 'light'));
+  const toggleDarkMode = () => {
+    const newDarkMode = darkMode === 'light' ? 'dark' : 'light';
+    store.set('darkMode', newDarkMode);
+    setDarkMode(newDarkMode);
   };
-  const handleDarkModeOff = () => {
-    store.set('darkMode', false);
-    setDarkMode(false);
-  };
+  const [primary, setPrimary] = useState(
+    store.get('primary', {
+      main: '#3f50b5',
+    })
+  );
+  const [secondary, setSecondary] = useState(
+    store.get('secondary', {
+      main: '#f44336',
+    })
+  );
 
   const theme = createMuiTheme({
     palette: {
-      primary: {
-        light: '#757ce8',
-        main: '#3f50b5',
-        dark: '#002884',
-        contrastText: '#fff',
-      },
-      secondary: {
-        light: '#ff7961',
-        main: '#f44336',
-        dark: '#ba000d',
-        contrastText: '#000',
-      },
-      type: darkMode ? 'dark' : 'light',
+      primary,
+      secondary,
+      type: darkMode,
     },
   });
 
@@ -171,6 +167,19 @@ const GenericTemplate = ({ children, title, id }) => {
     store.set('open', false);
   };
 
+  useEffect(() => {
+    const paletteColorsListener = (event, arg) => {
+      setPrimary(arg.primary);
+      store.set('primary', arg.primary);
+      setSecondary(arg.secondary);
+      store.set('secondary', arg.secondary);
+    };
+    ipcRenderer.on('paletteColors', paletteColorsListener);
+
+    return () => {
+      ipcRenderer.removeListener('paletteColors', paletteColorsListener);
+    };
+  }, []);
   return (
     <ThemeProvider theme={theme}>
       <div className={classes.root}>
@@ -201,31 +210,32 @@ const GenericTemplate = ({ children, title, id }) => {
               {t('パソナールDB')}
             </Typography>
             <Tooltip title="Toggle en/ja language">
-              <IconButton color="inherit" onClick={() => changeLanguage()}>
+              <IconButton color="inherit" onClick={changeLanguage}>
                 <TranslateIcon />
               </IconButton>
             </Tooltip>
             <Tooltip title="Toggle dard/light theme">
-              <IconButton
-                color="inherit"
-                onClick={darkMode ? handleDarkModeOff : handleDarkModeOn}
-              >
-                {darkMode ? <Brightness7Icon /> : <Brightness4Icon />}
+              <IconButton color="inherit" onClick={toggleDarkMode}>
+                {darkMode === 'dark' ? (
+                  <Brightness7Icon />
+                ) : (
+                  <Brightness4Icon />
+                )}
               </IconButton>
             </Tooltip>
             <Tooltip title="Change Colors">
               <Link to="/color" className={classes.link}>
-                <IconButton color="inherit" onClick={() => changeColor()}>
+                <IconButton color="inherit">
                   <InvertColorsIcon />
                 </IconButton>
               </Link>
             </Tooltip>
             <Tooltip title="System Update">
-              <Badge color="secondary" variant="dot">
-                <IconButton color="inherit">
+              <IconButton color="inherit">
+                <Badge color="secondary" variant="dot">
                   <NotificationsIcon />
-                </IconButton>
-              </Badge>
+                </Badge>
+              </IconButton>
             </Tooltip>
           </Toolbar>
         </AppBar>

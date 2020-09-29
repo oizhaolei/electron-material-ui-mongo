@@ -7,13 +7,13 @@ import MaterialTable from 'material-table';
 const store = new Store();
 
 export default function DataTable({ table, query }) {
-  const [columns, setColumns] = useState([
+  const columns = [
     { title: 'Title', field: 'title' },
     { title: 'Field', field: 'field' },
     { title: 'Type', field: 'type' },
     { title: 'Align', field: 'align' },
     { title: 'PK', field: 'pk' },
-  ]);
+  ];
   const [data, setData] = useState([]);
   const [pageSize, setPageSize] = useState(store.get('pageSize', 5));
 

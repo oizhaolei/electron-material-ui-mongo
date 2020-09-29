@@ -1,5 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useReducer } from 'react';
+import { ipcRenderer } from 'electron';
+
 import { makeStyles } from '@material-ui/core/styles';
+import { withRouter } from 'react-router-dom';
 import Paper from '@material-ui/core/Paper';
 import Stepper from '@material-ui/core/Stepper';
 import Step from '@material-ui/core/Step';
@@ -12,6 +15,7 @@ import NameForm from '../components/schema/NameForm';
 import EtcForm from '../components/schema/EtcForm';
 import CSVImport from '../components/schema/CSVImport';
 import Review from '../components/schema/Review';
+import { initialState, dataReducer } from './schemaSlice';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -39,34 +43,90 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const steps = ['Table Name', 'Title, Icon', 'Upload Data', 'Summary'];
-const stepActions = ['Check Name', 'Next', 'Create Table', 'Finish'];
+const steps = ['Table Name', 'Title, Icon', 'Upload Data'];
+const stepLabels = ['Next', 'Next', 'Create Table'];
 
-function getStepContent(step) {
-  switch (step) {
-    case 0:
-      return <NameForm />;
-    case 1:
-      return <EtcForm />;
-    case 2:
-      return <CSVImport />;
-    case 3:
-      return <Review />;
-    default:
-      throw new Error('Unknown step');
-  }
-}
-
-export default function SchemaWizard() {
+function SchemaWizard({ history }) {
   const classes = useStyles();
   const [activeStep, setActiveStep] = useState(0);
+  const [dataState, dispatch] = useReducer(dataReducer, initialState)
+  useEffect(() => {
+    const schemaPostListener = (event, args) => {
+      console.log('schema-post:', args);
+      history.replace(`/table/${args.table}`);
+    };
+    ipcRenderer.on('schema-post', schemaPostListener);
+
+    return () => {
+      ipcRenderer.removeListener('schema-post', schemaPostListener);
+    };
+  }, []);
+
+  const stepActionss = [
+    // 'Check Name'
+    () => {},
+    // 'Next'
+    () => {},
+    // 'Create Table'
+    () => {
+      ipcRenderer.send('schema-post', {
+        table: dataState.table,
+        definition: dataState.definition,
+        etc: {
+          label: dataState.label,
+          icon: dataState.icon,
+        },
+        docs: dataState.data,
+      });
+    },
+  ];
 
   const handleNext = () => {
+    stepActionss[activeStep]();
     setActiveStep(activeStep + 1);
   };
 
   const handleBack = () => {
     setActiveStep(activeStep - 1);
+  };
+
+  const getStepContent = (step) => {
+    switch (step) {
+      case 0:
+        return (
+        <NameForm
+          dataState={dataState}
+          onChange={(payload) => dispatch({
+            type: 'DATA_CHANGE',
+            payload,
+          })}
+        />
+        );
+      case 1:
+        return (
+        <EtcForm
+          dataState={dataState}
+          onChange={(payload) => dispatch({
+            type: 'DATA_CHANGE',
+            payload,
+          })}
+        />
+        );
+      case 2:
+        return (
+        <CSVImport
+          dataState={dataState}
+          onChange={(payload) => dispatch({
+            type: 'DATA_CHANGE',
+            payload,
+          })}
+        />
+        );
+      case 3:
+        return <Review dataState={dataState} />;
+      default:
+        throw new Error('Unknown step');
+    }
   };
 
   return (
@@ -108,7 +168,7 @@ export default function SchemaWizard() {
                   onClick={handleNext}
                   className={classes.button}
                 >
-                  {stepActions[activeStep]}
+                  {stepLabels[activeStep]}
                 </Button>
               </div>
             </>
@@ -118,3 +178,4 @@ export default function SchemaWizard() {
     </GenericTemplate>
   );
 }
+export default withRouter(SchemaWizard);

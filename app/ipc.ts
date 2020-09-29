@@ -1,7 +1,8 @@
 import { app, ipcMain, shell } from 'electron';
 import path from 'path';
+import csv from 'csvtojson';
 
-import Mdb from './mdb';
+import Mdb, { genTableDefinition } from './mdb';
 import config from './config';
 
 export default function ipc() {
@@ -11,8 +12,17 @@ export default function ipc() {
   mdb.snapshot();
 
   // ping
-  ipcMain.on('asynchronous-message', (event) => {
-    event.reply('asynchronous-reply', 'pong');
+  ipcMain.on('asynchronous-message', (event, { sync = false  }) => {
+    if (sync) {
+      event.returnValue = 'pong';
+    } else {
+      event.reply('asynchronous-reply', 'pong');
+    }
+  });
+
+  // paletteColors
+  ipcMain.on('paletteColors', (event, paletteColors) => {
+    event.reply('paletteColors', paletteColors);
   });
 
   // uri
@@ -21,14 +31,24 @@ export default function ipc() {
   });
 
   // tables: add / update
-  ipcMain.on('schema-post', async (event, { table, definition, etc }) => {
+  ipcMain.on('schema-post', async (event, { table, definition, etc, docs }) => {
     const newSchema = await mdb.createSchema(table, definition, etc);
+    if (docs && docs.length > 0) {
+      const SchemaModel = await mdb.getSchemaModel(table);
+      await SchemaModel.insertMany(docs);
+    }
     event.reply('schema-post', newSchema);
   });
 
-  ipcMain.on('tables', async (event) => {
+  ipcMain.on('schemas', async (event) => {
     const schemas = await mdb.getSchemas();
-    event.reply('tables', schemas);
+    event.reply('schemas', schemas);
+  });
+
+  // db.schema
+  ipcMain.on('schema', async (event, { table }) => {
+    const schema = await mdb.getSchema(table);
+    event.reply('schema', { schema });
   });
 
   // analysis
@@ -41,10 +61,15 @@ export default function ipc() {
     event.reply('analysis', definitions);
   });
 
-  // db.schema
-  ipcMain.on('schema', async (event, { table }) => {
-    const schema = await mdb.getSchema(table);
-    event.reply('schema', { schema });
+  // csv-read
+  ipcMain.on('csv-read', async (event, arg) => {
+    csv().fromFile(arg).then((data)=>{
+      const definition = genTableDefinition(data);
+      event.reply('csv-read', {
+        definition,
+        data,
+      });
+    });
   });
 
   // db.find
