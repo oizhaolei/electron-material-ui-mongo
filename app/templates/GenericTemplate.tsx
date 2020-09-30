@@ -22,7 +22,6 @@ import Tooltip from '@material-ui/core/Tooltip';
 import Container from '@material-ui/core/Container';
 import { Link } from 'react-router-dom';
 import MenuIcon from '@material-ui/icons/Menu';
-import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import IconButton from '@material-ui/core/IconButton';
 import HomeIcon from '@material-ui/icons/Home';
 import NotificationsIcon from '@material-ui/icons/Notifications';
@@ -184,10 +183,7 @@ const GenericTemplate = ({ children, title, id }) => {
     <ThemeProvider theme={theme}>
       <div className={classes.root}>
         <CssBaseline />
-        <AppBar
-          position="absolute"
-          className={clsx(classes.appBar, open && classes.appBarShift)}
-        >
+        <AppBar position="absolute" className={clsx(classes.appBar, false)}>
           <Toolbar className={classes.toolbar}>
             <IconButton
               edge="start"
@@ -196,6 +192,17 @@ const GenericTemplate = ({ children, title, id }) => {
               className={clsx(
                 classes.menuButton,
                 open && classes.menuButtonHidden
+              )}
+            >
+              <MenuIcon />
+            </IconButton>
+            <IconButton
+              edge="start"
+              color="inherit"
+              onClick={handleDrawerClose}
+              className={clsx(
+                classes.menuButton,
+                !open && classes.menuButtonHidden
               )}
             >
               <MenuIcon />
@@ -247,9 +254,7 @@ const GenericTemplate = ({ children, title, id }) => {
           open={open}
         >
           <div className={classes.toolbarIcon}>
-            <IconButton onClick={handleDrawerClose}>
-              <ChevronLeftIcon />
-            </IconButton>
+            <IconButton />
           </div>
           <Divider />
           <List>

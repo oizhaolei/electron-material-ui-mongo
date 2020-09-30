@@ -134,9 +134,6 @@ export default function TestPage() {
                 suggests: {
                   sex: ['male', 'female'],
                 },
-                foreighTables: {
-                  name: 'symptoms.patient',
-                },
               },
             })
           }

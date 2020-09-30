@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ipcRenderer } from 'electron';
+import pluralize  from 'pluralize';
 
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
@@ -14,7 +15,7 @@ export default function NameForm({ dataState, onChange }) {
 
   useEffect(() => {
     const schemasListener = (event, arg) => {
-      setTables(arg.map((s) => s.table.toLowerCase()));
+      setTables(arg.map((s) => pluralize(s.table.toLowerCase())));
     };
     ipcRenderer.on('schemas', schemasListener);
     ipcRenderer.send('schemas');
@@ -26,15 +27,13 @@ export default function NameForm({ dataState, onChange }) {
 
   const handleChange = (v) => {
     setTable(v);
-    if (tables.includes(v.toLowerCase())) {
-      setError(true);
-      setHelperText('duplicated name');
-    } else {
-      setError(false);
-      setHelperText(null);
-    }
+
+    const err = tables.includes(pluralize(v.toLowerCase()));
+    setError(err);
+    setHelperText(err && 'duplicated name');
     onChange({
       table: v,
+      error: err,
     });
   };
   return (

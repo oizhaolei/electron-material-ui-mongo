@@ -1,14 +1,15 @@
 import React, { useState, useEffect, useReducer } from 'react';
 import { ipcRenderer } from 'electron';
 
-import { makeStyles } from '@material-ui/core/styles';
 import { withRouter } from 'react-router-dom';
+import { makeStyles } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
 import Stepper from '@material-ui/core/Stepper';
 import Step from '@material-ui/core/Step';
 import StepLabel from '@material-ui/core/StepLabel';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
+import Snackbar from '@material-ui/core/Snackbar';
 
 import GenericTemplate from '../templates/GenericTemplate';
 import NameForm from '../components/schema/NameForm';
@@ -49,11 +50,12 @@ const stepLabels = ['Next', 'Next', 'Create Table'];
 function SchemaWizard({ history }) {
   const classes = useStyles();
   const [activeStep, setActiveStep] = useState(0);
-  const [dataState, dispatch] = useReducer(dataReducer, initialState)
+  const [snackOpen, setSnackOpen] = useState(false);
+  const [dataState, dispatch] = useReducer(dataReducer, initialState);
   useEffect(() => {
     const schemaPostListener = (event, args) => {
       console.log('schema-post:', args);
-      history.replace(`/table/${args.table}`);
+      setSnackOpen(true);
     };
     ipcRenderer.on('schema-post', schemaPostListener);
 
@@ -61,9 +63,13 @@ function SchemaWizard({ history }) {
       ipcRenderer.removeListener('schema-post', schemaPostListener);
     };
   }, []);
+  const handleSnackClose = (event, reason) => {
+    setSnackOpen(false);
+    history.replace(`/table/${dataState.table}`);
+  };
 
   const stepActionss = [
-    // 'Check Name'
+    // 'Next'
     () => {},
     // 'Next'
     () => {},
@@ -158,12 +164,16 @@ function SchemaWizard({ history }) {
               {getStepContent(activeStep)}
               <div className={classes.buttons}>
                 {activeStep !== 0 && (
-                  <Button onClick={handleBack} className={classes.button}>
+                  <Button
+                   disabled={dataState.error}
+                   onClick={handleBack}
+                   className={classes.button}>
                     Back
                   </Button>
                 )}
                 <Button
-                  variant="contained"
+                   disabled={dataState.error}
+                   variant="contained"
                   color="primary"
                   onClick={handleNext}
                   className={classes.button}
@@ -174,6 +184,17 @@ function SchemaWizard({ history }) {
             </>
           )}
         </>
+
+      <Snackbar
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'left',
+        }}
+        open={snackOpen}
+        autoHideDuration={2000}
+        onClose={handleSnackClose}
+        message="Table created, redirect..."
+      />
       </Paper>
     </GenericTemplate>
   );

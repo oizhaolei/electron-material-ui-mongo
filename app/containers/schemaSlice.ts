@@ -1,11 +1,11 @@
 export const initialState = {
+  error: false,
   table: '',
   definition: {},
   label: '',
   icon: 'ac_unit',
   suggests: {},
-  foreighTabless: {},
-  foreighKeyss: {},
+  foreighKeys: {},
   data: {},
   files: [],
 };

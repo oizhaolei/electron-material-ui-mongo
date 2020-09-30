@@ -31,7 +31,7 @@ const main = async () => {
       suggests: {
         sex: ['male', 'female'],
       },
-      foreighTables: {
+      oneToMany: {
         name: 'symptoms.patient',
       },
     }
@@ -53,9 +53,6 @@ const main = async () => {
       label: 'Symptoms',
       icon: 'Camera',
       suggests: {
-      },
-      foreighKeys: {
-        patient: 'patients.patient',
       },
     }
   );

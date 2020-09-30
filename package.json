@@ -290,6 +290,7 @@
     "fs-extra": "^9.0.1",
     "history": "^4.7.2",
     "i18next": "^19.7.0",
+    "i18next-browser-languagedetector": "^6.0.1",
     "json2csv": "^5.0.1",
     "material-table": "^1.69.0",
     "material-ui-dropzone": "^3.4.0",

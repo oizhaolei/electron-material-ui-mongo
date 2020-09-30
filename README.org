@@ -1,6 +1,7 @@
 # UI
 
 *  Functions
+** TODO lazy load
 ** TODO create table
 
 default path: ~/.personal.db/

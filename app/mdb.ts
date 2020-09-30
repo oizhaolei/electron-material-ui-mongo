@@ -47,7 +47,6 @@ export default class Mdb {
       label: String,
       icon: String,
       suggests: mongoose.Schema.Types.Mixed,
-      foreighTables: mongoose.Schema.Types.Mixed,
       foreighKeys: mongoose.Schema.Types.Mixed,
     }, {
       timestamps: true,
@@ -60,6 +59,7 @@ export default class Mdb {
     });
 
     this.SchemaModel = mongoose.model('s_c_h_e_m_a_s', schemaSchema);
+    this.models = {};
   }
 
   // table: plural, lowercased
@@ -150,6 +150,10 @@ export default class Mdb {
   }
 
   async getSchemaModel(table) {
+    if (this.models[table]) {
+      return this.models[table];
+    }
+
     const schemaData = await this.SchemaModel.findOne({
       table,
     }).lean();
@@ -164,6 +168,8 @@ export default class Mdb {
     }, {
       strict: false,
     });
-    return mongoose.model(schemaData.table, sampleSchema);
+    const model = mongoose.model(schemaData.table, sampleSchema);
+    this.models[table] = model;
+    return model;
   }
 }

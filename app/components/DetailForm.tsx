@@ -30,11 +30,16 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function DetailForm({ columns, list }) {
+export default function DetailForm({ columns, list, onChange }) {
   const [values, setValues] = useState(sameValue(list));
 
   useEffect(() => {
   }, [list]);
+
+  const handleChange = (event) => setValues({
+    ...values,
+    [col.field]: event.target.value,
+  });
 
   return (
     <Grid container spacing={3}>
@@ -49,10 +54,7 @@ export default function DetailForm({ columns, list }) {
               label={col.title}
               fullWidth
               value={values[col.field]}
-              onChange={(event) => setValues({
-                ...values,
-                [col.field]: event.target.value,
-              })}
+              onChange={handleChange}
             />
           </Grid>
         ))

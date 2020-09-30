@@ -12,7 +12,7 @@ export default function ipc() {
   mdb.snapshot();
 
   // ping
-  ipcMain.on('asynchronous-message', (event, { sync = false  }) => {
+  ipcMain.on('asynchronous-message', (event, { sync = false }) => {
     if (sync) {
       event.returnValue = 'pong';
     } else {
@@ -45,7 +45,7 @@ export default function ipc() {
     event.reply('schemas', schemas);
   });
 
-  // db.schema
+  // mdb.schema
   ipcMain.on('schema', async (event, { table }) => {
     const schema = await mdb.getSchema(table);
     event.reply('schema', { schema });
@@ -72,17 +72,17 @@ export default function ipc() {
     });
   });
 
-  // db.find
+  // mdb.find
   ipcMain.on('find', async (event, { table, filter = {}, projection, options }) => {
     const SchemaModel = await mdb.getSchemaModel(table);
-    const records = await SchemaModel.find(filter, projection, options);
+    const records = await SchemaModel.find(filter, projection, options).lean();
     event.reply('find', { records });
   });
 
-  // db.findSync
+  // mdb.findSync
   ipcMain.on('findSync', async (event, { table, filter = {}, projection, options }) => {
     const SchemaModel = await mdb.getSchemaModel(table);
-    const data = await SchemaModel.find(filter, projection, options);
+    const data = await SchemaModel.find(filter, projection, options).lean();
     const totalCount = await SchemaModel.countDocuments(filter);
     event.returnValue = {
       data,
@@ -91,7 +91,7 @@ export default function ipc() {
     };
   });
 
-  // db.insert
+  // mdb.insert
   ipcMain.on('insert', async (event, { table, doc }) => {
     const SchemaModel = await mdb.getSchemaModel(table);
     const newDoc = new SchemaModel(doc);
@@ -99,21 +99,21 @@ export default function ipc() {
     event.reply('insert', { newDoc });
   });
 
-  // db.remove
+  // mdb.remove
   ipcMain.on('remove', async (event, { table, filter, options }) => {
     const SchemaModel = await mdb.getSchemaModel(table);
     const numRemoved = await SchemaModel.deleteMany(filter, options);
     event.reply('remove', { numRemoved });
   });
 
-  // db.update
+  // mdb.update
   ipcMain.on('update', async (event, { table, filter, doc, options }) => {
     const SchemaModel = await mdb.getSchemaModel(table);
-    const numAffected = await SchemaModel.update(db, filter, doc, options);
+    const numAffected = await SchemaModel.update(filter, doc, options);
     event.reply('update', { numAffected });
   });
 
-  // db.export
+  // mdb.export
   ipcMain.on('export-csv', async (event, table) => {
     const file = path.resolve(
       app.getPath('home'),

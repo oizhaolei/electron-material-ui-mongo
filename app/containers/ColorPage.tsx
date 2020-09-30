@@ -3,7 +3,7 @@ import { ipcRenderer } from 'electron';
 import Paper from '@material-ui/core/Paper';
 
 import GenericTemplate from '../templates/GenericTemplate';
-import ColorTool from '../color/ColorTool';
+import ColorTool from '../components/color/ColorTool';
 
 export default function ColorPage() {
   const onChange = (paletteColors) => {

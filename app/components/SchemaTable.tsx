@@ -6,33 +6,28 @@ import MaterialTable from 'material-table';
 
 const store = new Store();
 
-export default function DataTable({ table, query }) {
+export default function SchemaTable({ table }) {
   const columns = [
     { title: 'Title', field: 'title' },
     { title: 'Field', field: 'field' },
-    { title: 'Type', field: 'type' },
-    { title: 'Align', field: 'align' },
-    { title: 'PK', field: 'pk' },
   ];
   const [data, setData] = useState([]);
-  const [pageSize, setPageSize] = useState(store.get('pageSize', 5));
-
-  const handleChangeRowsPerPage = (size) => {
-    setPageSize(size);
-  };
 
   useEffect(() => {
-    const findListener = (event, { schema }) => {
-      console.log('schema:', schema);
-      setData(schema);
+    const schemaListener = (event, { schema }) => {
+      setData(
+        Object.keys(schema.definition).map((k) => ({
+          title: k,
+          field: k,
+        }))
+      );
     };
-    ipcRenderer.on('find', findListener);
-    ipcRenderer.send('find', {
+    ipcRenderer.on('schema', schemaListener);
+    ipcRenderer.send('schema', {
       table,
-      query,
     });
     return () => {
-      ipcRenderer.removeListener('find', findListener);
+      ipcRenderer.removeListener('schema', schemaListener);
     };
   }, [table]);
 
@@ -40,7 +35,7 @@ export default function DataTable({ table, query }) {
     <MaterialTable
       title={table}
       options={{
-        pageSize,
+        pageSize: 1000,
         selection: true,
       }}
       columns={columns}
@@ -53,7 +48,6 @@ export default function DataTable({ table, query }) {
           });
         },
       }}
-      onChangeRowsPerPage={handleChangeRowsPerPage}
       actions={[
         {
           icon: 'add',

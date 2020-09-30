@@ -91,17 +91,17 @@ export const SecondaryListItems = ({ current }) => {
   return (
     <>
       <ListSubheader inset>Tables</ListSubheader>
-      {tables.map((record) => (
+      {tables.map((t) => (
         <Link
-          key={record.table}
-          to={`/table/${record.table}`}
+          key={t.table}
+          to={`/table/${t.table}`}
           className={classes.link}
         >
-          <ListItem button selected={current === record.table}>
+          <ListItem button selected={current === t.table}>
             <ListItemIcon>
-              <Icon>{record.icon}</Icon>
+              <Icon>{t.icon}</Icon>
             </ListItemIcon>
-            <ListItemText primary={record.label} />
+            <ListItemText primary={t.table} />
           </ListItem>
         </Link>
       ))}

@@ -34,7 +34,7 @@ export default function DataTable({ table }) {
   };
 
   // delete snackbar
-  const [deleteOpen, setDeleteOpen] = React.useState(false);
+  const [deleteOpen, setDeleteOpen] = useState(false);
   const handleDeleteClick = () => {
     setDeleteOpen(true);
   };
@@ -87,7 +87,7 @@ export default function DataTable({ table }) {
 
             resolve({
               ...results,
-            })
+            });
           })
         }
         cellEditable={{
@@ -129,8 +129,12 @@ export default function DataTable({ table }) {
             },
           },
         ]}
+        editable={{
+          onRowAdd: (newData) => console.log('onRowAdd: ', newData),
+          onRowUpdate: (newData, oldData) =>console.log('onRowUpdate: ', newData, oldData),
+          onRowDelete: (oldData) => console.log('onRowDelete: ', oldData),
+        }}
       />
-
       <Dialog
         disableBackdropClick
         disableEscapeKeyDown
@@ -139,7 +143,11 @@ export default function DataTable({ table }) {
       >
         <DialogTitle>Fill the form</DialogTitle>
         <DialogContent>
-          <DetailForm columns={columns} list={selected} />
+          <DetailForm
+            columns={columns}
+            list={selected}
+            onChange={console.log}
+        />
         </DialogContent>
         <DialogActions>
           <Button onClick={handleDetailClose}>Cancel</Button>

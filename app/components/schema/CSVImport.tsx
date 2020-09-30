@@ -16,9 +16,6 @@ const SchemaTable = ({ data }) => {
   const columns = [
     { title: 'Title', field: 'title' },
     { title: 'Field', field: 'field' },
-    { title: 'Type', field: 'type' },
-    { title: 'Align', field: 'align' },
-    { title: 'PK', field: 'pk' },
   ];
   return (
     <MaterialTable
@@ -26,7 +23,8 @@ const SchemaTable = ({ data }) => {
       columns={columns}
       data={data}
     />
-  )};
+  );
+};
 
 const DataTable = ({ columns, data }) => {
   return (
@@ -35,7 +33,8 @@ const DataTable = ({ columns, data }) => {
       columns={columns}
       data={data}
     />
-  )};
+  );
+};
 
 const useStyles = makeStyles((theme) => ({
   listItem: {
@@ -94,12 +93,15 @@ export default function CSVImport({ dataState, onChange }) {
         onChange={(files) => {
           if (files && files.length > 0) {
             setLoading(true);
-            ipcRenderer.send('csv-read', files[0]);
+            ipcRenderer.send('csv-read', files[0].path);
           }
         }}
       />
       {dataState.definition && Object.keys(dataState.definition).length > 0 && (
-        <SchemaTable data={dataState.data} />
+        <SchemaTable data={Object.keys(dataState.definition).map((k) => ({
+            title: k,
+            field: k,
+          }))} />
       )}
 
       {dataState.data && dataState.data.length > 0 && (

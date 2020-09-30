@@ -1,12 +1,15 @@
-import React from 'react';
+import React, { useState } from 'react';
 
+import { withRouter } from 'react-router-dom';
 import clsx from 'clsx';
 import { makeStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
-import Fab from '@material-ui/core/Fab';
-import SettingsIcon from '@material-ui/icons/Settings';
-import Tooltip from '@material-ui/core/Tooltip';
+import SpeedDial from '@material-ui/lab/SpeedDial';
+import SpeedDialIcon from '@material-ui/lab/SpeedDialIcon';
+import SpeedDialAction from '@material-ui/lab/SpeedDialAction';
+import TableChartIcon from '@material-ui/icons/TableChart';
+import FindInPageIcon from '@material-ui/icons/FindInPage';
 
 import Chart from '../components/dashboard/Chart';
 import Deposits from '../components/dashboard/Deposits';
@@ -24,17 +27,46 @@ const useStyles = makeStyles((theme) => ({
   fixedHeight: {
     height: 240,
   },
-  absolute: {
+  speedDial: {
     position: 'absolute',
-    bottom: theme.spacing(2),
-    right: theme.spacing(3),
+    '&.MuiSpeedDial-directionUp, &.MuiSpeedDial-directionLeft': {
+      bottom: theme.spacing(2),
+      right: theme.spacing(2),
+    },
+    '&.MuiSpeedDial-directionDown, &.MuiSpeedDial-directionRight': {
+      top: theme.spacing(2),
+      left: theme.spacing(2),
+    },
   },
 }));
 
-export default function Dashboard() {
+function Dashboard({ history }) {
   const classes = useStyles();
   const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
+  const [open, setOpen] = useState(false);
 
+  const actions = [
+    {
+      icon: <TableChartIcon />,
+      name: 'Table',
+      action: () => {
+        setOpen(false);
+        history.push('/schema-wizard');
+      },
+    },
+    {
+      icon: <FindInPageIcon />,
+      name: 'Query',
+      action: () => {
+        setOpen(false);
+        history.push('/query-wizard');
+      },
+    },
+  ];
+
+  const handleOpen = () => {
+    setOpen(true);
+  };
   return (
     <GenericTemplate title="Dashboard" id="dashboard">
       <Grid container spacing={3}>
@@ -57,11 +89,25 @@ export default function Dashboard() {
           </Paper>
         </Grid>
       </Grid>
-      <Tooltip title="Setting">
-        <Fab color="primary" className={classes.absolute}>
-          <SettingsIcon />
-        </Fab>
-      </Tooltip>
+      <SpeedDial
+        ariaLabel="SpeedDial example"
+        className={classes.speedDial}
+        icon={<SpeedDialIcon />}
+        onClose={() => setOpen(false)}
+        onOpen={handleOpen}
+        open={open}
+      >
+        {actions.map((a) => (
+          <SpeedDialAction
+            key={a.name}
+            icon={a.icon}
+            tooltipTitle={a.name}
+            tooltipOpen
+            onClick={a.action}
+          />
+        ))}
+      </SpeedDial>
     </GenericTemplate>
   );
 }
+export default withRouter(Dashboard);
