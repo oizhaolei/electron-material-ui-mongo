@@ -11,6 +11,7 @@ import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
+import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
 
 import SearchIcons from './SearchIcons';
 
@@ -38,12 +39,17 @@ export default function SettingTable({ table }) {
   const [tableIcon, setTableIcon] = useState('');
 
   useEffect(() => {
-    const tableListener = (event, args) => {
+    const tablePostListener = (event, args) => {
       console.log('schema-post:', args);
     };
-    ipcRenderer.on('schema-post', tableListener);
+    ipcRenderer.on('schema-post', tablePostListener);
+    const tableDeleteListener = (event, args) => {
+      console.log('schema-delete:', args);
+    };
+    ipcRenderer.on('schema-delete', tableDeleteListener);
     return () => {
-      ipcRenderer.removeListener('schema-post', tableListener);
+      ipcRenderer.removeListener('schema-post', tablePostListener);
+      ipcRenderer.removeListener('schema-delete', tableDeleteListener);
     };
   }, [table]);
 
@@ -67,7 +73,12 @@ export default function SettingTable({ table }) {
             fullWidth
             value={tableName}
             onChange={(event) => setTableName(event.target.value)}
-            onBlur={() => ipcRenderer.send('schema-post', { table, doc: { table: tableName }})}
+            onBlur={() =>
+              ipcRenderer.send('schema-post', {
+                table,
+                doc: { table: tableName },
+              })
+            }
           />
         </Grid>
         <Grid item xs={12}>
@@ -78,16 +89,29 @@ export default function SettingTable({ table }) {
             fullWidth
             value={tableTitle}
             onChange={(event) => setTableTitle(event.target.value)}
-            onBlur={() => ipcRenderer.send('schema-post', { table, doc: { title: tableTitle }})}
+            onBlur={() =>
+              ipcRenderer.send('schema-post', {
+                table,
+                doc: { title: tableTitle },
+              })
+            }
           />
         </Grid>
         <Grid item xs={12}>
           <Button
-            variant="outlined"
+            variant="contained"
             onClick={handleClickOpen}
             startIcon={<Icon>{tableIcon || 'ac_unit'}</Icon>}
           >
             Change Icon...
+          </Button>
+          <Button
+            variant="contained"
+            color="secondary"
+            onClick={() => ipcRenderer.send('schema-delete', { table })}
+            startIcon={<DeleteForeverIcon />}
+          >
+            Drop Table
           </Button>
         </Grid>
       </Grid>

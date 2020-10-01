@@ -77,12 +77,13 @@ export default function DataTable({ table }) {
           new Promise((resolve, reject) => {
             const options = {
               limit: query.pageSize,
-              skip: query.page + query.pageSize,
+              skip: query.page * query.pageSize,
               page: query.page,
             };
-            const results = ipcRenderer.sendSync('findSync', {
+            const results = ipcRenderer.sendSync('find', {
               table,
               options,
+              sync: true,
             });
 
             resolve({

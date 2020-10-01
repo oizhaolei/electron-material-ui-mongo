@@ -10,7 +10,7 @@ import HomePage from './containers/HomePage';
 import TestPage from './containers/TestPage';
 import TabsPage from './containers/TabsPage';
 import Color from './containers/ColorPage';
-import SignIn from './containers/SignIn';
+import PinCode from './containers/PinCode';
 
 // Lazily load routes and code split with webpack
 const LazyCounterPage = React.lazy(() =>
@@ -32,7 +32,7 @@ export default function Routes() {
         <Route path="/table/:table" component={TablePage} exact />
         <Route path="/test" component={TestPage} exact />
         <Route path="/tabs" component={TabsPage} exact />
-        <Route path="/pincode" component={SignIn} exact />
+        <Route path="/pincode" component={PinCode} exact />
         <Route path="/color" component={Color} exact />
         <Route path="/" component={HomePage} exact />
       </Switch>

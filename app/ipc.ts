@@ -51,6 +51,12 @@ export default function ipc() {
     event.reply('schema', { schema });
   });
 
+  // mdb.schema delete
+  ipcMain.on('schema-delete', async (event, { table }) => {
+    const result = await mdb.removeSchema(table);
+    event.reply('schema-delete', { result });
+  });
+
   // analysis
   ipcMain.on('analysis', async (event, arg) => {
     const tables = arg
@@ -73,22 +79,21 @@ export default function ipc() {
   });
 
   // mdb.find
-  ipcMain.on('find', async (event, { table, filter = {}, projection, options }) => {
-    const SchemaModel = await mdb.getSchemaModel(table);
-    const records = await SchemaModel.find(filter, projection, options).lean();
-    event.reply('find', { records });
-  });
-
-  // mdb.findSync
-  ipcMain.on('findSync', async (event, { table, filter = {}, projection, options }) => {
+  ipcMain.on('find', async (event, { table, filter = {}, projection, options, sync = false }) => {
     const SchemaModel = await mdb.getSchemaModel(table);
     const data = await SchemaModel.find(filter, projection, options).lean();
     const totalCount = await SchemaModel.countDocuments(filter);
-    event.returnValue = {
+
+    const result = {
       data,
       page: options.page,
       totalCount,
     };
+    if (sync) {
+      event.returnValue = result;
+    } else {
+      event.reply('find', result);
+    }
   });
 
   // mdb.insert

@@ -27,11 +27,11 @@ default path: ~/.personal.db/
 *** add/remove row
 *** edit cell
 
-** schema Table:
-*** add
-*** rename
-*** remove
-*** change type
+** schema table column:
+*** TODO add
+*** TODO rename
+*** TODO remove
+*** TODO change type
 
 * memo
 ** DONE sqlite => nedb => mongo
@@ -40,4 +40,8 @@ default path: ~/.personal.db/
 ** DONE meterial ui
 ** DONE dnd to import
 ** DONE dark theme
-** TODO Win/Macos/Linux
+** DONE dark theme - PINCODE
+** TODO deploy to Win/Macos/Linux
+
+* BUGS
+** find & pagination

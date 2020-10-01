@@ -79,6 +79,12 @@ export default class Mdb {
       upsert: true,
       new: true,
     }).lean();
+
+    if (this.models[table]) {
+      mongoose.deleteModel(table);
+      delete this.models[table];
+    }
+
     return schemaDoc;
   }
 
@@ -86,6 +92,10 @@ export default class Mdb {
     const result = await this.SchemaModel.deleteMany({
       table,
     });
+    if (this.models[table]) {
+      mongoose.deleteModel(table);
+      delete this.models[table];
+    }
     await this._dropCollection(table);
     return result;
   }
@@ -168,7 +178,7 @@ export default class Mdb {
     }, {
       strict: false,
     });
-    const model = mongoose.model(schemaData.table, sampleSchema);
+    const model = mongoose.model(table, sampleSchema);
     this.models[table] = model;
     return model;
   }
