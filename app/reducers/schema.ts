@@ -9,14 +9,14 @@ export const initialState = {
   data: {},
   files: [],
 };
-export const dataReducer = (dataState, action) => {
+export const dataReducer = (state = initialState, action) => {
   switch (action.type) {
-    case 'DATA_CHANGE':
+    case 'SCHEMA_DATA_CHANGE':
       return {
-        ...dataState,
+        ...state,
         ...action.payload,
       };
     default:
-      return dataState;
+      return state;
   }
 };

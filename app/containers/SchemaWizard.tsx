@@ -16,7 +16,7 @@ import NameForm from '../components/schema/NameForm';
 import EtcForm from '../components/schema/EtcForm';
 import CSVImport from '../components/schema/CSVImport';
 import Review from '../components/schema/Review';
-import { initialState, dataReducer } from './schemaSlice';
+import { initialState, dataReducer } from '../reducers/schema';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -103,7 +103,7 @@ function SchemaWizard({ history }) {
         <NameForm
           dataState={dataState}
           onChange={(payload) => dispatch({
-            type: 'DATA_CHANGE',
+            type: 'SCHEMA_DATA_CHANGE',
             payload,
           })}
         />
@@ -113,7 +113,7 @@ function SchemaWizard({ history }) {
         <EtcForm
           dataState={dataState}
           onChange={(payload) => dispatch({
-            type: 'DATA_CHANGE',
+            type: 'SCHEMA_DATA_CHANGE',
             payload,
           })}
         />
@@ -123,7 +123,7 @@ function SchemaWizard({ history }) {
         <CSVImport
           dataState={dataState}
           onChange={(payload) => dispatch({
-            type: 'DATA_CHANGE',
+            type: 'SCHEMA_DATA_CHANGE',
             payload,
           })}
         />
