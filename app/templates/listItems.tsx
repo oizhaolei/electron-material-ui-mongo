@@ -28,6 +28,7 @@ export const MainListItems = () => {
 
   return (
     <>
+      <ListSubheader inset>Query</ListSubheader>
       <Link to="/schema-wizard" className={classes.link}>
         <ListItem button>
           <ListItemIcon>

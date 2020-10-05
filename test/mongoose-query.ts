@@ -15,22 +15,23 @@ const fk = {
 };
 const main = async () => {
   const code = `
-  (({ mdb, filter, projection, options, callback }) => {
-    (async () => {
-      console.log('vm start.');
+(({ mdb, filter, projection, options, callback }) => {
+  (async () => {
+    console.log('vm start.');
 
-      const ones = await mdb['${fk.one.table}'].find(filter, projection, options).lean();
-      const result = await Promise.all(ones.map(async (p) => {
-        const many = await mdb['${fk.many.table}'].find({ ['${fk.many.field}']: p['${fk.one.field}'] }).lean();
-        return {
-          ...p,
-          many,
-        };
-      }));
-      console.log('vm end');
-      callback(result);
-    })();
-  })`;
+    const rows = await mdb['${fk.one.table}'].find(filter, projection, options).lean();
+    const result = await Promise.all(rows.map(async (p) => {
+      const many = await mdb['${fk.many.table}'].find({ ['${fk.many.field}']: p['${fk.one.field}'] }).lean();
+      return {
+        ...p,
+        many,
+      };
+    }));
+    console.log('vm end');
+    callback(result);
+  })();
+})
+`;
 
   return new Promise((resolve, reject) => {
     const mdb = new Mdb();

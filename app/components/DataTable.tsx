@@ -12,6 +12,7 @@ import Snackbar from '@material-ui/core/Snackbar';
 import MaterialTable from 'material-table';
 
 import DetailForm from './DetailForm';
+import { mongo2MaterialType } from '../utils/utils';
 
 const store = new Store();
 
@@ -52,6 +53,7 @@ export default function DataTable({ table }) {
       setColumns(Object.keys(schema.definition).map((k) => ({
         title: k,
         field: k,
+        type: mongo2MaterialType(schema.definition[k].type),
       })));
     };
     ipcRenderer.on('schema', schemaListener);

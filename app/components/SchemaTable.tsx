@@ -8,8 +8,8 @@ const store = new Store();
 
 export default function SchemaTable({ table }) {
   const columns = [
-    { title: 'Title', field: 'title' },
     { title: 'Field', field: 'field' },
+    { title: 'Type', field: 'type' },
   ];
   const [data, setData] = useState([]);
 
@@ -17,8 +17,8 @@ export default function SchemaTable({ table }) {
     const schemaListener = (event, { schema }) => {
       setData(
         Object.keys(schema.definition).map((k) => ({
-          title: k,
           field: k,
+          type: schema.definition[k].type,
         }))
       );
     };

@@ -1,26 +1,40 @@
 /* eslint react/jsx-props-no-spreading: off */
-import React from 'react';
+import React, { lazy, Suspense } from 'react';
 import { Switch, Route } from 'react-router-dom';
 import App from './containers/App';
 
-import SchemaWizard from './containers/SchemaWizard';
-import ProductPage from './containers/ProductPage';
 import TablePage from './containers/TablePage';
 import HomePage from './containers/HomePage';
-import TestPage from './containers/TestPage';
-import TabsPage from './containers/TabsPage';
-import Color from './containers/ColorPage';
 import PinCode from './containers/PinCode';
 
-// Lazily load routes and code split with webpack
-const LazyCounterPage = React.lazy(() =>
-  import(/* webpackChunkName: "CounterPage" */ './containers/CounterPage')
-);
+import ProductPage from './containers/ProductPage';
+import TestPage from './containers/TestPage';
+import TabsPage from './containers/TabsPage';
 
-const CounterPage = (props: Record<string, any>) => (
-  <React.Suspense fallback={<h1>Loading...</h1>}>
-    <LazyCounterPage {...props} />
-  </React.Suspense>
+// Lazily load routes and code split with webpack
+const LazySchemaWizard = lazy(() =>
+  import(/* webpackChunkName: "SchemaWizard" */ './containers/SchemaWizard')
+);
+const SchemaWizard = (props) => (
+  <Suspense fallback={<h1>Loading...</h1>}>
+    <LazySchemaWizard {...props} />
+  </Suspense>
+);
+const LazyColorPage = lazy(() =>
+  import(/* webpackChunkName: "ColorPage" */ './containers/ColorPage')
+);
+const ColorPage = (props) => (
+  <Suspense fallback={<h1>Loading...</h1>}>
+    <LazyColorPage {...props} />
+  </Suspense>
+);
+const LazyTablePage = lazy(() =>
+  import(/* webpackChunkName: "TablePage" */ './containers/TablePage')
+);
+const TablePage = (props) => (
+  <Suspense fallback={<h1>Loading...</h1>}>
+    <LazyTablePage {...props} />
+  </Suspense>
 );
 
 export default function Routes() {
@@ -28,12 +42,13 @@ export default function Routes() {
     <App>
       <Switch>
         <Route path="/products" component={ProductPage} exact />
-        <Route path="/schema-wizard" component={SchemaWizard} exact />
-        <Route path="/table/:table" component={TablePage} exact />
         <Route path="/test" component={TestPage} exact />
         <Route path="/tabs" component={TabsPage} exact />
+
+        <Route path="/schema-wizard" component={SchemaWizard} exact />
+        <Route path="/table/:table" component={TablePage} exact />
         <Route path="/pincode" component={PinCode} exact />
-        <Route path="/color" component={Color} exact />
+        <Route path="/color" component={ColorPage} exact />
         <Route path="/" component={HomePage} exact />
       </Switch>
     </App>

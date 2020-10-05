@@ -12,10 +12,12 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import { DropzoneArea } from 'material-ui-dropzone';
 import MaterialTable from 'material-table';
 
+import { mongo2MaterialType } from '../../utils/utils';
+
 const SchemaTable = ({ data }) => {
   const columns = [
-    { title: 'Title', field: 'title' },
     { title: 'Field', field: 'field' },
+    { title: 'Type', field: 'type' },
   ];
   return (
     <MaterialTable
@@ -101,6 +103,7 @@ export default function CSVImport({ dataState, onChange }) {
         <SchemaTable data={Object.keys(dataState.definition).map((k) => ({
             title: k,
             field: k,
+            type: dataState.definition[k].type,
           }))} />
       )}
 
@@ -109,6 +112,7 @@ export default function CSVImport({ dataState, onChange }) {
           columns={Object.keys(dataState.definition).map((k) => ({
             title: k,
             field: k,
+            type: mongo2MaterialType(dataState.definition[k].type),
           }))}
           data={dataState.data}
         />

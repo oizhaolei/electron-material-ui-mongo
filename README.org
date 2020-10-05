@@ -1,12 +1,10 @@
 # UI
 
 *  Functions
-** TODO lazy load
-** TODO create table
+** DONE lazy load
+** DONE create table
 
-default path: ~/.personal.db/
-
-** TODO import csv to table
+** DONE import csv to table
 
 ** DONE flex search: filtering
 ** DONE export to csv
@@ -18,16 +16,20 @@ default path: ~/.personal.db/
 *** DONE snapshot at startup
  save to: ~/personaldb-xx.zip
 
-** DONE analysis when schema changes
-** i18n
+** TODO analysis when schema changes
+** DONE i18n
 
-** Data Table:
-*** detail modal dialog
-*** single row/multi row
-*** add/remove row
-*** edit cell
+** Query
 
-** schema table column:
+** Data:
+*** TODO detail modal dialog
+*** TODO single row/multi row
+*** TODO add/remove row
+*** TODO edit cell
+*** TODO onColumnDragged / onOrderChange
+
+
+** Schema:
 *** TODO add
 *** TODO rename
 *** TODO remove
@@ -44,4 +46,4 @@ default path: ~/.personal.db/
 ** TODO deploy to Win/Macos/Linux
 
 * BUGS
-** find & pagination
+** TODO find & pagination
