@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Store from 'electron-store';
 import { ipcRenderer } from 'electron';
+import { withRouter } from 'react-router-dom';
 
 import { useTranslation } from 'react-i18next';
 import clsx from 'clsx';
@@ -8,6 +9,7 @@ import {
   ThemeProvider,
   createMuiTheme,
   makeStyles,
+  withStyles,
   createStyles,
 } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -32,13 +34,51 @@ import Brightness7Icon from '@material-ui/icons/Brightness7';
 import Brightness4Icon from '@material-ui/icons/Brightness4';
 import TranslateIcon from '@material-ui/icons/Translate';
 import InvertColorsIcon from '@material-ui/icons/InvertColors';
+import AddIcon from '@material-ui/icons/Add';
 import Badge from '@material-ui/core/Badge';
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
+import TableChartIcon from '@material-ui/icons/TableChart';
+import FindInPageIcon from '@material-ui/icons/FindInPage';
 
 import Copyright from '../components/Copyright';
 import { MainListItems, SecondaryListItems } from './listItems';
 
 const store = new Store();
 const drawerWidth = 240;
+
+
+const StyledMenu = withStyles({
+  paper: {
+    border: '1px solid #d3d4d5',
+  },
+})((props) => (
+  <Menu
+    elevation={0}
+    getContentAnchorEl={null}
+    anchorOrigin={{
+      vertical: 'bottom',
+      horizontal: 'center',
+    }}
+    transformOrigin={{
+      vertical: 'top',
+      horizontal: 'center',
+    }}
+    {...props}
+  />
+));
+
+const StyledMenuItem = withStyles((theme) => ({
+  root: {
+    '&:focus': {
+      backgroundColor: theme.palette.primary.main,
+      '& .MuiListItemIcon-root, & .MuiListItemText-primary': {
+        color: theme.palette.common.white,
+      },
+    },
+  },
+}))(MenuItem);
+
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -119,7 +159,7 @@ const useStyles = makeStyles((theme) =>
   })
 );
 
-const GenericTemplate = ({ children, title, id }) => {
+const GenericTemplate = ({ history, children, title, id }) => {
   const classes = useStyles();
 
   const { t, i18n } = useTranslation();
@@ -165,6 +205,29 @@ const GenericTemplate = ({ children, title, id }) => {
     setOpen(false);
     store.set('open', false);
   };
+
+  const [anchorEl, setAnchorEl] = useState(null);
+  const handleAddClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleAddClose = () => {
+    setAnchorEl(null);
+  };
+  const addActions = [
+    {
+      icon: <TableChartIcon fontSize="small" />,
+      name: 'Add Table',
+      link: '/schema-wizard',
+    },
+    {
+      icon: <FindInPageIcon fontSize="small" />,
+      name: 'Add Query',
+      link: '/query-wizard',
+    },
+  ];
+
+
 
   useEffect(() => {
     const paletteColorsListener = (event, arg) => {
@@ -216,6 +279,11 @@ const GenericTemplate = ({ children, title, id }) => {
             >
               {t('パソナールDB')}
             </Typography>
+            <Tooltip title="Add">
+              <IconButton color="inherit" onClick={handleAddClick}>
+                <AddIcon />
+              </IconButton>
+            </Tooltip>
             <Tooltip title="Toggle en/ja language">
               <IconButton color="inherit" onClick={changeLanguage}>
                 <TranslateIcon />
@@ -245,6 +313,26 @@ const GenericTemplate = ({ children, title, id }) => {
               </IconButton>
             </Tooltip>
           </Toolbar>
+          <StyledMenu
+            id="customized-menu"
+            anchorEl={anchorEl}
+            keepMounted
+            open={Boolean(anchorEl)}
+            onClose={handleAddClose}
+          >
+            {
+              addActions.map((a) => (
+                <Link key={a.link} to={a.link}>
+                  <StyledMenuItem>
+                    <ListItemIcon>
+                      {a.icon}
+                    </ListItemIcon>
+                    <ListItemText primary={a.name} />
+                  </StyledMenuItem>
+                </Link>
+              ))
+            }
+          </StyledMenu>
         </AppBar>
         <Drawer
           variant="permanent"
@@ -299,4 +387,4 @@ const GenericTemplate = ({ children, title, id }) => {
   );
 };
 
-export default GenericTemplate;
+export default withRouter(GenericTemplate);
