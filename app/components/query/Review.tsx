@@ -6,27 +6,12 @@ import Typography from '@material-ui/core/Typography';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
-import Icon from '@material-ui/core/Icon';
 import CircularProgress from '@material-ui/core/CircularProgress';
 
-import { DropzoneArea } from 'material-ui-dropzone';
 import MaterialTable from 'material-table';
 
 import { mongo2MaterialType } from '../../utils/utils';
 
-const SchemaTable = ({ data }) => {
-  const columns = [
-    { title: 'Field', field: 'field' },
-    { title: 'Type', field: 'type' },
-  ];
-  return (
-    <MaterialTable
-      title="Schema"
-      columns={columns}
-      data={data}
-    />
-  );
-};
 
 const DataTable = ({ columns, data }) => {
   return (
@@ -50,62 +35,42 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function CSVImport({ dataState, onChange }) {
+export default function Review({ dataState, onChange }) {
   const [loading, setLoading] = useState(false);
   const classes = useStyles();
 
   useEffect(() => {
-    const csvReadListener = (event, { definition, data }) => {
+    const queryDataListener = (event, { data }) => {
       setLoading(false);
       onChange({
-        definition,
         data,
       });
     };
-    ipcRenderer.on('csv-read', csvReadListener);
+    ipcRenderer.on('query-data', queryDataListener);
+    ipcRenderer.send('query-data', dataState.code);
 
     return () => {
-      ipcRenderer.removeListener('csv-read', csvReadListener);
+      ipcRenderer.removeListener('query-data', queryDataListener);
     };
   }, []);
 
   return (
     <>
       {loading && <CircularProgress />}
-      <Typography variant="h6" gutterBottom>
-        <Icon>{dataState.icon}</Icon>
-      </Typography>
       <List disablePadding>
         <ListItem className={classes.listItem}>
           <ListItemText primary="Name" />
-          <Typography variant="table name" className={classes.total}>
-            {dataState.table}
+          <Typography variant="query name" className={classes.total}>
+            {dataState.query}
           </Typography>
         </ListItem>
         <ListItem className={classes.listItem}>
           <ListItemText primary="Label" />
-          <Typography variant="table table" className={classes.total}>
-          {dataState.label}
+          <Typography variant="query query" className={classes.total}>
+            {dataState.code}
           </Typography>
         </ListItem>
       </List>
-      <DropzoneArea
-        acceptedFiles={['text/csv']}
-        dropzoneText={'Drag and drop an CSV here or click'}
-        onChange={(files) => {
-          if (files && files.length > 0) {
-            setLoading(true);
-            ipcRenderer.send('csv-read', files[0].path);
-          }
-        }}
-      />
-      {dataState.definition && Object.keys(dataState.definition).length > 0 && (
-        <SchemaTable data={Object.keys(dataState.definition).map((k) => ({
-            title: k,
-            field: k,
-            type: dataState.definition[k].type,
-          }))} />
-      )}
 
       {dataState.data && dataState.data.length > 0 && (
         <DataTable
@@ -113,9 +78,6 @@ export default function CSVImport({ dataState, onChange }) {
             title: k,
             field: k,
             type: mongo2MaterialType(dataState.definition[k].type),
-            headerStyle: {
-              whiteSpace: "nowrap",
-            },
           }))}
           data={dataState.data}
         />

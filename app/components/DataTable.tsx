@@ -54,6 +54,9 @@ export default function DataTable({ table }) {
         title: k,
         field: k,
         type: mongo2MaterialType(schema.definition[k].type),
+        headerStyle: {
+          whiteSpace: "nowrap",
+        },
       })));
     };
     ipcRenderer.on('schema', schemaListener);

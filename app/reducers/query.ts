@@ -1,13 +1,9 @@
 export const initialState = {
   error: false,
-  table: '',
-  definition: {},
-  label: '',
-  icon: 'ac_unit',
-  suggests: {},
-  foreighKeys: {},
-  data: {},
-  files: [],
+  query: '',
+  type: 'one-to-many',
+  relation: {},
+  code: '',
 };
 export const dataReducer = (state = initialState, action) => {
   switch (action.type) {

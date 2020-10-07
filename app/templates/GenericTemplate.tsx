@@ -42,7 +42,7 @@ import TableChartIcon from '@material-ui/icons/TableChart';
 import FindInPageIcon from '@material-ui/icons/FindInPage';
 
 import Copyright from '../components/Copyright';
-import { MainListItems, SecondaryListItems } from './listItems';
+import { QueryListItems, TableListItems } from './listItems';
 
 const store = new Store();
 const drawerWidth = 240;
@@ -322,13 +322,13 @@ const GenericTemplate = ({ history, children, title, id }) => {
           >
             {
               addActions.map((a) => (
-                <Link key={a.link} to={a.link}>
-                  <StyledMenuItem>
+                <Link key={a.link} to={a.link} className={classes.link}>
+                  <MenuItem>
                     <ListItemIcon>
                       {a.icon}
                     </ListItemIcon>
                     <ListItemText primary={a.name} />
-                  </StyledMenuItem>
+                  </MenuItem>
                 </Link>
               ))
             }
@@ -357,11 +357,11 @@ const GenericTemplate = ({ history, children, title, id }) => {
           </List>
           <Divider />
           <List>
-            <SecondaryListItems current={id} />
+            <TableListItems current={id} />
           </List>
           <Divider />
           <List>
-            <MainListItems />
+            <QueryListItems />
           </List>
         </Drawer>
         <main className={classes.content}>

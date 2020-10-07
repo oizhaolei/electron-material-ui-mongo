@@ -7,44 +7,50 @@ import Typography from '@material-ui/core/Typography';
 import TextField from '@material-ui/core/TextField';
 
 export default function NameForm({ dataState, onChange }) {
-  const [table, setTable] = useState(dataState.table);
+  const [query, setTable] = useState(dataState.query);
 
-  const [tableNames, setTableNames] = useState([]);
+  const [queries, setQueries] = useState([]);
   const [error, setError] = useState(false);
   const [helperText, setHelperText] = useState();
 
   useEffect(() => {
-    setTableNames(ipcRenderer.sendSync('schemas', {
-      sync: true,
-    }).map((s) => pluralize(s.table.toLowerCase())));
+    const queriesListener = (event, arg) => {
+      setQueries(arg.map((s) => pluralize(s.query.toLowerCase())));
+    };
+    ipcRenderer.on('queries', queriesListener);
+    ipcRenderer.send('queries');
+
+    return () => {
+      ipcRenderer.removeListener('queries', queriesListener);
+    };
   }, []);
 
   const handleChange = (v) => {
     setTable(v);
 
-    const err = tableNames.includes(pluralize(v.toLowerCase()));
+    const err = queries.includes(pluralize(v.toLowerCase()));
     setError(err);
     setHelperText(err && 'duplicated name');
     onChange({
-      table: v,
+      query: v,
       error: err,
     });
   };
   return (
     <>
       <Typography variant="h6" gutterBottom>
-        Table Name
+        Query Name
       </Typography>
       <Grid container spacing={3}>
         <Grid item xs={12}>
           <TextField
             required
-            id="table"
-            name="table"
-            label="Table Name"
+            id="query"
+            name="query"
+            label="Query Name"
             fullWidth
-            autoComplete="input unique table please"
-            value={table}
+            autoComplete="input unique query please"
+            value={query}
             onChange={(event) => handleChange(event.target.value)}
             error={error}
             helperText={helperText}

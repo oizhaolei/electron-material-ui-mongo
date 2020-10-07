@@ -23,7 +23,7 @@ const useStyles = makeStyles(() =>
   })
 );
 
-export const MainListItems = () => {
+export const QueryListItems = () => {
   const classes = useStyles();
 
   return (
@@ -73,20 +73,12 @@ export const MainListItems = () => {
   );
 };
 
-export const SecondaryListItems = ({ current }) => {
+export const TableListItems = ({ current }) => {
   const classes = useStyles();
   const [tables, setTables] = useState([]);
 
   useEffect(() => {
-    const schemasListener = (event, arg) => {
-      setTables(arg);
-    };
-    ipcRenderer.on('schemas', schemasListener);
-    ipcRenderer.send('schemas');
-
-    return () => {
-      ipcRenderer.removeListener('schemas', schemasListener);
-    };
+    setTables(ipcRenderer.sendSync('schemas', { sync: true }));
   }, []);
 
   return (

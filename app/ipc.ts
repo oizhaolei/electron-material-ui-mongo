@@ -40,9 +40,13 @@ export default function ipc() {
     event.reply('schema-post', newSchema);
   });
 
-  ipcMain.on('schemas', async (event) => {
+  ipcMain.on('schemas', async (event, { sync = false }) => {
     const schemas = await mdb.getSchemas();
-    event.reply('schemas', schemas);
+    if (sync) {
+      event.returnValue = schemas;
+    } else {
+      event.reply('schemas', schemas);
+    }
   });
 
   // mdb.schema
@@ -61,7 +65,7 @@ export default function ipc() {
   ipcMain.on('analysis', async (event, arg) => {
     const tables = arg
       ? [arg]
-      : await mdb.getTables();
+      : await mdb.getSchemaNames();
     const definitions = await Promise.all(tables.map((t) => mdb.analysisSchema(t)));
 
     event.reply('analysis', definitions);
@@ -127,5 +131,21 @@ export default function ipc() {
     mdb.writeCSV(table, file);
     shell.showItemInFolder(file);
     event.reply('export-csv', file);
+  });
+
+  ipcMain.on('queries', async (event) => {
+    const queries = await mdb.getQueries();
+    event.reply('queries', queries);
+  });
+
+  ipcMain.on('query-post', async (event, { query, data }) => {
+    const newQuery = await mdb.createQuery(query, data);
+    event.reply('query-post', newQuery);
+  });
+
+  // mdb.query delete
+  ipcMain.on('query-delete', async (event, { query }) => {
+    const result = await mdb.removeQuery(query);
+    event.reply('query-delete', { result });
   });
 }

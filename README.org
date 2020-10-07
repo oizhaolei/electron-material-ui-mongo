@@ -9,9 +9,9 @@
 ** DONE flex search: filtering
 ** DONE export to csv
 ** DONE pincode page
-** auto version upgrade
-** import xlsx to table
-** export to xlsx
+** TODO auto version upgrade
+** TODO import xlsx to table
+** TODO export to xlsx
 ** DONE db backup
 *** DONE snapshot at startup
  save to: ~/personaldb-xx.zip
@@ -47,3 +47,5 @@
 
 * BUGS
 ** TODO find & pagination
+** Tables   => context
+** Treeview

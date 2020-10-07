@@ -41,6 +41,7 @@ export const genTableDefinition = (docs) => {
 
 export default class Mdb {
   constructor() {
+    // scheme
     const schemaSchema = mongoose.Schema({
       table: String,
       definition: mongoose.Schema.Types.Mixed,
@@ -57,8 +58,25 @@ export default class Mdb {
         virtuals: true,
       },
     });
-
     this.SchemaModel = mongoose.model('s_c_h_e_m_a_s', schemaSchema);
+
+    // query
+    const querySchema = mongoose.Schema({
+      query: String,
+      type: String,
+      relations: mongoose.Schema.Types.Mixed,
+      code: String,
+    }, {
+      timestamps: true,
+      toObject: {
+        virtuals: true,
+      },
+      toJSON: {
+        virtuals: true,
+      },
+    });
+    this.QueryModel = mongoose.model('q_u_e_r_y_s', querySchema);
+
     this.models = {};
   }
 
@@ -147,7 +165,7 @@ export default class Mdb {
     return schemas;
   }
 
-  async getTables() {
+  async getSchemaNames() {
     const schemas = await this.getSchemas();
     return schemas.map((s) => s.table);
   }
@@ -181,5 +199,32 @@ export default class Mdb {
     const model = mongoose.model(table, sampleSchema);
     this.models[table] = model;
     return model;
+  }
+
+  async createQuery(query, data = {}) {
+    const queryDoc = await this.QueryModel.findOneAndUpdate({
+      query,
+    }, {
+      query,
+      ...data,
+    }, {
+      upsert: true,
+      new: true,
+    }).lean();
+
+    return queryDoc;
+  }
+
+  async removeQuery(query) {
+    const result = await this.QueryModel.deleteMany({
+      query,
+    });
+
+    return result;
+  }
+
+  async getQueries() {
+    const queries = await this.QueryModel.find().lean();
+    return queries;
   }
 }

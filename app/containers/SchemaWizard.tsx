@@ -15,7 +15,6 @@ import GenericTemplate from '../templates/GenericTemplate';
 import NameForm from '../components/schema/NameForm';
 import EtcForm from '../components/schema/EtcForm';
 import CSVImport from '../components/schema/CSVImport';
-import Review from '../components/schema/Review';
 import { initialState, dataReducer } from '../reducers/schema';
 
 const useStyles = makeStyles((theme) => ({
@@ -128,8 +127,6 @@ function SchemaWizard({ history }) {
           })}
         />
         );
-      case 3:
-        return <Review dataState={dataState} />;
       default:
         throw new Error('Unknown step');
     }
