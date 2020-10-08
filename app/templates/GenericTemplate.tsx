@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Store from 'electron-store';
 import { ipcRenderer } from 'electron';
-import { withRouter } from 'react-router-dom';
 
 import { useTranslation } from 'react-i18next';
 import clsx from 'clsx';
@@ -159,7 +158,7 @@ const useStyles = makeStyles((theme) =>
   })
 );
 
-const GenericTemplate = ({ history, children, title, id }) => {
+const GenericTemplate = ({ children, title, id }) => {
   const classes = useStyles();
 
   const { t, i18n } = useTranslation();
@@ -387,4 +386,4 @@ const GenericTemplate = ({ history, children, title, id }) => {
   );
 };
 
-export default withRouter(GenericTemplate);
+export default GenericTemplate;

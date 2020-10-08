@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 
-import { withRouter } from 'react-router-dom';
 import clsx from 'clsx';
 import { makeStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
@@ -24,8 +23,9 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function Dashboard({ history }) {
+function Dashboard() {
   const classes = useStyles();
+
   const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
 
   return (
@@ -53,4 +53,4 @@ function Dashboard({ history }) {
     </GenericTemplate>
   );
 }
-export default withRouter(Dashboard);
+export default Dashboard;

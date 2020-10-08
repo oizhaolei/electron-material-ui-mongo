@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useReducer } from 'react';
 import { ipcRenderer } from 'electron';
+import { useHistory } from "react-router-dom";
 
-import { withRouter } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
 import Stepper from '@material-ui/core/Stepper';
@@ -47,8 +47,10 @@ const useStyles = makeStyles((theme) => ({
 const steps = ['Query Name', 'Relations', 'Preview'];
 const stepLabels = ['Next', 'Next', 'Create Query'];
 
-function QueryWizard({ history }) {
+function QueryWizard() {
   const classes = useStyles();
+  const history = useHistory();
+
   const [activeStep, setActiveStep] = useState(0);
   const [snackOpen, setSnackOpen] = useState(false);
   const [dataState, dispatch] = useReducer(dataReducer, initialState);
@@ -65,18 +67,15 @@ function QueryWizard({ history }) {
   }, []);
   const handleSnackClose = (event, reason) => {
     setSnackOpen(false);
-    history.replace(`/table/${dataState.table}`);
+    history.replace(`/query/${dataState.name}`);
   };
 
   const stepActionss = [
-    // 'Next'
-    () => {},
-    // 'Next'
-    () => {},
-    // 'Create Query'
-    () => {
+    () => {}, // 'Next'
+    () => {}, // 'Next'
+    () => {   // 'Create Query'
       ipcRenderer.send('query-post', {
-        query: dataState.query,
+        name: dataState.name,
         data: {
           type: dataState.type,
           relations: dataState.relations,
@@ -112,7 +111,7 @@ function QueryWizard({ history }) {
         <RelationForm
           dataState={dataState}
           onChange={(payload) => dispatch({
-            type: 'QUERY_DATA_CHANGE',
+            type: 'QUERY_RELATION_CHANGE',
             payload,
           })}
         />
@@ -169,8 +168,8 @@ function QueryWizard({ history }) {
                   </Button>
                 )}
                 <Button
-                   disabled={dataState.error}
-                   variant="contained"
+                  disabled={dataState.error}
+                  variant="contained"
                   color="primary"
                   onClick={handleNext}
                   className={classes.button}
@@ -190,10 +189,10 @@ function QueryWizard({ history }) {
         open={snackOpen}
         autoHideDuration={2000}
         onClose={handleSnackClose}
-        message="Table created, redirect..."
+        message="Query created, redirect..."
       />
       </Paper>
     </GenericTemplate>
   );
 }
-export default withRouter(QueryWizard);
+export default QueryWizard;

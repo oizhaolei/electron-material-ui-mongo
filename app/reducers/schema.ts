@@ -1,6 +1,6 @@
 export const initialState = {
   error: false,
-  table: '',
+  name: '',
   definition: {},
   label: '',
   icon: 'ac_unit',

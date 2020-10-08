@@ -49,3 +49,6 @@
 ** TODO find & pagination
 ** Tables   => context
 ** Treeview
+
+** 機能一覧整理
+** i18n

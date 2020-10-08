@@ -17,19 +17,19 @@ export default function RelationForm({ dataState, onChange }) {
   return (
     <>
       <Typography variant="h6" gutterBottom>
-        One-to-Many relation
+        One-to-Many relation - {dataState.name}
       </Typography>
       <Grid container spacing={3}>
         <Grid item xs={6}>
           <TableView
             label="One"
-            onChange={({ table, field }) => handleRelationChange('one', table, field)}
+            onChange={(table, field) => handleRelationChange('one', table, field)}
           />
         </Grid>
         <Grid item xs={6}>
         <TableView
             label="Many"
-            onChange={({ table, field }) => handleRelationChange('many', table, field)}
+            onChange={(table, field) => handleRelationChange('many', table, field)}
           />
         </Grid>
       </Grid>

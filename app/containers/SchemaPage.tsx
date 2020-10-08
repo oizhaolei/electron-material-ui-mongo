@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { useRouteMatch } from "react-router-dom";
+
 import { makeStyles, Theme } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
 import Tabs from '@material-ui/core/Tabs';
@@ -11,6 +13,7 @@ import SchemaTable from '../components/SchemaTable';
 import ExportTable from '../components/ExportTable';
 import ImportTable from '../components/ImportTable';
 import SettingTable from '../components/SettingTable';
+import DetailForm from '../components/DetailForm';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -52,18 +55,19 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 }));
 
-export default function TablePage({ match }) {
+export default function SchemaPage() {
   const classes = useStyles();
-  const { table } = match.params;
+  const match = useRouteMatch();
+  const { name } = match.params;
   const [tab, setTab] = useState(0);
 
-  const handleChange = (event, newValue) => {
-    setTab(newValue);
+  const handleChange = (event, newTab) => {
+    setTab(newTab);
   };
 
   return (
-    <GenericTemplate title={table} id={table}>
-      <Paper square key={table}>
+    <GenericTemplate title={name} id={name}>
+      <Paper square key={name}>
         <Tabs
           value={tab}
           onChange={handleChange}
@@ -78,19 +82,24 @@ export default function TablePage({ match }) {
           <Tab label="Setting" {...a11yProps(4)} />
         </Tabs>
         <TabPanel value={tab} index={0}>
-          <DataTable table={table} />
+          <DataTable
+            schemaName={name}
+            dialogContent={(props) => (
+              <DetailForm {...props} />
+            )}
+          />
         </TabPanel>
         <TabPanel value={tab} index={1}>
-          <SchemaTable table={table} />
+          <SchemaTable schemaName={name} />
         </TabPanel>
         <TabPanel value={tab} index={2}>
-          <ExportTable table={table} />
+          <ExportTable schemaName={name} />
         </TabPanel>
         <TabPanel value={tab} index={3}>
-          <ImportTable table={table} />
+          <ImportTable schemaName={name} />
         </TabPanel>
         <TabPanel value={tab} index={4}>
-          <SettingTable table={table} />
+          <SettingTable schemaName={name} />
         </TabPanel>
       </Paper>
     </GenericTemplate>

@@ -6,28 +6,44 @@ import App from './containers/App';
 import SchemaWizard from './containers/SchemaWizard';
 import QueryWizard from './containers/QueryWizard';
 import QueryPage from './containers/QueryPage';
-import TablePage from './containers/TablePage';
+import SchemaPage from './containers/SchemaPage';
 import HomePage from './containers/HomePage';
 import Color from './containers/ColorPage';
 import PinCode from './containers/PinCode';
 import TestPage from './containers/TestPage';
-import ProductPage from './containers/ProductPage';
 import TabsPage from './containers/TabsPage';
 
 export default function Routes() {
   return (
     <App>
       <Switch>
-        <Route path="/products" component={ProductPage} exact />
-        <Route path="/schema-wizard" component={SchemaWizard} exact />
-        <Route path="/query-wizard" component={QueryWizard} exact />
-        <Route path="/query/:query" component={QueryPage} exact />
-        <Route path="/table/:table" component={TablePage} exact />
-        <Route path="/test" component={TestPage} exact />
-        <Route path="/tabs" component={TabsPage} exact />
-        <Route path="/pincode" component={PinCode} exact />
-        <Route path="/color" component={Color} exact />
-        <Route path="/" component={HomePage} exact />
+        <Route path="/pincode" exact >
+          <PinCode />
+        </Route>
+        <Route path="/schema-wizard" exact >
+          <SchemaWizard />
+        </Route>
+        <Route path="/query-wizard" exact >
+          <QueryWizard />
+        </Route>
+        <Route path="/query/:name" exact >
+          <QueryPage />
+        </Route>
+        <Route path="/table/:name" exact >
+          <SchemaPage />
+        </Route>
+        <Route path="/test" exact >
+          <TestPage />
+        </Route>
+        <Route path="/tabs" exact >
+          <TabsPage />
+        </Route>
+        <Route path="/color" exact >
+          <Color />
+        </Route>
+        <Route path="/" exact >
+          <HomePage />
+        </Route>
       </Switch>
     </App>
   );

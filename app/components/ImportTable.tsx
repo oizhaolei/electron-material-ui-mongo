@@ -12,7 +12,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 }));
 
-export default function ImportTable({ table }) {
+export default function ImportTable({ schemaName }) {
   const classes = useStyles();
 
   return (

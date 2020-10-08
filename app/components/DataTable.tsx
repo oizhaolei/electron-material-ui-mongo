@@ -11,12 +11,11 @@ import Snackbar from '@material-ui/core/Snackbar';
 
 import MaterialTable from 'material-table';
 
-import DetailForm from './DetailForm';
 import { mongo2MaterialType } from '../utils/utils';
 
 const store = new Store();
 
-export default function DataTable({ table }) {
+export default function DataTable({ schemaName, dialogContent, filter = {} }) {
   const [columns, setColumns] = useState([]);
   const [pageSize, setPageSize] = useState(store.get('pageSize', 5));
 
@@ -48,7 +47,7 @@ export default function DataTable({ table }) {
   };
 
   useEffect(() => {
-    const schemaListener = (event, { schema }) => {
+    const schemaListener = (event, schema) => {
       console.log('schema:', schema);
       setColumns(Object.keys(schema.definition).map((k) => ({
         title: k,
@@ -60,18 +59,16 @@ export default function DataTable({ table }) {
       })));
     };
     ipcRenderer.on('schema', schemaListener);
-    ipcRenderer.send('schema', {
-      table,
-    });
+    ipcRenderer.send('schema', schemaName);
     return () => {
       ipcRenderer.removeListener('schema', schemaListener);
     };
-  }, [table]);
+  }, [schemaName]);
 
   return (
     <>
       <MaterialTable
-        title={table}
+        title={schemaName}
         options={{
           pageSize,
           selection: true,
@@ -86,13 +83,14 @@ export default function DataTable({ table }) {
               page: query.page,
             };
             const results = ipcRenderer.sendSync('find', {
-              table,
+              name: schemaName,
+              filter,
               options,
               sync: true,
             });
 
             resolve({
-              ...results,
+            ...results,
             });
           })
         }
@@ -149,10 +147,13 @@ export default function DataTable({ table }) {
       >
         <DialogTitle>Fill the form</DialogTitle>
         <DialogContent>
-          <DetailForm
-            columns={columns}
-            list={selected}
-            onChange={console.log}
+          {
+            dialogContent && dialogContent({
+              columns: columns,
+              list: selected,
+              onChange: console.log,
+            })
+          }
         />
         </DialogContent>
         <DialogActions>

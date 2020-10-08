@@ -58,8 +58,8 @@ const main = async () => {
   );
 
   // get a SchemaModel and CRUD
-  const PatientModel = await mdb.getSchemaModel(patientSchema.table);
-  const SymptomModel = await mdb.getSchemaModel(symptomSchema.table);
+  const PatientModel = await mdb.getSchemaModel(patientSchema.name);
+  const SymptomModel = await mdb.getSchemaModel(symptomSchema.name);
 
   const patientDoc = new PatientModel({
     name: 'charlie',
@@ -113,9 +113,9 @@ const main = async () => {
   console.log('schemas', schemas);
 
   // removeSchema
-  const removeResult = await mdb.removeSchema(patientSchema.table);
+  const removeResult = await mdb.removeSchema(patientSchema.name);
   console.log('removeResult', removeResult);
-  await mdb.removeSchema(symptomSchema.table);
+  await mdb.removeSchema(symptomSchema.name);
 };
 
 mongoose.connect(config.mongoose.connect, config.mongoose.options).then(() => {

@@ -6,7 +6,6 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import ListSubheader from '@material-ui/core/ListSubheader';
-import DashboardIcon from '@material-ui/icons/Dashboard';
 import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
 import PeopleIcon from '@material-ui/icons/People';
 import BarChartIcon from '@material-ui/icons/BarChart';
@@ -23,20 +22,60 @@ const useStyles = makeStyles(() =>
   })
 );
 
-export const QueryListItems = () => {
+export const TableListItems = ({ current }) => {
   const classes = useStyles();
+  const [schemas, setSchemas] = useState([]);
+
+  useEffect(() => {
+    setSchemas(ipcRenderer.sendSync('schemas', { sync: true }));
+  }, []);
+
+  return (
+    <>
+      <ListSubheader inset>Tables</ListSubheader>
+      {schemas.map((t) => (
+        <Link
+          key={t.name}
+          to={`/table/${t.name}`}
+          className={classes.link}
+        >
+          <ListItem button selected={current === t.name}>
+            <ListItemIcon>
+              <Icon>{t.icon}</Icon>
+            </ListItemIcon>
+            <ListItemText primary={t.name} />
+          </ListItem>
+        </Link>
+      ))}
+    </>
+  );
+};
+
+export const QueryListItems= ({ current }) => {
+  const classes = useStyles();
+  const [queries, setQueries] = useState([]);
+
+  useEffect(() => {
+    setQueries(ipcRenderer.sendSync('queries', { sync: true }));
+  }, []);
 
   return (
     <>
       <ListSubheader inset>Query</ListSubheader>
-      <Link to="/schema-wizard" className={classes.link}>
-        <ListItem button>
-          <ListItemIcon>
-            <DashboardIcon />
-          </ListItemIcon>
-          <ListItemText primary="Create Table" />
-        </ListItem>
-      </Link>
+      {queries.map((q) => (
+        <Link
+          key={q.name}
+          to={`/query/${q.name}`}
+          className={classes.link}
+        >
+          <ListItem button selected={current === q.name}>
+            <ListItemIcon>
+              <ShoppingCartIcon />
+            </ListItemIcon>
+            <ListItemText primary={q.name} />
+          </ListItem>
+        </Link>
+      ))}
       <Link to="/tabs" className={classes.link}>
         <ListItem button>
           <ListItemIcon>
@@ -61,43 +100,6 @@ export const QueryListItems = () => {
           <ListItemText primary="Pincode" />
         </ListItem>
       </Link>
-      <Link to="/products" className={classes.link}>
-        <ListItem button>
-          <ListItemIcon>
-            <ShoppingCartIcon />
-          </ListItemIcon>
-          <ListItemText primary="商品ページ" />
-        </ListItem>
-      </Link>
-    </>
-  );
-};
-
-export const TableListItems = ({ current }) => {
-  const classes = useStyles();
-  const [tables, setTables] = useState([]);
-
-  useEffect(() => {
-    setTables(ipcRenderer.sendSync('schemas', { sync: true }));
-  }, []);
-
-  return (
-    <>
-      <ListSubheader inset>Tables</ListSubheader>
-      {tables.map((t) => (
-        <Link
-          key={t.table}
-          to={`/table/${t.table}`}
-          className={classes.link}
-        >
-          <ListItem button selected={current === t.table}>
-            <ListItemIcon>
-              <Icon>{t.icon}</Icon>
-            </ListItemIcon>
-            <ListItemText primary={t.table} />
-          </ListItem>
-        </Link>
-      ))}
     </>
   );
 };

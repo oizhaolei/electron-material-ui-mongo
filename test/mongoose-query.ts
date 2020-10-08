@@ -28,7 +28,7 @@ const main = async () => {
       };
     }));
     console.log('vm end');
-    callback(result);
+    callback(false, result);
   })();
 })
 `;

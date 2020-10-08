@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import Store from 'electron-store';
+import { useHistory } from "react-router-dom";
 
 import {
   ThemeProvider,
@@ -33,8 +34,10 @@ const useStyles = makeStyles((theme) => ({
 
 const PINCODE_LENGTH = 4;
 
-export default function PinCode({ history }) {
+export default function PinCode() {
   const classes = useStyles();
+  const history = useHistory();
+
   // theme
   const [darkMode] = useState(store.get('darkMode', 'light'));
   const theme = createMuiTheme({

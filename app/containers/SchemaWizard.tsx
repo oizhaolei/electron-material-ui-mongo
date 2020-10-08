@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useReducer } from 'react';
 import { ipcRenderer } from 'electron';
+import { useHistory } from "react-router-dom";
 
-import { withRouter } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
 import Stepper from '@material-ui/core/Stepper';
@@ -46,8 +46,10 @@ const useStyles = makeStyles((theme) => ({
 const steps = ['Table Name', 'Title, Icon', 'Upload Data'];
 const stepLabels = ['Next', 'Next', 'Create Table'];
 
-function SchemaWizard({ history }) {
+function SchemaWizard() {
   const classes = useStyles();
+  const history = useHistory();
+
   const [activeStep, setActiveStep] = useState(0);
   const [snackOpen, setSnackOpen] = useState(false);
   const [dataState, dispatch] = useReducer(dataReducer, initialState);
@@ -64,18 +66,15 @@ function SchemaWizard({ history }) {
   }, []);
   const handleSnackClose = (event, reason) => {
     setSnackOpen(false);
-    history.replace(`/table/${dataState.table}`);
+    history.replace(`/table/${dataState.name}`);
   };
 
   const stepActionss = [
-    // 'Next'
-    () => {},
-    // 'Next'
-    () => {},
-    // 'Create Table'
-    () => {
+    () => {}, // 'Next'
+    () => {}, // 'Next'
+    () => {   // 'Create Table'
       ipcRenderer.send('schema-post', {
-        table: dataState.table,
+        name: dataState.name,
         definition: dataState.definition,
         etc: {
           label: dataState.label,
@@ -196,4 +195,4 @@ function SchemaWizard({ history }) {
     </GenericTemplate>
   );
 }
-export default withRouter(SchemaWizard);
+export default SchemaWizard;

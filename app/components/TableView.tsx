@@ -1,73 +1,168 @@
 import React, { useState, useEffect } from 'react';
 import { ipcRenderer } from 'electron';
 
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles, Theme, createStyles } from '@material-ui/core/styles';
 
+import TreeView from '@material-ui/lab/TreeView';
+import TreeItem from '@material-ui/lab/TreeItem';
+import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
+import ArrowRightIcon from '@material-ui/icons/ArrowRight';
 import Typography from '@material-ui/core/Typography';
+import TableChartIcon from '@material-ui/icons/TableChart';
+import Label from '@material-ui/icons/Label';
 import Grid from '@material-ui/core/Grid';
-import Select from '@material-ui/core/Select';
-import MenuItem from '@material-ui/core/MenuItem';
 
-const useStyles = makeStyles(() => ({
-  root: {
-    flexGrow: 1,
-  },
-}));
+
+const useTreeItemStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    root: {
+      color: theme.palette.text.secondary,
+      '&:hover > $content': {
+        backgroundColor: theme.palette.action.hover,
+      },
+      '&:focus > $content, &$selected > $content': {
+        backgroundColor: `var(--tree-view-bg-color, ${theme.palette.grey[400]})`,
+        color: 'var(--tree-view-color)',
+      },
+      '&:focus > $content $label, &:hover > $content $label, &$selected > $content $label': {
+        backgroundColor: 'transparent',
+      },
+    },
+    content: {
+      color: theme.palette.text.secondary,
+      borderTopRightRadius: theme.spacing(2),
+      borderBottomRightRadius: theme.spacing(2),
+      paddingRight: theme.spacing(1),
+      fontWeight: theme.typography.fontWeightMedium,
+      '$expanded > &': {
+        fontWeight: theme.typography.fontWeightRegular,
+      },
+    },
+    group: {
+      marginLeft: 0,
+      '& $content': {
+        paddingLeft: theme.spacing(2),
+      },
+    },
+    tree: {
+      minHeight: 500,
+    },
+    expanded: {},
+    selected: {},
+    label: {
+      fontWeight: 'inherit',
+      color: 'inherit',
+    },
+    labelRoot: {
+      display: 'flex',
+      alignItems: 'center',
+      padding: theme.spacing(0.5, 0),
+    },
+    labelIcon: {
+      marginRight: theme.spacing(1),
+    },
+    labelText: {
+      fontWeight: 'inherit',
+      flexGrow: 1,
+    },
+  }),
+);
+
+function StyledTreeItem(props) {
+  const classes = useTreeItemStyles();
+  const { labelText, labelIcon: LabelIcon, labelInfo, color, bgColor, ...other } = props;
+
+  return (
+    <TreeItem
+      label={
+        <div className={classes.labelRoot}>
+          <LabelIcon color="inherit" className={classes.labelIcon} />
+          <Typography variant="body2" className={classes.labelText}>
+            {labelText}
+          </Typography>
+          <Typography variant="caption" color="inherit">
+            {labelInfo}
+          </Typography>
+        </div>
+      }
+      style={{
+        '--tree-view-color': color,
+        '--tree-view-bg-color': bgColor,
+      }}
+      classes={{
+        root: classes.root,
+        content: classes.content,
+        expanded: classes.expanded,
+        selected: classes.selected,
+        group: classes.group,
+        label: classes.label,
+      }}
+      {...other}
+    />
+  );
+}
+
+const useStyles = makeStyles(
+  createStyles({
+    root: {
+      height: 264,
+      flexGrow: 1,
+      maxWidth: 400,
+    },
+  }),
+);
 
 export default function TableView({ label, onChange }) {
   const classes = useStyles();
-  const [tables, setTables] = useState([]);
-  const [table, setTable] = React.useState('');
-  const [fields, setFields] = useState([]);
-  const [field, setField] = React.useState('');
+  const [schemas, setSchemas] = useState([]);
 
   useEffect(() => {
-    setTables(ipcRenderer.sendSync('schemas', { sync: true }));
+    setSchemas(ipcRenderer.sendSync('schemas', { sync: true }));
   }, []);
-
-  const handleTableChange = (event) => {
-    setTable(event.target.value);
-    setFields(tables.find((t) => t.name === event.target.value));
-    setField('');
-  };
-  const handleFieldChange = (event) => {
-    setField(event.target.value);
-  };
 
   return (
     <div className={classes.root}>
       <Typography variant="h6" gutterBottom>
         {label}
       </Typography>
-      <Grid container spacing={3}>
-        <Grid item xs={12}>
-          <Select
-            value={table}
-            onChange={handleTableChange}
-            displayEmpty
-            className={classes.selectEmpty}
-          >
-            {
-              tables.map((t) => (
-                <MenuItem key={t.name} value={t.name}>{t.name}</MenuItem>
-              ))
-            }
-          </Select>
-        </Grid>
-        <Grid item xs={12}>
-          <Select
-            value={field}
-            onChange={handleFieldChange}
-            displayEmpty
-            className={classes.selectEmpty}
-          >
-            {
-              fields.map((f) => (
-                <MenuItem value={f}>f</MenuItem>
-              ))
-            }
-          </Select>
-        </Grid>
+      <Grid container spacing={3} className={classes.tree}>
+        <TreeView
+          className={classes.root}
+          defaultExpanded={schemas.map((t) => t.name)}
+          defaultCollapseIcon={<ArrowDropDownIcon />}
+          defaultExpandIcon={<ArrowRightIcon />}
+          defaultEndIcon={<div style={{ width: 24 }} />}
+          onNodeSelect={(event, value) => {
+            console.log(value);
+            const [schema, field] = value.split('.');
+            onChange(schema, field);
+          }}
+        >
+          {
+            schemas.map((t) => (
+              <StyledTreeItem
+                key={t.name}
+                nodeId={t.name}
+                labelText={t.name}
+                labelIcon={TableChartIcon}
+              >
+                {
+                  Object.keys(t.definition).map((f) => (
+                    <StyledTreeItem
+                      key={`${t.name}.${f}`}
+                      nodeId={`${t.name}.${f}`}
+                      labelText={f}
+                      labelIcon={Label}
+                      color="#1a73e8"
+                      bgColor="#e8f0fe"
+                    />
+
+                  ))
+                }
+              </StyledTreeItem>
+            ))
+          }
+        </TreeView>
       </Grid>
     </div>
   );

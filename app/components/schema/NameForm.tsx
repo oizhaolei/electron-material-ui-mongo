@@ -7,26 +7,26 @@ import Typography from '@material-ui/core/Typography';
 import TextField from '@material-ui/core/TextField';
 
 export default function NameForm({ dataState, onChange }) {
-  const [table, setTable] = useState(dataState.table);
+  const [name, setName] = useState(dataState.name);
 
-  const [tableNames, setTableNames] = useState([]);
+  const [schemaNames, setSchemaNames] = useState([]);
   const [error, setError] = useState(false);
   const [helperText, setHelperText] = useState();
 
   useEffect(() => {
-    setTableNames(ipcRenderer.sendSync('schemas', {
+    setSchemaNames(ipcRenderer.sendSync('schemas', {
       sync: true,
-    }).map((s) => pluralize(s.table.toLowerCase())));
+    }).map((s) => pluralize(s.name.toLowerCase())));
   }, []);
 
   const handleChange = (v) => {
-    setTable(v);
+    setName(v);
 
-    const err = tableNames.includes(pluralize(v.toLowerCase()));
+    const err = schemaNames.includes(pluralize(v.toLowerCase()));
     setError(err);
     setHelperText(err && 'duplicated name');
     onChange({
-      table: v,
+      name: v,
       error: err,
     });
   };
@@ -39,12 +39,12 @@ export default function NameForm({ dataState, onChange }) {
         <Grid item xs={12}>
           <TextField
             required
-            id="table"
-            name="table"
+            id="name"
+            name="name"
             label="Table Name"
             fullWidth
             autoComplete="input unique table please"
-            value={table}
+            value={name}
             onChange={(event) => handleChange(event.target.value)}
             error={error}
             helperText={helperText}

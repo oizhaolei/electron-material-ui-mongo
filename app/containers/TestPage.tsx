@@ -116,7 +116,7 @@ export default function TestPage() {
           color="secondary"
           onClick={() =>
             ipcRenderer.send('schema-post', {
-              table: 'patients',
+              name: 'patients',
               definition: {
                 name: {
                   type: 'String',
@@ -145,7 +145,7 @@ export default function TestPage() {
           color="secondary"
           onClick={() =>
             ipcRenderer.send('find', {
-              table: 'projects',
+              name: 'projects',
             })
           }
         >

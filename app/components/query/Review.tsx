@@ -8,20 +8,10 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import CircularProgress from '@material-ui/core/CircularProgress';
 
-import MaterialTable from 'material-table';
+import DataTable from '../DataTable';
 
 import { mongo2MaterialType } from '../../utils/utils';
 
-
-const DataTable = ({ columns, data }) => {
-  return (
-    <MaterialTable
-      title="Data"
-      columns={columns}
-      data={data}
-    />
-  );
-};
 
 const useStyles = makeStyles((theme) => ({
   listItem: {
@@ -39,49 +29,25 @@ export default function Review({ dataState, onChange }) {
   const [loading, setLoading] = useState(false);
   const classes = useStyles();
 
-  useEffect(() => {
-    const queryDataListener = (event, { data }) => {
-      setLoading(false);
-      onChange({
-        data,
-      });
-    };
-    ipcRenderer.on('query-data', queryDataListener);
-    ipcRenderer.send('query-data', dataState.code);
-
-    return () => {
-      ipcRenderer.removeListener('query-data', queryDataListener);
-    };
-  }, []);
-
   return (
     <>
       {loading && <CircularProgress />}
       <List disablePadding>
         <ListItem className={classes.listItem}>
           <ListItemText primary="Name" />
-          <Typography variant="query name" className={classes.total}>
-            {dataState.query}
+          <Typography variant="subtitle1" className={classes.total}>
+            {dataState.name}
           </Typography>
         </ListItem>
         <ListItem className={classes.listItem}>
-          <ListItemText primary="Label" />
-          <Typography variant="query query" className={classes.total}>
+          <ListItemText primary="Relation" />
+          <Typography variant="body1" className={classes.total}>
             {dataState.code}
           </Typography>
         </ListItem>
       </List>
 
-      {dataState.data && dataState.data.length > 0 && (
-        <DataTable
-          columns={Object.keys(dataState.definition).map((k) => ({
-            title: k,
-            field: k,
-            type: mongo2MaterialType(dataState.definition[k].type),
-          }))}
-          data={dataState.data}
-        />
-      )}
+      <DataTable schemaName={dataState.relation.one.table} />
     </>
   );
 }

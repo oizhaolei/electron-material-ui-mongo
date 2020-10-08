@@ -78,13 +78,13 @@ export default function CSVImport({ dataState, onChange }) {
       <List disablePadding>
         <ListItem className={classes.listItem}>
           <ListItemText primary="Name" />
-          <Typography variant="table name" className={classes.total}>
-            {dataState.table}
+          <Typography variant="subtitle1" className={classes.total}>
+            {dataState.name}
           </Typography>
         </ListItem>
         <ListItem className={classes.listItem}>
           <ListItemText primary="Label" />
-          <Typography variant="table table" className={classes.total}>
+          <Typography variant="subtitle2" className={classes.total}>
           {dataState.label}
           </Typography>
         </ListItem>
@@ -104,7 +104,8 @@ export default function CSVImport({ dataState, onChange }) {
             title: k,
             field: k,
             type: dataState.definition[k].type,
-          }))} />
+          }))}
+        />
       )}
 
       {dataState.data && dataState.data.length > 0 && (

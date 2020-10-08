@@ -7,7 +7,7 @@ import Typography from '@material-ui/core/Typography';
 import TextField from '@material-ui/core/TextField';
 
 export default function NameForm({ dataState, onChange }) {
-  const [query, setTable] = useState(dataState.query);
+  const [name, setName] = useState(dataState.name);
 
   const [queries, setQueries] = useState([]);
   const [error, setError] = useState(false);
@@ -15,7 +15,7 @@ export default function NameForm({ dataState, onChange }) {
 
   useEffect(() => {
     const queriesListener = (event, arg) => {
-      setQueries(arg.map((s) => pluralize(s.query.toLowerCase())));
+      setQueries(arg.map((s) => pluralize(s.name.toLowerCase())));
     };
     ipcRenderer.on('queries', queriesListener);
     ipcRenderer.send('queries');
@@ -26,13 +26,13 @@ export default function NameForm({ dataState, onChange }) {
   }, []);
 
   const handleChange = (v) => {
-    setTable(v);
+    setName(v);
 
     const err = queries.includes(pluralize(v.toLowerCase()));
     setError(err);
     setHelperText(err && 'duplicated name');
     onChange({
-      query: v,
+      name: v,
       error: err,
     });
   };
@@ -45,12 +45,12 @@ export default function NameForm({ dataState, onChange }) {
         <Grid item xs={12}>
           <TextField
             required
-            id="query"
-            name="query"
+            id="name"
+            name="name"
             label="Query Name"
             fullWidth
             autoComplete="input unique query please"
-            value={query}
+            value={name}
             onChange={(event) => handleChange(event.target.value)}
             error={error}
             helperText={helperText}

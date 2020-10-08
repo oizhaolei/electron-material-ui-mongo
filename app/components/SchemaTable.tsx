@@ -6,7 +6,7 @@ import MaterialTable from 'material-table';
 
 const store = new Store();
 
-export default function SchemaTable({ table }) {
+export default function SchemaTable({ schemaName }) {
   const columns = [
     { title: 'Field', field: 'field' },
     { title: 'Type', field: 'type' },
@@ -14,7 +14,7 @@ export default function SchemaTable({ table }) {
   const [data, setData] = useState([]);
 
   useEffect(() => {
-    const schemaListener = (event, { schema }) => {
+    const schemaListener = (event, schema) => {
       setData(
         Object.keys(schema.definition).map((k) => ({
           field: k,
@@ -23,17 +23,15 @@ export default function SchemaTable({ table }) {
       );
     };
     ipcRenderer.on('schema', schemaListener);
-    ipcRenderer.send('schema', {
-      table,
-    });
+    ipcRenderer.send('schema', schemaName);
     return () => {
       ipcRenderer.removeListener('schema', schemaListener);
     };
-  }, [table]);
+  }, [schemaName]);
 
   return (
     <MaterialTable
-      title={table}
+      title={schemaName}
       options={{
         pageSize: 1000,
         selection: true,
@@ -48,29 +46,38 @@ export default function SchemaTable({ table }) {
           });
         },
       }}
-      actions={[
-        {
-          icon: 'add',
-          tooltip: 'Add',
-          isFreeAction: true,
-          onClick: console.log,
-        },
-        {
-          icon: 'delete',
-          tooltip: 'Delete',
-          onClick: console.log,
-        },
-      ]}
-    /* components={{ */
-    /*   Toolbar: (props) => ( */
-    /*     <div> */
-    /*       <MTableToolbar {...props} /> */
-    /*       <div style={{ padding: '0px 10px' }}> */
-    /*         <Button variant="contained">Default</Button> */
-    /*       </div> */
-    /*     </div> */
-    /*   ), */
-    /* }} */
+      editable={{
+        onRowAdd: newData =>
+          new Promise((resolve, reject) => {
+            setTimeout(() => {
+              setData([...data, newData]);
+
+              resolve();
+            }, 1000)
+          }),
+        onRowUpdate: (newData, oldData) =>
+          new Promise((resolve, reject) => {
+            setTimeout(() => {
+              const dataUpdate = [...data];
+              const index = oldData.tableData.field;
+              dataUpdate[index] = newData;
+              setData([...dataUpdate]);
+
+              resolve();
+            }, 1000)
+          }),
+        onRowDelete: oldData =>
+          new Promise((resolve, reject) => {
+            setTimeout(() => {
+              const dataDelete = [...data];
+              const index = oldData.tableData.field;
+              dataDelete.splice(index, 1);
+              setData([...dataDelete]);
+
+              resolve()
+            }, 1000)
+          }),
+      }}
     />
   );
 }

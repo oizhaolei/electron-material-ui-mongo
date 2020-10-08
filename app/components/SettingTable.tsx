@@ -30,28 +30,28 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function SettingTable({ table }) {
+export default function SettingTable({ schemaName }) {
   const classes = useStyles();
 
-  const [tableName, setTableName] = useState(table);
-  const [tableTitle, setTableTitle] = useState(table);
+  const [label, setLabel] = useState(schemaName);
+  const [icon, setIcon] = useState('');
+
   const [open, setOpen] = useState(false);
-  const [tableIcon, setTableIcon] = useState('');
 
   useEffect(() => {
-    const tablePostListener = (event, args) => {
+    const schemaPostListener = (event, args) => {
       console.log('schema-post:', args);
     };
-    ipcRenderer.on('schema-post', tablePostListener);
-    const tableDeleteListener = (event, args) => {
+    ipcRenderer.on('schema-post', schemaPostListener);
+    const schemaDeleteListener = (event, args) => {
       console.log('schema-delete:', args);
     };
-    ipcRenderer.on('schema-delete', tableDeleteListener);
+    ipcRenderer.on('schema-delete', schemaDeleteListener);
     return () => {
-      ipcRenderer.removeListener('schema-post', tablePostListener);
-      ipcRenderer.removeListener('schema-delete', tableDeleteListener);
+      ipcRenderer.removeListener('schema-post', schemaPostListener);
+      ipcRenderer.removeListener('schema-delete', schemaDeleteListener);
     };
-  }, [table]);
+  }, [schemaName]);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -66,33 +66,18 @@ export default function SettingTable({ table }) {
       <Grid container spacing={3}>
         <Grid item xs={12}>
           <TextField
-            required
-            id="table"
-            name="table"
-            label="Table Name"
-            fullWidth
-            value={tableName}
-            onChange={(event) => setTableName(event.target.value)}
-            onBlur={() =>
-              ipcRenderer.send('schema-post', {
-                table,
-                doc: { table: tableName },
-              })
-            }
-          />
-        </Grid>
-        <Grid item xs={12}>
-          <TextField
             id="title"
             name="title"
             label="Table Title"
             fullWidth
-            value={tableTitle}
-            onChange={(event) => setTableTitle(event.target.value)}
+            value={label}
+            onChange={(event) => setLabel(event.target.value)}
             onBlur={() =>
               ipcRenderer.send('schema-post', {
-                table,
-                doc: { title: tableTitle },
+                name: schemaName,
+                etc: {
+                  label,
+                },
               })
             }
           />
@@ -101,14 +86,16 @@ export default function SettingTable({ table }) {
           <Button
             variant="contained"
             onClick={handleClickOpen}
-            startIcon={<Icon>{tableIcon || 'ac_unit'}</Icon>}
+            startIcon={<Icon>{icon || 'ac_unit'}</Icon>}
           >
             Change Icon...
           </Button>
           <Button
             variant="contained"
             color="secondary"
-            onClick={() => ipcRenderer.send('schema-delete', { table })}
+            onClick={() => ipcRenderer.send('schema-delete', {
+              name: schemaName,
+            })}
             startIcon={<DeleteForeverIcon />}
           >
             Drop Table
@@ -125,8 +112,13 @@ export default function SettingTable({ table }) {
         <DialogTitle>Fill the form</DialogTitle>
         <DialogContent>
           <SearchIcons onChange={(icon) => {
-            setTableIcon(icon);
-            ipcRenderer.send('schema-post', { table, doc: { icon }})
+            setIcon(icon);
+            ipcRenderer.send('schema-post', {
+              name: schemaName,
+              etc: {
+                icon,
+              }
+            });
           }} />
         </DialogContent>
         <DialogActions>
