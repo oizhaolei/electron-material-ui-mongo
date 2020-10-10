@@ -47,8 +47,20 @@
 
 * BUGS
 ** TODO find & pagination
-** Tables   => context
+** Tables   => useContext
 ** Treeview
 
 ** 機能一覧整理
-** i18n
+** DONE i18n
+** Store to save all
+** Schema change
+** Update bulkly
+** Query bugs
+** dashboard
+** hotload
+
+
+* そもそもほしいがった機能
+ - データ属性の拡張
+ - いろいろ検索、数値、日付タイプ検知、検索条件
+ - ヒント出す

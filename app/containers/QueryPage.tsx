@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { useRouteMatch } from "react-router-dom";
+import { ipcRenderer } from 'electron';
+import { useParams } from "react-router-dom";
 
 import { makeStyles } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
@@ -16,9 +17,8 @@ const useStyles = makeStyles((theme) => ({
 
 export default function QueryPage() {
   const classes = useStyles();
-  const match = useRouteMatch();
-  const { name } = match.params;
-  const [query, setQuery] = useState([]);
+  const { name } = useParams();
+  const [query, setQuery] = useState({});
 
   useEffect(() => {
     const queryListener = (event, query) => {
@@ -41,7 +41,7 @@ export default function QueryPage() {
           && (
             <DataTable
               schemaName={query.relations.one.table}
-              dialogContent={({ list }) => (
+              dialogContent={({ list }) => list.length > 0 && (
                 <DataTable
                   schemaName={query.relations.many.table}
                   filter={{

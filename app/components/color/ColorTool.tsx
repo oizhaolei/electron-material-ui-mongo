@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+
 import PropTypes from 'prop-types';
 import { rgbToHex, withStyles, useTheme } from '@material-ui/core/styles';
 import * as colors from '@material-ui/core/colors';
@@ -86,6 +88,7 @@ const styles = (theme) => ({
 });
 
 function ColorTool({ classes, onChange }) {
+  const { t } = useTranslation();
   const theme = useTheme();
   const [state, setState] = useState({
     primary: defaults.primary.main,
@@ -276,7 +279,7 @@ function ColorTool({ classes, onChange }) {
       </Grid>
       <Grid item xs={12}>
         <Button variant="contained" onClick={handleChangeDocsColors}>
-          Set Colors
+        {t('Set Colors')}
         </Button>
       </Grid>
     </Grid>

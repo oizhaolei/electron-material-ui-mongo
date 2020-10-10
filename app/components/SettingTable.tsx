@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ipcRenderer } from 'electron';
+import { useTranslation } from 'react-i18next';
 
 import { makeStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
@@ -32,6 +33,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function SettingTable({ schemaName }) {
   const classes = useStyles();
+  const { t } = useTranslation();
 
   const [label, setLabel] = useState(schemaName);
   const [icon, setIcon] = useState('');
@@ -66,9 +68,9 @@ export default function SettingTable({ schemaName }) {
       <Grid container spacing={3}>
         <Grid item xs={12}>
           <TextField
-            id="title"
-            name="title"
-            label="Table Title"
+            id="label"
+            name="label"
+            label={t('Table Label')}
             fullWidth
             value={label}
             onChange={(event) => setLabel(event.target.value)}
@@ -88,7 +90,7 @@ export default function SettingTable({ schemaName }) {
             onClick={handleClickOpen}
             startIcon={<Icon>{icon || 'ac_unit'}</Icon>}
           >
-            Change Icon...
+            {t('Change Icon...')}
           </Button>
           <Button
             variant="contained"
@@ -98,7 +100,7 @@ export default function SettingTable({ schemaName }) {
             })}
             startIcon={<DeleteForeverIcon />}
           >
-            Drop Table
+            {t('Drop Table')}
           </Button>
         </Grid>
       </Grid>
@@ -123,10 +125,10 @@ export default function SettingTable({ schemaName }) {
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose}>
-            Cancel
+            {t('Cancel')}
           </Button>
           <Button onClick={handleClose} color="primary">
-            Ok
+            {t('Ok')}
           </Button>
         </DialogActions>
       </Dialog>

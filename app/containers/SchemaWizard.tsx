@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useReducer } from 'react';
+import { useTranslation } from 'react-i18next';
 import { ipcRenderer } from 'electron';
 import { useHistory } from "react-router-dom";
 
@@ -43,11 +44,9 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const steps = ['Table Name', 'Title, Icon', 'Upload Data'];
-const stepLabels = ['Next', 'Next', 'Create Table'];
-
 function SchemaWizard() {
   const classes = useStyles();
+  const { t } = useTranslation();
   const history = useHistory();
 
   const [activeStep, setActiveStep] = useState(0);
@@ -68,6 +67,18 @@ function SchemaWizard() {
     setSnackOpen(false);
     history.replace(`/table/${dataState.name}`);
   };
+
+  const steps = [
+    t('Table Name'),
+    t('Title, Icon'),
+    t('Upload Data'),
+
+  ];
+  const stepLabels = [
+    t('Next'),
+    t('Next'),
+    t('Create Table'),
+  ];
 
   const stepActionss = [
     () => {}, // 'Next'
@@ -135,7 +146,7 @@ function SchemaWizard() {
     <GenericTemplate title="Create Table" id="create-wizard">
       <Paper className={classes.paper}>
         <Typography component="h1" variant="h4" align="center">
-        Create Table
+          {t('Create Table')}
         </Typography>
         <Stepper activeStep={activeStep} className={classes.stepper}>
           {steps.map((label) => (
@@ -148,11 +159,10 @@ function SchemaWizard() {
           {activeStep === steps.length ? (
             <>
               <Typography variant="h5" gutterBottom>
-                Thank you for your order.
+                {t('Congratulations.')}
               </Typography>
               <Typography variant="subtitle1">
-                Your order number is #2001539. We have emailed your order confirmation, and will
-                send you an update when your order has shipped.
+                {t('create.succeed')}
               </Typography>
             </>
           ) : (
@@ -161,15 +171,16 @@ function SchemaWizard() {
               <div className={classes.buttons}>
                 {activeStep !== 0 && (
                   <Button
-                   disabled={dataState.error}
-                   onClick={handleBack}
-                   className={classes.button}>
-                    Back
+                    disabled={dataState.error}
+                    onClick={handleBack}
+                    className={classes.button}
+                  >
+                    {t('Back')}
                   </Button>
                 )}
                 <Button
-                   disabled={dataState.error}
-                   variant="contained"
+                  disabled={dataState.error}
+                  variant="contained"
                   color="primary"
                   onClick={handleNext}
                   className={classes.button}
@@ -189,7 +200,7 @@ function SchemaWizard() {
         open={snackOpen}
         autoHideDuration={2000}
         onClose={handleSnackClose}
-        message="Table created, redirect..."
+        message={t('Table created, redirect...')}
       />
       </Paper>
     </GenericTemplate>

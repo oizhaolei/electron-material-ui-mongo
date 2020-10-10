@@ -2,7 +2,7 @@ export const initialState = {
   error: false,
   name: '',
   type: 'one-to-many',
-  relation: {},
+  relations: {},
   code: '',
   definition: {},
   data: {},
@@ -35,15 +35,15 @@ export const dataReducer = (state = initialState, action) => {
       ...action.payload,
     };
   case 'QUERY_RELATION_CHANGE':
-    const relation = {
-      ...state.relation,
+    const relations = {
+      ...state.relations,
       ...action.payload,
     };
-    const error = !relation.one || !relation.many;
-    const code = relation.one && relation.many && genCode(relation);
+    const error = !relations.one || !relations.many;
+    const code = relations.one && relations.many && genCode(relations);
     return {
       ...state,
-      relation,
+      relations,
       error,
       code,
     };

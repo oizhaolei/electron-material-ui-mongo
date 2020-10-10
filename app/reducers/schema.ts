@@ -5,7 +5,6 @@ export const initialState = {
   label: '',
   icon: 'ac_unit',
   suggests: {},
-  foreighKeys: {},
   data: {},
   files: [],
 };

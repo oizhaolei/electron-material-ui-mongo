@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useReducer } from 'react';
 import { ipcRenderer } from 'electron';
+import { useTranslation } from 'react-i18next';
 import { useHistory } from "react-router-dom";
 
 import { makeStyles } from '@material-ui/core/styles';
@@ -44,11 +45,9 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const steps = ['Query Name', 'Relations', 'Preview'];
-const stepLabels = ['Next', 'Next', 'Create Query'];
-
 function QueryWizard() {
   const classes = useStyles();
+  const { t } = useTranslation();
   const history = useHistory();
 
   const [activeStep, setActiveStep] = useState(0);
@@ -69,6 +68,17 @@ function QueryWizard() {
     setSnackOpen(false);
     history.replace(`/query/${dataState.name}`);
   };
+
+  const steps = [
+    t('Query Name'),
+    t('Relations'),
+    t('Preview'),
+   ];
+  const stepLabels = [
+    t('Next'),
+    t('Next'),
+    t('Create Query'),
+  ];
 
   const stepActionss = [
     () => {}, // 'Next'
@@ -135,7 +145,7 @@ function QueryWizard() {
     <GenericTemplate title="Create Query" id="create-wizard">
       <Paper className={classes.paper}>
         <Typography component="h1" variant="h4" align="center">
-        Create Query
+        {t('Create Query')}
         </Typography>
         <Stepper activeStep={activeStep} className={classes.stepper}>
           {steps.map((label) => (
@@ -148,11 +158,10 @@ function QueryWizard() {
           {activeStep === steps.length ? (
             <>
               <Typography variant="h5" gutterBottom>
-                Thank you for your order.
+                {t('Congratulations.')}
               </Typography>
               <Typography variant="subtitle1">
-                Your order number is #2001539. We have emailed your order confirmation, and will
-                send you an update when your order has shipped.
+                {t('create.succeed')}
               </Typography>
             </>
           ) : (
@@ -164,7 +173,7 @@ function QueryWizard() {
                    disabled={dataState.error}
                    onClick={handleBack}
                    className={classes.button}>
-                    Back
+                    {t('Back')}
                   </Button>
                 )}
                 <Button
@@ -189,7 +198,7 @@ function QueryWizard() {
         open={snackOpen}
         autoHideDuration={2000}
         onClose={handleSnackClose}
-        message="Query created, redirect..."
+        message={t('Query created, redirect...')}
       />
       </Paper>
     </GenericTemplate>

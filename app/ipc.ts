@@ -158,8 +158,8 @@ export default function ipc() {
   });
 
   // mdb.query
-  ipcMain.on('query', async (event, { name }) => {
-    console.log('query');
+  ipcMain.on('query', async (event, name) => {
+    console.log('query', name);
     const query = await mdb.getQuery(name);
     event.reply('query', query);
   });

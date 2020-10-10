@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ipcRenderer } from 'electron';
+import { useTranslation } from 'react-i18next';
 
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
@@ -26,6 +27,8 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function Review({ dataState, onChange }) {
+  const { t } = useTranslation();
+
   const [loading, setLoading] = useState(false);
   const classes = useStyles();
 
@@ -34,20 +37,20 @@ export default function Review({ dataState, onChange }) {
       {loading && <CircularProgress />}
       <List disablePadding>
         <ListItem className={classes.listItem}>
-          <ListItemText primary="Name" />
+          <ListItemText primary={t('Name')} />
           <Typography variant="subtitle1" className={classes.total}>
             {dataState.name}
           </Typography>
         </ListItem>
         <ListItem className={classes.listItem}>
-          <ListItemText primary="Relation" />
+          <ListItemText primary={t('Relation')} />
           <Typography variant="body1" className={classes.total}>
             {dataState.code}
           </Typography>
         </ListItem>
       </List>
 
-      <DataTable schemaName={dataState.relation.one.table} />
+      <DataTable schemaName={dataState.relations.one.table} />
     </>
   );
 }

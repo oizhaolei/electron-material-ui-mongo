@@ -2,6 +2,7 @@ import mongoose from 'mongoose';
 import vm from 'vm';
 
 import fs from 'fs';
+import dayjs from 'dayjs';
 import json2csv from 'json2csv';
 
 mongoose.set('debug', (coll, method, query, doc, options) => {
@@ -15,7 +16,6 @@ const schemaDef = {
   label: String,
   icon: String,
   suggests: mongoose.Schema.Types.Mixed,
-  foreighKeys: mongoose.Schema.Types.Mixed,
 };
 const defOptions = {
   timestamps: true,
@@ -43,20 +43,35 @@ const getType = (field, row) => {
     if (typeof cell === 'boolean') {
       return 'Boolean';
     }
+    if (dayjs(cell).isValid()) {
+      return 'Date';
+    }
   }
 
   return 'String';
 };
 
-const getSuggest = (field, rows) => {
-  return undefined;
-};
+const getSuggests = (field, docs) => field.map((f) => {
+  const colAllData = docs.map((r) => r[f]).filter(Boolean);
+  const colUniqData = [...new Set(colAllData)];
+  if (colUniqData.length < 20) { // || (docs.length / colUniqData.length) > 10
+    return {
+      field: f,
+      suggest: colUniqData,
+    };
+  }
+}).reduce((r, v) => {
+  if (v && v.suggest && v.suggest.length > 0) {
+    r[v.field] = v.suggest;
+  }
+  return r;
+}, {});
 
 export const genSchemaDefinition = (docs) => {
   if (!docs || docs.length === 0) {
     return [];
   }
-  const uniqFields = [...new Set(docs.map((doc) => Object.keys(doc)).flat())].map((f) => ({
+  const fields = [...new Set(docs.map((doc) => Object.keys(doc)).flat())].map((f) => ({
     field: [f],
     type: getType(f, docs[0]),
   })).reduce((r, v) => {
@@ -65,7 +80,7 @@ export const genSchemaDefinition = (docs) => {
     };
     return r;
   }, {});
-  return uniqFields;
+  return fields;
 };
 
 export default class Mdb {
@@ -137,23 +152,23 @@ export default class Mdb {
 
   async writeCSV(name, file) {
     const SchemaModel = await this.getSchemaModel(name);
-    const rows = await SchemaModel.find().lean();
+    const docs = await SchemaModel.find().lean();
 
-    const fields = genSchemaDefinition(rows).map((f) => f.field);
+    const fields = genSchemaDefinition(docs).map((f) => f.field);
     const opts = { fields: Object.keys(fields) };
 
     const parser = new json2csv.Parser(opts);
-    const csv = parser.parse(rows);
+    const csv = parser.parse(docs);
     console.log(csv);
     fs.writeFileSync(file, csv);
   }
 
-  // all rows
+  // all docs
   async analysisSchema(name, save = false) {
     const SchemaModel = await this.getSchemaModel(name);
-    const rows = await SchemaModel.find().lean();
+    const docs = await SchemaModel.find().lean();
 
-    const definition = genSchemaDefinition(rows);
+    const definition = genSchemaDefinition(docs);
     if (save) {
       await this.changeSchema(name, definition);
     }
@@ -208,6 +223,26 @@ export default class Mdb {
       return r;
     }, {});
     this.models = models;
+
+    this.reIndexSuggests(models);
+  }
+
+  async reIndexSuggests(models) {
+    return await Promise.all(Object.keys(models).forEach(async (name) => {
+      const model = models[name];
+      const schema = await this.SchemaModel.findOne({
+        name,
+      }).lean();
+      const fields = Object.keys(schema.definition);
+      const docs = await model.find();
+      const suggests = getSuggests(fields, docs);
+
+      await this.SchemaModel.findOneAndUpdate({
+        name,
+      }, {
+        suggests,
+      });
+    }));
   }
 
   async createQuery(name, data = {}) {

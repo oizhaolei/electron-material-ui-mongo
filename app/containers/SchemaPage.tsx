@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { useRouteMatch } from "react-router-dom";
+import { useTranslation } from 'react-i18next';
+import { useParams } from "react-router-dom";
 
 import { makeStyles, Theme } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
@@ -57,8 +58,8 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 export default function SchemaPage() {
   const classes = useStyles();
-  const match = useRouteMatch();
-  const { name } = match.params;
+  const { t } = useTranslation();
+  const { name } = useParams();
   const [tab, setTab] = useState(0);
 
   const handleChange = (event, newTab) => {
@@ -75,15 +76,31 @@ export default function SchemaPage() {
           indicatorColor="primary"
           textColor="primary"
         >
-          <Tab label="Browse" {...a11yProps(0)} />
-          <Tab label="Structure" {...a11yProps(1)} />
-          <Tab label="Export" {...a11yProps(2)} />
-          <Tab label="Import" {...a11yProps(3)} />
-          <Tab label="Setting" {...a11yProps(4)} />
+          <Tab
+            label={t('Browse')}
+            {...a11yProps(0)}
+          />
+          <Tab
+            label={t('Structure')}
+            {...a11yProps(1)}
+          />
+          <Tab
+            label={t('Export')}
+            {...a11yProps(2)}
+          />
+          <Tab
+            label={t('Import')}
+            {...a11yProps(3)}
+          />
+          <Tab
+            label={t('Setting')}
+            {...a11yProps(4)}
+          />
         </Tabs>
         <TabPanel value={tab} index={0}>
           <DataTable
             schemaName={name}
+            readonly={false}
             dialogContent={(props) => (
               <DetailForm {...props} />
             )}

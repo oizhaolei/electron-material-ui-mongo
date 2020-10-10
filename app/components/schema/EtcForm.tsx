@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
+
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
@@ -12,6 +14,7 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import SearchIcons from '../SearchIcons';
 
 export default function EtcForm({ dataState, onChange }) {
+  const { t } = useTranslation();
   const [label, setLabel] = useState(dataState.label);
   const [icon, setIcon] = useState(dataState.icon);
 
@@ -41,14 +44,14 @@ export default function EtcForm({ dataState, onChange }) {
   return (
     <>
       <Typography variant="h6" gutterBottom>
-        Table Label, Icon
+      {t('Table Label, Icon')}
       </Typography>
       <Grid container spacing={3}>
         <Grid item xs={12}>
           <TextField
             id="label"
             name="label"
-            label="Table Label"
+            label={t('Table Label')}
             fullWidth
             value={label}
             onChange={(event) => handleLabelChange(event.target.value)}
@@ -60,7 +63,7 @@ export default function EtcForm({ dataState, onChange }) {
             onClick={handleClickOpen}
             startIcon={<Icon>{icon}</Icon>}
           >
-            Change Icon...
+            {t('Change Icon...')}
           </Button>
         </Grid>
       </Grid>
@@ -71,16 +74,16 @@ export default function EtcForm({ dataState, onChange }) {
         open={open}
         onClose={handleClose}
       >
-        <DialogTitle>Fill the form</DialogTitle>
+        <DialogTitle>{t('Fill the form')}</DialogTitle>
         <DialogContent>
           <SearchIcons onChange={handleIconChange} />
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose}>
-            Cancel
+            {t('Cancel')}
           </Button>
           <Button onClick={handleClose} color="primary">
-            Ok
+            {t('Ok')}
           </Button>
         </DialogActions>
       </Dialog>

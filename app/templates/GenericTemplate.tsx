@@ -160,8 +160,8 @@ const useStyles = makeStyles((theme) =>
 
 const GenericTemplate = ({ children, title, id }) => {
   const classes = useStyles();
-
   const { t, i18n } = useTranslation();
+
   const changeLanguage = () => {
     const getCurrentLng = i18n.language || window.localStorage.i18nextLng || '';
 
@@ -216,12 +216,12 @@ const GenericTemplate = ({ children, title, id }) => {
   const addActions = [
     {
       icon: <TableChartIcon fontSize="small" />,
-      name: 'Add Table',
+      name: t('Add Table'),
       link: '/schema-wizard',
     },
     {
       icon: <FindInPageIcon fontSize="small" />,
-      name: 'Add Query',
+      name: t('Add Query'),
       link: '/query-wizard',
     },
   ];
@@ -276,7 +276,7 @@ const GenericTemplate = ({ children, title, id }) => {
               noWrap
               className={classes.title}
             >
-              {t('パソナールDB')}
+              {t('personal.db')}
             </Typography>
             <Tooltip title="Add">
               <IconButton color="inherit" onClick={handleAddClick}>
@@ -350,7 +350,7 @@ const GenericTemplate = ({ children, title, id }) => {
                 <ListItemIcon>
                   <HomeIcon />
                 </ListItemIcon>
-                <ListItemText primary="トップページ" />
+                <ListItemText primary={t('トップページ')} />
               </ListItem>
             </Link>
           </List>
@@ -360,7 +360,7 @@ const GenericTemplate = ({ children, title, id }) => {
           </List>
           <Divider />
           <List>
-            <QueryListItems />
+            <QueryListItems current={id} />
           </List>
         </Drawer>
         <main className={classes.content}>

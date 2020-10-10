@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ipcRenderer } from 'electron';
+import { useTranslation } from 'react-i18next';
 import Store from 'electron-store';
 
 import Button from '@material-ui/core/Button';
@@ -15,7 +16,8 @@ import { mongo2MaterialType } from '../utils/utils';
 
 const store = new Store();
 
-export default function DataTable({ schemaName, dialogContent, filter = {} }) {
+export default function DataTable({ schemaName, readonly = true, dialogContent, filter = {} }) {
+  const { t } = useTranslation();
   const [columns, setColumns] = useState([]);
   const [pageSize, setPageSize] = useState(store.get('pageSize', 5));
 
@@ -94,7 +96,7 @@ export default function DataTable({ schemaName, dialogContent, filter = {} }) {
             });
           })
         }
-        cellEditable={{
+        cellEditable={readonly ? undefined : {
           onCellEditApproved: (newValue, oldValue, rowData, columnDef) => {
             return new Promise((resolve, reject) => {
               console.log('newValue: ' + newValue);
@@ -104,7 +106,7 @@ export default function DataTable({ schemaName, dialogContent, filter = {} }) {
         }}
         onChangeRowsPerPage={handleChangeRowsPerPage}
         onSelectionChange={(rows) => console.log('You selected ' + rows.length + ' rows')}
-        actions={[
+        actions={readonly ? undefined : [
           {
             icon: 'add',
             tooltip: 'Add',
@@ -133,7 +135,7 @@ export default function DataTable({ schemaName, dialogContent, filter = {} }) {
             },
           },
         ]}
-        editable={{
+        editable={ readonly ? undefined : {
           onRowAdd: (newData) => console.log('onRowAdd: ', newData),
           onRowUpdate: (newData, oldData) =>console.log('onRowUpdate: ', newData, oldData),
           onRowDelete: (oldData) => console.log('onRowDelete: ', oldData),
@@ -154,12 +156,13 @@ export default function DataTable({ schemaName, dialogContent, filter = {} }) {
               onChange: console.log,
             })
           }
-        />
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleDetailClose}>Cancel</Button>
+          <Button onClick={handleDetailClose}>
+            {t('Cancel')}
+          </Button>
           <Button onClick={handleDetailClose} color="primary">
-            Ok
+            {t('Ok')}
           </Button>
         </DialogActions>
       </Dialog>
@@ -172,14 +175,14 @@ export default function DataTable({ schemaName, dialogContent, filter = {} }) {
         open={deleteOpen}
         autoHideDuration={6000}
         onClose={handleDeleteClose}
-        message="Deleting..."
+        message={t('Deleting...')}
         action={
           <Button
             color="secondary"
             size="small"
             onClick={handleDeleteClose}
           >
-            UNDO
+            {t('UNDO')}
           </Button>
         }
       />

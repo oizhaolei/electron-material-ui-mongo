@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import Store from 'electron-store';
+import { useTranslation } from 'react-i18next';
 import { useHistory } from "react-router-dom";
 
 import {
@@ -36,6 +37,7 @@ const PINCODE_LENGTH = 4;
 
 export default function PinCode() {
   const classes = useStyles();
+  const { t } = useTranslation();
   const history = useHistory();
 
   // theme
@@ -54,7 +56,7 @@ export default function PinCode() {
             <LockOutlinedIcon />
           </Avatar>
           <Typography component="h1" variant="h5">
-            Input Pincode to Login
+            {t('Input Pincode to Login')}
           </Typography>
           <ReactCodeInput
             type="password"

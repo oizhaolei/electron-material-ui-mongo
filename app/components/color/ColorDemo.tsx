@@ -1,4 +1,6 @@
-import * as React from 'react';
+import React from 'react';
+import { useTranslation } from 'react-i18next';
+
 import PropTypes from 'prop-types';
 import { withStyles, useTheme } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
@@ -39,6 +41,7 @@ const styles = (theme) => ({
 
 function ColorDemo(props) {
   const { classes, data } = props;
+  const { t } = useTranslation();
   const theme = useTheme();
   const primary = theme.palette.augmentColor({
     main: data.primary,
@@ -71,7 +74,7 @@ function ColorDemo(props) {
               <MenuIcon />
             </IconButton>
             <Typography component="div" variant="h6" color="inherit">
-              Color
+              {t('Color')}
             </Typography>
           </Toolbar>
         </AppBar>

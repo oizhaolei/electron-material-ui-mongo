@@ -31,9 +31,6 @@ const main = async () => {
       suggests: {
         sex: ['male', 'female'],
       },
-      oneToMany: {
-        name: 'symptoms.patient',
-      },
     }
   );
   const symptomSchema = await mdb.createSchema(

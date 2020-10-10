@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { ipcRenderer, shell } from 'electron';
+import { ipcRenderer } from 'electron';
+import { useTranslation } from 'react-i18next';
 
 import { makeStyles, Theme } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
@@ -17,6 +18,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 export default function ExportTable({ schemaName }) {
   const classes = useStyles();
+  const { t } = useTranslation();
   const [result, setResult] = useState('');
 
   useEffect(() => {
@@ -37,7 +39,7 @@ export default function ExportTable({ schemaName }) {
         startIcon={<ListIcon />}
         onClick={() => ipcRenderer.send('export-csv', schemaName)}
       >
-        Export to CSV
+        {t('Export to CSV')}
       </Button>
       <Button
         variant="contained"
@@ -45,7 +47,7 @@ export default function ExportTable({ schemaName }) {
         startIcon={<GridOnIcon />}
         onClick={() => console.log('Export to Excel')}
       >
-        Export to Excel
+        {t('Export to Excel')}
       </Button>
       <Typography variant="body1" gutterBottom>
         {result}

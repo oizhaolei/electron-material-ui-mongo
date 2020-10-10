@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ipcRenderer } from 'electron';
+import { useTranslation } from 'react-i18next';
 
 import { makeStyles, createStyles } from '@material-ui/core/styles';
 import ListItem from '@material-ui/core/ListItem';
@@ -24,6 +25,7 @@ const useStyles = makeStyles(() =>
 
 export const TableListItems = ({ current }) => {
   const classes = useStyles();
+  const { t } = useTranslation();
   const [schemas, setSchemas] = useState([]);
 
   useEffect(() => {
@@ -32,7 +34,7 @@ export const TableListItems = ({ current }) => {
 
   return (
     <>
-      <ListSubheader inset>Tables</ListSubheader>
+      <ListSubheader inset>{t('Tables')}</ListSubheader>
       {schemas.map((t) => (
         <Link
           key={t.name}
@@ -53,6 +55,7 @@ export const TableListItems = ({ current }) => {
 
 export const QueryListItems= ({ current }) => {
   const classes = useStyles();
+  const { t } = useTranslation();
   const [queries, setQueries] = useState([]);
 
   useEffect(() => {
@@ -61,7 +64,7 @@ export const QueryListItems= ({ current }) => {
 
   return (
     <>
-      <ListSubheader inset>Query</ListSubheader>
+      <ListSubheader inset>{t('Query')}</ListSubheader>
       {queries.map((q) => (
         <Link
           key={q.name}

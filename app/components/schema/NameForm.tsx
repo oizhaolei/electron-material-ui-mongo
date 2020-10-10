@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ipcRenderer } from 'electron';
+import { useTranslation } from 'react-i18next';
 import pluralize  from 'pluralize';
 
 import Grid from '@material-ui/core/Grid';
@@ -7,8 +8,9 @@ import Typography from '@material-ui/core/Typography';
 import TextField from '@material-ui/core/TextField';
 
 export default function NameForm({ dataState, onChange }) {
-  const [name, setName] = useState(dataState.name);
+  const { t } = useTranslation();
 
+  const [name, setName] = useState(dataState.name);
   const [schemaNames, setSchemaNames] = useState([]);
   const [error, setError] = useState(false);
   const [helperText, setHelperText] = useState();
@@ -33,7 +35,7 @@ export default function NameForm({ dataState, onChange }) {
   return (
     <>
       <Typography variant="h6" gutterBottom>
-        Table Name
+        {t('Table Name')}
       </Typography>
       <Grid container spacing={3}>
         <Grid item xs={12}>
@@ -41,7 +43,7 @@ export default function NameForm({ dataState, onChange }) {
             required
             id="name"
             name="name"
-            label="Table Name"
+            label={t('Table Name')}
             fullWidth
             autoComplete="input unique table please"
             value={name}
