@@ -129,8 +129,6 @@ export default function TestPage() {
                 },
               },
               etc: {
-                label: 'Patients',
-                icon: 'Person',
                 suggests: {
                   sex: ['male', 'female'],
                 },

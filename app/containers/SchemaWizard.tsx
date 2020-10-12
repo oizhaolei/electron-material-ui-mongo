@@ -14,7 +14,6 @@ import Snackbar from '@material-ui/core/Snackbar';
 
 import GenericTemplate from '../templates/GenericTemplate';
 import NameForm from '../components/schema/NameForm';
-import EtcForm from '../components/schema/EtcForm';
 import CSVImport from '../components/schema/CSVImport';
 import { initialState, dataReducer } from '../reducers/schema';
 
@@ -70,27 +69,20 @@ function SchemaWizard() {
 
   const steps = [
     t('Table Name'),
-    t('Title, Icon'),
     t('Upload Data'),
 
   ];
   const stepLabels = [
-    t('Next'),
     t('Next'),
     t('Create Table'),
   ];
 
   const stepActionss = [
     () => {}, // 'Next'
-    () => {}, // 'Next'
     () => {   // 'Create Table'
       ipcRenderer.send('schema-post', {
         name: dataState.name,
         definition: dataState.definition,
-        etc: {
-          label: dataState.label,
-          icon: dataState.icon,
-        },
         docs: dataState.data,
       });
     },
@@ -107,8 +99,8 @@ function SchemaWizard() {
 
   const getStepContent = (step) => {
     switch (step) {
-      case 0:
-        return (
+    case 0:
+      return (
         <NameForm
           dataState={dataState}
           onChange={(payload) => dispatch({
@@ -116,19 +108,9 @@ function SchemaWizard() {
             payload,
           })}
         />
-        );
-      case 1:
-        return (
-        <EtcForm
-          dataState={dataState}
-          onChange={(payload) => dispatch({
-            type: 'SCHEMA_DATA_CHANGE',
-            payload,
-          })}
-        />
-        );
-      case 2:
-        return (
+      );
+    case 1:
+      return (
         <CSVImport
           dataState={dataState}
           onChange={(payload) => dispatch({
@@ -136,9 +118,9 @@ function SchemaWizard() {
             payload,
           })}
         />
-        );
-      default:
-        throw new Error('Unknown step');
+      );
+    default:
+      throw new Error('Unknown step');
     }
   };
 
@@ -192,16 +174,16 @@ function SchemaWizard() {
           )}
         </>
 
-      <Snackbar
-        anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'left',
-        }}
-        open={snackOpen}
-        autoHideDuration={2000}
-        onClose={handleSnackClose}
-        message={t('Table created, redirect...')}
-      />
+        <Snackbar
+          anchorOrigin={{
+            vertical: 'bottom',
+            horizontal: 'left',
+          }}
+          open={snackOpen}
+          autoHideDuration={2000}
+          onClose={handleSnackClose}
+          message={t('Table created, redirect...')}
+        />
       </Paper>
     </GenericTemplate>
   );

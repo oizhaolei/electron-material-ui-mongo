@@ -22,8 +22,6 @@ const defOptions = {
 const schemaDef = {
   name: String,
   definition: mongoose.Schema.Types.Mixed,
-  label: String,
-  icon: String,
   suggests: mongoose.Schema.Types.Mixed,
 };
 

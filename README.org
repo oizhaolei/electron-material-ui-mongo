@@ -58,6 +58,7 @@
 ** Query bugs
 ** dashboard
 ** hotload
+** auth route for: pincode
 
 * そもそもほしいがった機能
  - データ属性の拡張

@@ -25,7 +25,7 @@ export default function DataTable({
 }) {
   const { t } = useTranslation();
   const [columns, setColumns] = useState([]);
-  const [pageSize, setPageSize] = useState(store.get('pageSize', 5));
+  const [pageSize, setPageSize] = useState(store.get('pageSize', 10));
 
   const [detailOpen, setDetailOpen] = useState(false);
   const [selected, setSelected] = useState([]);
@@ -84,6 +84,7 @@ export default function DataTable({
           pageSize,
           selection: true,
           filtering: true,
+          pageSizeOptions: [10, 20, 50, 100],
         }}
         columns={columns}
         data={(query) =>
@@ -114,8 +115,22 @@ export default function DataTable({
           },
         }}
         onChangeRowsPerPage={handleChangeRowsPerPage}
-        onSelectionChange={(rows) => console.log('You selected ' + rows.length + ' rows')}
-        actions={readonly ? undefined : [
+        onSelectionChange={(rows) => {
+          if (rows.length === 1 && selected.length === 0) {
+            setDetailOpen(true);
+          }
+          console.log('You selected ' + rows.length + ' rows');
+          setSelected(rows);
+        }}
+        actions={readonly ? [
+          {
+            icon: 'formatListBulleted',
+            tooltip: 'Detail',
+            isFreeAction: true,
+            onClick: () => {
+            },
+          },
+        ] : [
           {
             icon: 'add',
             tooltip: 'Add',

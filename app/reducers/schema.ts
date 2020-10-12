@@ -2,8 +2,6 @@ export const initialState = {
   error: false,
   name: '',
   definition: {},
-  label: '',
-  icon: 'ac_unit',
   suggests: {},
   data: {},
   files: [],

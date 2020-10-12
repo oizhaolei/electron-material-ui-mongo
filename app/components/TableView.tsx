@@ -8,7 +8,7 @@ import TreeItem from '@material-ui/lab/TreeItem';
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import ArrowRightIcon from '@material-ui/icons/ArrowRight';
 import Typography from '@material-ui/core/Typography';
-import TableChartIcon from '@material-ui/icons/TableChart';
+import GridOnIcon from '@material-ui/icons/GridOn';
 import Label from '@material-ui/icons/Label';
 import Grid from '@material-ui/core/Grid';
 
@@ -144,7 +144,7 @@ export default function TableView({ label, onChange }) {
                 key={t.name}
                 nodeId={t.name}
                 labelText={t.name}
-                labelIcon={TableChartIcon}
+                labelIcon={GridOnIcon}
               >
                 {
                   Object.keys(t.definition).map((f) => (

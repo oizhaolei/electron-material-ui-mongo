@@ -26,8 +26,6 @@ const main = async () => {
       },
     },
     {
-      label: 'Patients',
-      icon: 'Person',
       suggests: {
         sex: ['male', 'female'],
       },
@@ -47,8 +45,6 @@ const main = async () => {
       },
     },
     {
-      label: 'Symptoms',
-      icon: 'Camera',
       suggests: {
       },
     }

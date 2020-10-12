@@ -13,7 +13,6 @@ import DataTable from '../components/DataTable';
 import SchemaTable from '../components/SchemaTable';
 import ExportTable from '../components/ExportTable';
 import ImportTable from '../components/ImportTable';
-import SettingTable from '../components/SettingTable';
 import DetailForm from '../components/DetailForm';
 
 interface TabPanelProps {
@@ -67,7 +66,7 @@ export default function SchemaPage() {
   };
 
   return (
-    <GenericTemplate title={name} id={name}>
+    <GenericTemplate id={name}>
       <Paper square key={name}>
         <Tabs
           value={tab}
@@ -92,10 +91,6 @@ export default function SchemaPage() {
             label={t('Import')}
             {...a11yProps(3)}
           />
-          <Tab
-            label={t('Setting')}
-            {...a11yProps(4)}
-          />
         </Tabs>
         <TabPanel value={tab} index={0}>
           <DataTable
@@ -114,9 +109,6 @@ export default function SchemaPage() {
         </TabPanel>
         <TabPanel value={tab} index={3}>
           <ImportTable schemaName={name} />
-        </TabPanel>
-        <TabPanel value={tab} index={4}>
-          <SettingTable schemaName={name} />
         </TabPanel>
       </Paper>
     </GenericTemplate>

@@ -8,8 +8,20 @@ const store = new Store();
 
 export default function SchemaTable({ schemaName }) {
   const columns = [
-    { title: 'Field', field: 'field' },
-    { title: 'Type', field: 'type' },
+    {
+      title: 'Field',
+      field: 'field',
+    },
+    {
+      title: 'Type',
+      field: 'type',
+      lookup: {
+        Number: 'Number',
+        Boolean: 'Boolean',
+        Date: 'Date',
+        String: 'String',
+      },
+    },
   ];
   const [data, setData] = useState([]);
 
@@ -33,8 +45,9 @@ export default function SchemaTable({ schemaName }) {
     <MaterialTable
       title={schemaName}
       options={{
-        pageSize: 1000,
+        pageSize: 10,
         selection: true,
+        pageSizeOptions: [10, 20, 50, 100],
       }}
       columns={columns}
       data={data}
@@ -53,7 +66,7 @@ export default function SchemaTable({ schemaName }) {
               setData([...data, newData]);
 
               resolve();
-            }, 1000)
+            }, 1000);
           }),
         onRowUpdate: (newData, oldData) =>
           new Promise((resolve, reject) => {
@@ -64,7 +77,7 @@ export default function SchemaTable({ schemaName }) {
               setData([...dataUpdate]);
 
               resolve();
-            }, 1000)
+            }, 1000);
           }),
         onRowDelete: oldData =>
           new Promise((resolve, reject) => {
@@ -74,8 +87,8 @@ export default function SchemaTable({ schemaName }) {
               dataDelete.splice(index, 1);
               setData([...dataDelete]);
 
-              resolve()
-            }, 1000)
+              resolve();
+            }, 1000);
           }),
       }}
     />

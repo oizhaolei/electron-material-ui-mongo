@@ -10,7 +10,8 @@ import ListSubheader from '@material-ui/core/ListSubheader';
 import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
 import PeopleIcon from '@material-ui/icons/People';
 import BarChartIcon from '@material-ui/icons/BarChart';
-import Icon from '@material-ui/core/Icon';
+import GridOnIcon from '@material-ui/icons/GridOn';
+import FindInPageIcon from '@material-ui/icons/FindInPage';
 
 import { Link } from 'react-router-dom';
 
@@ -43,7 +44,7 @@ export const TableListItems = ({ current }) => {
         >
           <ListItem button selected={current === t.name}>
             <ListItemIcon>
-              <Icon>{t.icon}</Icon>
+              <GridOnIcon/>
             </ListItemIcon>
             <ListItemText primary={t.name} />
           </ListItem>
@@ -73,7 +74,7 @@ export const QueryListItems= ({ current }) => {
         >
           <ListItem button selected={current === q.name}>
             <ListItemIcon>
-              <ShoppingCartIcon />
+              <FindInPageIcon />
             </ListItemIcon>
             <ListItemText primary={q.name} />
           </ListItem>

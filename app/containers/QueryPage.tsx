@@ -32,7 +32,7 @@ export default function QueryPage() {
   }, [name]);
 
   return (
-    <GenericTemplate title={name} id={name}>
+    <GenericTemplate id={name}>
       <Paper square key={name}>
         {
           query.relations

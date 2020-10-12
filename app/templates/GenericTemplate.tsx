@@ -37,7 +37,7 @@ import AddIcon from '@material-ui/icons/Add';
 import Badge from '@material-ui/core/Badge';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
-import TableChartIcon from '@material-ui/icons/TableChart';
+import GridOnIcon from '@material-ui/icons/GridOn';
 import FindInPageIcon from '@material-ui/icons/FindInPage';
 
 import Copyright from '../components/Copyright';
@@ -215,7 +215,7 @@ const GenericTemplate = ({ children, title, id }) => {
   };
   const addActions = [
     {
-      icon: <TableChartIcon fontSize="small" />,
+      icon: <GridOnIcon fontSize="small" />,
       name: t('Add Table'),
       link: '/schema-wizard',
     },
@@ -350,7 +350,7 @@ const GenericTemplate = ({ children, title, id }) => {
                 <ListItemIcon>
                   <HomeIcon />
                 </ListItemIcon>
-                <ListItemText primary={t('top page')} />
+                <ListItemText primary={t('dashboard')} />
               </ListItem>
             </Link>
           </List>
@@ -366,15 +366,19 @@ const GenericTemplate = ({ children, title, id }) => {
         <main className={classes.content}>
           <div className={classes.appBarSpacer} />
           <Container maxWidth={false} className={classes.container}>
-            <Typography
-              component="h2"
-              variant="h5"
-              color="inherit"
-              noWrap
-              className={classes.pageTitle}
-            >
-              {title}
-            </Typography>
+            {
+              title && (
+                <Typography
+                  component="h2"
+                  variant="h5"
+                  color="inherit"
+                  noWrap
+                  className={classes.pageTitle}
+                >
+                  {title}
+                </Typography>
+              )
+            }
             {children}
             <Box pt={4}>
               <Copyright />
