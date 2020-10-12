@@ -29,7 +29,7 @@ const SchemaTable = ({ data }) => {
   );
 };
 
-const DataTable = ({ columns, data }) => {
+const CSVDataTable = ({ columns, data }) => {
   return (
     <MaterialTable
       title="Data"
@@ -111,7 +111,7 @@ export default function CSVImport({ dataState, onChange }) {
       )}
 
       {dataState.data && dataState.data.length > 0 && (
-        <DataTable
+        <CSVDataTable
           columns={Object.keys(dataState.definition).map((k) => ({
             title: k,
             field: k,

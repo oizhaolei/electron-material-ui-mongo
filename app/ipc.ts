@@ -54,6 +54,16 @@ export default function ipc() {
     }
   });
 
+  ipcMain.on('dashboard-schemas', async (event, { sync = false }) => {
+    console.log('dashboard-schemas');
+    const schemas = await mdb.getDashboardSchemas();
+    if (sync) {
+      event.returnValue = schemas;
+    } else {
+      event.reply('dashboard-schemas', schemas);
+    }
+  });
+
   // mdb.schema
   ipcMain.on('schema', async (event, name) => {
     console.log('schema');

@@ -41,6 +41,11 @@
   "personal.db": "personal.db",
   "primary": "primary",
   "secondary": "secondary",
-  "トップページ": "トップページ",
+  "top page": "Top Page",
+  "Column Count": "Column Count",
+  "Detail Table": "Detail Table",
+  "Main Table": "Main Table",
+  "Queries": "Queries",
+  "Row Count": "Row Count",
   "hello": "hello"
 }

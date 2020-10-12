@@ -16,7 +16,13 @@ import { mongo2MaterialType } from '../utils/utils';
 
 const store = new Store();
 
-export default function DataTable({ schemaName, readonly = true, dialogContent, filter = {} }) {
+export default function DataTable({
+  schemaName,
+  readonly = true,
+  dialogContent,
+  filter = {},
+  ...otherProps
+}) {
   const { t } = useTranslation();
   const [columns, setColumns] = useState([]);
   const [pageSize, setPageSize] = useState(store.get('pageSize', 5));
@@ -58,6 +64,9 @@ export default function DataTable({ schemaName, readonly = true, dialogContent, 
         headerStyle: {
           whiteSpace: "nowrap",
         },
+        lookup: schema.suggests[k]
+          ? schema.suggests[k].reduce((r, v) => (r[v] = v, r), {})
+          : undefined,
       })));
     };
     ipcRenderer.on('schema', schemaListener);
@@ -140,6 +149,7 @@ export default function DataTable({ schemaName, readonly = true, dialogContent, 
           onRowUpdate: (newData, oldData) =>console.log('onRowUpdate: ', newData, oldData),
           onRowDelete: (oldData) => console.log('onRowDelete: ', oldData),
         }}
+        {...otherProps}
       />
       <Dialog
         disableBackdropClick

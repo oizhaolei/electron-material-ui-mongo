@@ -32,7 +32,7 @@ import ListItemText from '@material-ui/core/ListItemText';
 import Brightness7Icon from '@material-ui/icons/Brightness7';
 import Brightness4Icon from '@material-ui/icons/Brightness4';
 import TranslateIcon from '@material-ui/icons/Translate';
-import InvertColorsIcon from '@material-ui/icons/InvertColors';
+import PaletteIcon from '@material-ui/icons/Palette';
 import AddIcon from '@material-ui/icons/Add';
 import Badge from '@material-ui/core/Badge';
 import Menu from '@material-ui/core/Menu';
@@ -300,7 +300,7 @@ const GenericTemplate = ({ children, title, id }) => {
             <Tooltip title="Change Colors">
               <Link to="/color" className={classes.link}>
                 <IconButton color="inherit">
-                  <InvertColorsIcon />
+                  <PaletteIcon />
                 </IconButton>
               </Link>
             </Tooltip>
@@ -350,7 +350,7 @@ const GenericTemplate = ({ children, title, id }) => {
                 <ListItemIcon>
                   <HomeIcon />
                 </ListItemIcon>
-                <ListItemText primary={t('トップページ')} />
+                <ListItemText primary={t('top page')} />
               </ListItem>
             </Link>
           </List>

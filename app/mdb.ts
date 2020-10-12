@@ -9,14 +9,6 @@ mongoose.set('debug', (coll, method, query, doc, options) => {
   console.log(`${coll}.${method}.(${JSON.stringify(query)})`, JSON.stringify(doc), options || '');
 });
 
-
-const schemaDef = {
-  name: String,
-  definition: mongoose.Schema.Types.Mixed,
-  label: String,
-  icon: String,
-  suggests: mongoose.Schema.Types.Mixed,
-};
 const defOptions = {
   timestamps: true,
   toObject: {
@@ -25,6 +17,14 @@ const defOptions = {
   toJSON: {
     virtuals: true,
   },
+};
+
+const schemaDef = {
+  name: String,
+  definition: mongoose.Schema.Types.Mixed,
+  label: String,
+  icon: String,
+  suggests: mongoose.Schema.Types.Mixed,
 };
 
 const queryDef = {
@@ -71,7 +71,9 @@ export const genSchemaDefinition = (docs) => {
   if (!docs || docs.length === 0) {
     return [];
   }
-  const fields = [...new Set(docs.map((doc) => Object.keys(doc)).flat())].map((f) => ({
+  const fields = [
+    ...new Set(docs.map((doc) => Object.keys(doc)).flat()),
+  ].map((f) => ({
     field: [f],
     type: getType(f, docs[0]),
   })).reduce((r, v) => {
@@ -151,22 +153,21 @@ export default class Mdb {
   }
 
   async writeCSV(name, file) {
-    const SchemaModel = await this.getSchemaModel(name);
-    const docs = await SchemaModel.find().lean();
+    const Model = await this.getSchemaModel(name);
+    const docs = await Model.find().lean();
 
     const fields = genSchemaDefinition(docs).map((f) => f.field);
     const opts = { fields: Object.keys(fields) };
 
     const parser = new json2csv.Parser(opts);
     const csv = parser.parse(docs);
-    console.log(csv);
     fs.writeFileSync(file, csv);
   }
 
   // all docs
   async analysisSchema(name, save = false) {
-    const SchemaModel = await this.getSchemaModel(name);
-    const docs = await SchemaModel.find().lean();
+    const Model = await this.getSchemaModel(name);
+    const docs = await Model.find().lean();
 
     const definition = genSchemaDefinition(docs);
     if (save) {
@@ -179,6 +180,20 @@ export default class Mdb {
   async getSchemas() {
     const schemas = await this.SchemaModel.find().lean();
     return schemas;
+  }
+
+  async getDashboardSchemas() {
+    const schemas = await this.SchemaModel.find().lean();
+    const dashboardSchemas = await Promise.all(schemas.map(async (schema) => {
+      const Model = await this.getSchemaModel(schema.name);
+      const rowCount = await Model.countDocuments();
+      return {
+        ...schema,
+        rowCount,
+        colCount: Object.keys(schema.definition).length,
+      };
+    }));
+    return dashboardSchemas;
   }
 
   async getSchemaNames() {
@@ -228,13 +243,13 @@ export default class Mdb {
   }
 
   async reIndexSuggests(models) {
-    return await Promise.all(Object.keys(models).forEach(async (name) => {
-      const model = models[name];
+    const all =  await Promise.all(Object.keys(models).map(async (name) => {
+      const Model = models[name];
       const schema = await this.SchemaModel.findOne({
         name,
       }).lean();
       const fields = Object.keys(schema.definition);
-      const docs = await model.find();
+      const docs = await Model.find();
       const suggests = getSuggests(fields, docs);
 
       await this.SchemaModel.findOneAndUpdate({
@@ -243,6 +258,7 @@ export default class Mdb {
         suggests,
       });
     }));
+    return all;
   }
 
   async createQuery(name, data = {}) {

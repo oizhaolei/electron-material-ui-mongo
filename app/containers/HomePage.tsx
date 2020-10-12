@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 
 import clsx from 'clsx';
 import { makeStyles } from '@material-ui/core/styles';
@@ -8,6 +8,8 @@ import Paper from '@material-ui/core/Paper';
 import Chart from '../components/dashboard/Chart';
 import Deposits from '../components/dashboard/Deposits';
 import Orders from '../components/dashboard/Orders';
+import Tables from '../components/dashboard/Tables';
+import Queries from '../components/dashboard/Queries';
 
 import GenericTemplate from '../templates/GenericTemplate';
 
@@ -43,10 +45,14 @@ function Dashboard() {
             <Deposits />
           </Paper>
         </Grid>
-        {/* Recent Orders */}
-        <Grid item xs={12}>
+        <Grid item xs={6}>
           <Paper className={classes.paper}>
-            <Orders />
+            <Tables />
+          </Paper>
+        </Grid>
+        <Grid item xs={6}>
+          <Paper className={classes.paper}>
+            <Queries />
           </Paper>
         </Grid>
       </Grid>
