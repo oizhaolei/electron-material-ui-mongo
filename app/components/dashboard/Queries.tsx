@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { ipcRenderer } from 'electron';
 import { useTranslation } from 'react-i18next';
-import Button from '@material-ui/core/Button';
+import { Link } from 'react-router-dom';
 
 import { makeStyles } from '@material-ui/core/styles';
+import Button from '@material-ui/core/Button';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -12,6 +13,10 @@ import TableRow from '@material-ui/core/TableRow';
 import Title from './Title';
 
 const useStyles = makeStyles((theme) => ({
+  link: {
+    textDecoration: 'none',
+    color: 'inherit',
+  },
   seeMore: {
     marginTop: theme.spacing(3),
   },
@@ -38,11 +43,19 @@ export default function Queries() {
           </TableRow>
         </TableHead>
         <TableBody>
-          {queries.map((query) => (
-            <TableRow key={query.name}>
-              <TableCell>{query.name}</TableCell>
-              <TableCell>{`${query.relations.one.table}.${query.relations.one.field}`}</TableCell>
-              <TableCell>{`${query.relations.many.table}.${query.relations.many.field}`}</TableCell>
+          {queries.map((q) => (
+            <TableRow key={q.name}>
+              <TableCell>
+                <Link
+                  key={q.name}
+                  to={`/query/${q.name}`}
+                  className={classes.link}
+                >
+                  {q.name}
+                </Link>
+              </TableCell>
+              <TableCell>{`${q.relations.one.table}.${q.relations.one.field}`}</TableCell>
+              <TableCell>{`${q.relations.many.table}.${q.relations.many.field}`}</TableCell>
             </TableRow>
           ))}
         </TableBody>

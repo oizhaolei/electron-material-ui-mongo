@@ -1,6 +1,6 @@
 /* eslint react/jsx-props-no-spreading: off */
 import React from 'react';
-import { Switch, Route } from 'react-router-dom';
+import { Switch, Route, Redirect } from 'react-router-dom';
 import App from './containers/App';
 
 import SchemaWizard from './containers/SchemaWizard';
@@ -13,37 +13,69 @@ import PinCode from './containers/PinCode';
 import TestPage from './containers/TestPage';
 import TabsPage from './containers/TabsPage';
 
+const fakeAuth = {
+  isAuthenticated: false,
+  authenticate(value, cb) {
+    this.isAuthenticated = true;
+    if (cb) cb(null);
+  },
+  signout(cb) {
+    this.isAuthenticated = false;
+    if (cb) cb(null);
+  }
+};
+
+function PrivateRoute({ component: Component, ...rest }) {
+  console.log('fakeAuth:', fakeAuth);
+  return (
+    <Route
+      {...rest}
+      render={(props) =>
+        fakeAuth.isAuthenticated ? (
+          <Component {...props} />
+        ) : (
+          <Redirect
+            to={{
+              pathname: "/pincode",
+            }}
+          />
+        )
+      }
+    />
+  );
+}
+
 export default function Routes() {
   return (
     <App>
       <Switch>
         <Route path="/pincode" exact >
-          <PinCode />
+          <PinCode auth={fakeAuth} />
         </Route>
-        <Route path="/schema-wizard" exact >
+        <PrivateRoute path="/schema-wizard" exact >
           <SchemaWizard />
-        </Route>
-        <Route path="/query-wizard" exact >
+        </PrivateRoute>
+        <PrivateRoute path="/query-wizard" exact >
           <QueryWizard />
-        </Route>
-        <Route path="/query/:name" exact >
+        </PrivateRoute>
+        <PrivateRoute path="/query/:name" exact >
           <QueryPage />
-        </Route>
-        <Route path="/table/:name" exact >
+        </PrivateRoute>
+        <PrivateRoute path="/table/:name" exact >
           <SchemaPage />
-        </Route>
-        <Route path="/test" exact >
+        </PrivateRoute>
+        <PrivateRoute path="/test" exact >
           <TestPage />
-        </Route>
-        <Route path="/tabs" exact >
+        </PrivateRoute>
+        <PrivateRoute path="/tabs" exact >
           <TabsPage />
-        </Route>
-        <Route path="/color" exact >
+        </PrivateRoute>
+        <PrivateRoute path="/color" exact >
           <Color />
-        </Route>
-        <Route path="/" exact >
+        </PrivateRoute>
+        <PrivateRoute path="/" exact >
           <HomePage />
-        </Route>
+        </PrivateRoute>
       </Switch>
     </App>
   );

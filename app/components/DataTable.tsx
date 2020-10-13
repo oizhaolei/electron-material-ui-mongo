@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { ipcRenderer } from 'electron';
 import { useTranslation } from 'react-i18next';
 import Store from 'electron-store';
@@ -17,18 +17,28 @@ import { mongo2MaterialType } from '../utils/utils';
 const store = new Store();
 
 export default function DataTable({
-  schemaName,
-  readonly = true,
+  dataState,
   dialogContent,
   filter = {},
   ...otherProps
 }) {
   const { t } = useTranslation();
-  const [columns, setColumns] = useState([]);
-  const [pageSize, setPageSize] = useState(store.get('pageSize', 10));
+  const [pageSize, setPageSize] = useState(store.get('pageSize', 20));
 
   const [detailOpen, setDetailOpen] = useState(false);
   const [selected, setSelected] = useState([]);
+
+  const columns = Object.keys(dataState.definition).map((k) => ({
+    title: k,
+    field: k,
+    type: mongo2MaterialType(dataState.definition[k].type),
+    headerStyle: {
+      whiteSpace: "nowrap",
+    },
+    lookup: dataState.suggests[k]
+      ? dataState.suggests[k].reduce((r, v) => (r[v] = v, r), {})
+      : undefined,
+  }));
 
   const handleClickDetailOpen = () => {
     setDetailOpen(true);
@@ -41,50 +51,28 @@ export default function DataTable({
     setPageSize(size);
   };
 
-  // delete snackbar
-  const [deleteOpen, setDeleteOpen] = useState(false);
-  const handleDeleteClick = () => {
-    setDeleteOpen(true);
+  // snackbar
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const handleSnackbarClick = () => {
+    setSnackbarOpen(true);
   };
-  const handleDeleteClose = (event, reason) => {
+  const handleSnackbarClose = (event, reason) => {
     if (reason === 'clickaway') {
       return;
     }
 
-    setDeleteOpen(false);
+    setSnackbarOpen(false);
   };
-
-  useEffect(() => {
-    const schemaListener = (event, schema) => {
-      console.log('schema:', schema);
-      setColumns(Object.keys(schema.definition).map((k) => ({
-        title: k,
-        field: k,
-        type: mongo2MaterialType(schema.definition[k].type),
-        headerStyle: {
-          whiteSpace: "nowrap",
-        },
-        lookup: schema.suggests[k]
-          ? schema.suggests[k].reduce((r, v) => (r[v] = v, r), {})
-          : undefined,
-      })));
-    };
-    ipcRenderer.on('schema', schemaListener);
-    ipcRenderer.send('schema', schemaName);
-    return () => {
-      ipcRenderer.removeListener('schema', schemaListener);
-    };
-  }, [schemaName]);
 
   return (
     <>
       <MaterialTable
-        title={schemaName}
+        title={dataState.name}
         options={{
           pageSize,
           selection: true,
           filtering: true,
-          pageSizeOptions: [10, 20, 50, 100],
+          pageSizeOptions: [20, 50, 100],
         }}
         columns={columns}
         data={(query) =>
@@ -95,7 +83,7 @@ export default function DataTable({
               page: query.page,
             };
             const results = ipcRenderer.sendSync('find', {
-              name: schemaName,
+              name: dataState.name,
               filter,
               options,
               sync: true,
@@ -106,7 +94,7 @@ export default function DataTable({
             });
           })
         }
-        cellEditable={readonly ? undefined : {
+        cellEditable={{
           onCellEditApproved: (newValue, oldValue, rowData, columnDef) => {
             return new Promise((resolve, reject) => {
               console.log('newValue: ' + newValue);
@@ -122,15 +110,7 @@ export default function DataTable({
           console.log('You selected ' + rows.length + ' rows');
           setSelected(rows);
         }}
-        actions={readonly ? [
-          {
-            icon: 'formatListBulleted',
-            tooltip: 'Detail',
-            isFreeAction: true,
-            onClick: () => {
-            },
-          },
-        ] : [
+        actions={[
           {
             icon: 'add',
             tooltip: 'Add',
@@ -155,11 +135,11 @@ export default function DataTable({
             onClick: (event, rows) => {
               console.log('You want to delete ' + rows.length + ' rows');
               setSelected(rows);
-              handleDeleteClick();
+              handleSnackbarClick();
             },
           },
         ]}
-        editable={ readonly ? undefined : {
+        editable={{
           onRowAdd: (newData) => console.log('onRowAdd: ', newData),
           onRowUpdate: (newData, oldData) =>console.log('onRowUpdate: ', newData, oldData),
           onRowDelete: (oldData) => console.log('onRowDelete: ', oldData),
@@ -174,12 +154,12 @@ export default function DataTable({
       >
         <DialogTitle>Fill the form</DialogTitle>
         <DialogContent>
-          {
-            dialogContent && dialogContent({
-              columns: columns,
-              list: selected,
-              onChange: console.log,
-            })
+          {dialogContent &&
+           dialogContent({
+             columns,
+             list: selected,
+             onChange: console.log,
+           })
           }
         </DialogContent>
         <DialogActions>
@@ -197,15 +177,15 @@ export default function DataTable({
           vertical: 'bottom',
           horizontal: 'left',
         }}
-        open={deleteOpen}
+        open={snackbarOpen}
         autoHideDuration={6000}
-        onClose={handleDeleteClose}
+        onClose={handleSnackbarClose}
         message={t('Deleting...')}
         action={
           <Button
             color="secondary"
             size="small"
-            onClick={handleDeleteClose}
+            onClick={handleSnackbarClose}
           >
             {t('UNDO')}
           </Button>

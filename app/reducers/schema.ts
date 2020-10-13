@@ -3,15 +3,49 @@ export const initialState = {
   name: '',
   definition: {},
   suggests: {},
-  data: {},
-  files: [],
 };
-export const dataReducer = (state = initialState, action) => {
-  switch (action.type) {
+export const dataReducer = (state = initialState, { type, payload }) => {
+  let newDefinition;
+  switch (type) {
+    case 'COLUMN_ADDED':
+      newDefinition = {
+        ...state.definition,
+        [payload.newData.field]: {
+          type: payload.newData.type,
+        },
+      };
+      return {
+        ...state,
+        definition: newDefinition,
+      };
+    case 'COLUMN_UPDATED':
+      newDefinition = {
+        ...state.definition,
+      };
+      delete newDefinition[payload.oldData.field];
+      newDefinition = {
+        ...newDefinition,
+        [payload.newData.field]: {
+          type: payload.newData.type,
+        },
+      };
+      return {
+        ...state,
+        definition: newDefinition,
+      };
+    case 'COLUMN_DELETED':
+      newDefinition = {
+        ...state.definition,
+      };
+      delete newDefinition[payload.oldData.field];
+      return {
+        ...state,
+        definition: newDefinition,
+      };
     case 'SCHEMA_DATA_CHANGE':
       return {
         ...state,
-        ...action.payload,
+        ...payload,
       };
     default:
       return state;

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useReducer } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ipcRenderer } from 'electron';
-import { useHistory } from "react-router-dom";
+import { useHistory } from 'react-router-dom';
 
 import { makeStyles } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
@@ -15,7 +15,7 @@ import Snackbar from '@material-ui/core/Snackbar';
 import GenericTemplate from '../templates/GenericTemplate';
 import NameForm from '../components/schema/NameForm';
 import CSVImport from '../components/schema/CSVImport';
-import { initialState, dataReducer } from '../reducers/schema';
+import { initialState, dataReducer } from '../reducers/schema-wizard';
 
 const useStyles = makeStyles((theme) => ({
   paper: {

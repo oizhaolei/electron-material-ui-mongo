@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { ipcRenderer } from 'electron';
-import { useParams } from "react-router-dom";
+import { useParams } from 'react-router-dom';
 
 import { makeStyles } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
 
 import GenericTemplate from '../templates/GenericTemplate';
-import DataTable from '../components/DataTable';
+import ReadonlyDataTable from '../components/ReadonlyDataTable';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -39,16 +39,17 @@ export default function QueryPage() {
           && query.relations.one
           && query.relations.one.table
           && (
-            <DataTable
+            <ReadonlyDataTable
               schemaName={query.relations.one.table}
-              dialogContent={({ list }) => list.length > 0 && (
-                <DataTable
-                  schemaName={query.relations.many.table}
-                  filter={{
-                    [query.relations.many.field]: list[0][query.relations.one.field],
-                  }}
-                />
-              )}
+              dialogContent={({ list }) =>
+                list.length > 0 && (
+                  <ReadonlyDataTable
+                    schemaName={query.relations.many.table}
+                    filter={{
+                      [query.relations.many.field]: list[0][query.relations.one.field],
+                    }}
+                  />
+                )}
             />
           )
         }

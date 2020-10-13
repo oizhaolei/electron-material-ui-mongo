@@ -1,96 +1,132 @@
-import React, { useState, useEffect } from 'react';
-import { ipcRenderer } from 'electron';
-import Store from 'electron-store';
+import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
+import Button from '@material-ui/core/Button';
+import Snackbar from '@material-ui/core/Snackbar';
 import MaterialTable from 'material-table';
+import SaveIcon from '@material-ui/icons/Save';
 
-const store = new Store();
-
-export default function SchemaTable({ schemaName }) {
-  const columns = [
-    {
-      title: 'Field',
-      field: 'field',
+const columns = [
+  {
+    field: 'field',
+    title: 'Field',
+  },
+  {
+    field: 'type',
+    title: 'Type',
+    lookup: {
+      Number: 'Number',
+      Boolean: 'Boolean',
+      Date: 'Date',
+      String: 'String',
     },
-    {
-      title: 'Type',
-      field: 'type',
-      lookup: {
-        Number: 'Number',
-        Boolean: 'Boolean',
-        Date: 'Date',
-        String: 'String',
-      },
-    },
-  ];
-  const [data, setData] = useState([]);
+  },
+];
+export default function SchemaTable({ dataState, dispatch, handleSaveSchema }) {
+  const { t } = useTranslation();
+  console.log('dataState.definition:', dataState.definition);
+  const data = Object.keys(dataState.definition).map((k) => ({
+    field: k,
+    type: dataState.definition[k].type,
+  }));
 
-  useEffect(() => {
-    const schemaListener = (event, schema) => {
-      setData(
-        Object.keys(schema.definition).map((k) => ({
-          field: k,
-          type: schema.definition[k].type,
-        }))
-      );
-    };
-    ipcRenderer.on('schema', schemaListener);
-    ipcRenderer.send('schema', schemaName);
-    return () => {
-      ipcRenderer.removeListener('schema', schemaListener);
-    };
-  }, [schemaName]);
+  const [changed, setChanged] = useState(false);
+  // snackbar
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const handleSnackbarClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setSnackbarOpen(false);
+  };
 
   return (
-    <MaterialTable
-      title={schemaName}
-      options={{
-        pageSize: 10,
-        selection: true,
-        pageSizeOptions: [10, 20, 50, 100],
-      }}
-      columns={columns}
-      data={data}
-      cellEditable={{
-        onCellEditApproved: (newValue, oldValue, rowData, columnDef) => {
-          return new Promise((resolve, reject) => {
-            console.log('newValue: ' + newValue);
-            setTimeout(resolve, 1000);
-          });
-        },
-      }}
-      editable={{
-        onRowAdd: newData =>
-          new Promise((resolve, reject) => {
-            setTimeout(() => {
-              setData([...data, newData]);
-
+    <>
+      {changed && (
+        <Button
+          variant="contained"
+          color="secondary"
+          startIcon={<SaveIcon />}
+          onClick={handleSaveSchema}
+        >
+          {t('Save')}
+        </Button>
+      )}
+      <MaterialTable
+        title={dataState.name}
+        options={{
+          pageSize: 20,
+          pageSizeOptions: [20, 50, 100],
+        }}
+        columns={columns}
+        data={data}
+        cellEditable={{
+          onCellEditApproved: (newValue, oldValue, rowData, columnDef) => {
+            return new Promise((resolve, reject) => {
+              console.log('newValue: ' + newValue);
+              setTimeout(resolve, 1000);
+            });
+          },
+        }}
+        editable={{
+          onRowAdd: (newData) =>
+            new Promise((resolve, reject) => {
+              console.log('newData:', newData);
+              setChanged(true);
+              dispatch({
+                type: 'COLUMN_ADDED',
+                payload: {
+                  newData,
+                },
+              });
               resolve();
-            }, 1000);
-          }),
-        onRowUpdate: (newData, oldData) =>
-          new Promise((resolve, reject) => {
-            setTimeout(() => {
-              const dataUpdate = [...data];
-              const index = oldData.tableData.field;
-              dataUpdate[index] = newData;
-              setData([...dataUpdate]);
-
+            }),
+          onRowUpdate: (newData, oldData) =>
+            new Promise((resolve, reject) => {
+              setChanged(true);
+              dispatch({
+                type: 'COLUMN_UPDATED',
+                payload: {
+                  newData,
+                  oldData,
+                },
+              });
               resolve();
-            }, 1000);
-          }),
-        onRowDelete: oldData =>
-          new Promise((resolve, reject) => {
-            setTimeout(() => {
-              const dataDelete = [...data];
-              const index = oldData.tableData.field;
-              dataDelete.splice(index, 1);
-              setData([...dataDelete]);
-
+            }),
+          onRowDelete: (oldData) =>
+            new Promise((resolve, reject) => {
+              setChanged(true);
+              dispatch({
+                type: 'COLUMN_DELETED',
+                payload: {
+                  oldData,
+                },
+              });
               resolve();
-            }, 1000);
-          }),
-      }}
-    />
+            }),
+        }}
+      />
+
+      <Snackbar
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'left',
+        }}
+        open={snackbarOpen}
+        autoHideDuration={6000}
+        onClose={handleSnackbarClose}
+        message={t('Saving...')}
+        action={
+          <Button
+            color="secondary"
+            size="small"
+            onClick={handleSnackbarClose}
+          >
+            {t('UNDO')}
+          </Button>
+        }
+      />
+    </>
   );
 }

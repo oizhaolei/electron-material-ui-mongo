@@ -34,14 +34,18 @@ export default function ipc() {
   });
 
   // schemaNames: add / update
-  ipcMain.on('schema-post', async (event, { name, definition, etc, docs }) => {
+  ipcMain.on('schema-post', async (event, { name, definition, etc, docs, sync = false }) => {
     console.log('schema-post');
     const newSchema = await mdb.createSchema(name, definition, etc);
     if (docs && docs.length > 0) {
-      const SchemaModel = await mdb.getSchemaModel(name);
-      await SchemaModel.insertMany(docs);
+      const Model = await mdb.getSchemaModel(name);
+      await Model.insertMany(docs);
     }
-    event.reply('schema-post', newSchema);
+    if (sync) {
+      event.returnValue = newSchema;
+    } else {
+      event.reply('schema-post', newSchema);
+    }
   });
 
   ipcMain.on('schemas', async (event, { sync = false }) => {
@@ -104,9 +108,9 @@ export default function ipc() {
   // mdb.find
   ipcMain.on('find', async (event, { name, filter = {}, projection, options, sync = false }) => {
     console.log('find');
-    const SchemaModel = await mdb.getSchemaModel(name);
-    const data = await SchemaModel.find(filter, projection, options).lean();
-    const totalCount = await SchemaModel.countDocuments(filter);
+    const Model = await mdb.getSchemaModel(name);
+    const data = await Model.find(filter, projection, options).lean();
+    const totalCount = await Model.countDocuments(filter);
 
     const result = {
       data,
@@ -123,25 +127,31 @@ export default function ipc() {
   // mdb.insert
   ipcMain.on('insert', async (event, { name, doc }) => {
     console.log('insert');
-    const SchemaModel = await mdb.getSchemaModel(name);
-    const newDoc = new SchemaModel(doc);
+    const Model = await mdb.getSchemaModel(name);
+    const newDoc = new Model(doc);
     await newDoc.save();
     event.reply('insert', { newDoc });
+  });
+  ipcMain.on('insert-many', async (event, { name, docs }) => {
+    console.log('insert');
+    const Model = await mdb.getSchemaModel(name);
+    const newDocs = await Model.insertMany(docs);
+    event.reply('insert-many', { newDocs });
   });
 
   // mdb.remove
   ipcMain.on('remove', async (event, { name, filter, options }) => {
     console.log('remove');
-    const SchemaModel = await mdb.getSchemaModel(name);
-    const numRemoved = await SchemaModel.deleteMany(filter, options);
+    const Model = await mdb.getSchemaModel(name);
+    const numRemoved = await Model.deleteMany(filter, options);
     event.reply('remove', { numRemoved });
   });
 
   // mdb.update
   ipcMain.on('update', async (event, { name, filter, doc, options }) => {
     console.log('update');
-    const SchemaModel = await mdb.getSchemaModel(name);
-    const numAffected = await SchemaModel.update(filter, doc, options);
+    const Model = await mdb.getSchemaModel(name);
+    const numAffected = await Model.update(filter, doc, options);
     event.reply('update', { numAffected });
   });
 

@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { ipcRenderer } from 'electron';
 import { useTranslation } from 'react-i18next';
 
 import { makeStyles } from '@material-ui/core/styles';
@@ -9,10 +8,7 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import CircularProgress from '@material-ui/core/CircularProgress';
 
-import DataTable from '../DataTable';
-
-import { mongo2MaterialType } from '../../utils/utils';
-
+import ReadonlyDataTable from '../ReadonlyDataTable';
 
 const useStyles = makeStyles((theme) => ({
   listItem: {
@@ -50,7 +46,7 @@ export default function Review({ dataState, onChange }) {
         </ListItem>
       </List>
 
-      <DataTable schemaName={dataState.relations.one.table} />
+      <ReadonlyDataTable schemaName={dataState.relations.one.table} />
     </>
   );
 }

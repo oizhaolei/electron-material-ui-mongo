@@ -48,17 +48,17 @@
 * BUGS
 ** TODO find & pagination
 ** Tables   => useContext
-** Treeview
+** TODO Treeview
 
 ** 機能一覧整理
 ** DONE i18n
 ** Store to save all
-** Schema change
-** Update bulkly
+** DONE Schema change
+** DONE Update bulkly
 ** Query bugs
-** dashboard
+** DONE dashboard
 ** hotload
-** auth route for: pincode
+** DONE auth route for: pincode
 
 * そもそもほしいがった機能
  - データ属性の拡張

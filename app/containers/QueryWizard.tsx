@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useReducer } from 'react';
 import { ipcRenderer } from 'electron';
 import { useTranslation } from 'react-i18next';
-import { useHistory } from "react-router-dom";
+import { useHistory } from 'react-router-dom';
 
 import { makeStyles } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
@@ -17,7 +17,7 @@ import GenericTemplate from '../templates/GenericTemplate';
 import NameForm from '../components/query/NameForm';
 import RelationForm from '../components/query/RelationForm';
 import Review from '../components/query/Review';
-import { initialState, dataReducer } from '../reducers/query';
+import { initialState, dataReducer } from '../reducers/query-wizard';
 
 const useStyles = makeStyles((theme) => ({
   paper: {

@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useReducer } from 'react';
+import { ipcRenderer } from 'electron';
 import { useTranslation } from 'react-i18next';
-import { useParams } from "react-router-dom";
+import { useParams } from 'react-router-dom';
 
 import { makeStyles, Theme } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
@@ -14,6 +15,8 @@ import SchemaTable from '../components/SchemaTable';
 import ExportTable from '../components/ExportTable';
 import ImportTable from '../components/ImportTable';
 import DetailForm from '../components/DetailForm';
+
+import { initialState, dataReducer } from '../reducers/schema';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -61,8 +64,39 @@ export default function SchemaPage() {
   const { name } = useParams();
   const [tab, setTab] = useState(0);
 
-  const handleChange = (event, newTab) => {
+  const [dataState, dispatch] = useReducer(dataReducer, {
+    ...initialState,
+    name,
+  });
+
+  useEffect(() => {
+    const schemaListener = (event, schema) => {
+      dispatch({
+        type: 'SCHEMA_DATA_CHANGE',
+        payload: schema,
+      });
+    };
+    ipcRenderer.on('schema', schemaListener);
+    ipcRenderer.send('schema', name);
+    return () => {
+      ipcRenderer.removeListener('schema', schemaListener);
+    };
+  }, [name]);
+
+  const handleTabChange = (event, newTab) => {
     setTab(newTab);
+  };
+
+  const handleSaveSchema = () => {
+    const newSchema = ipcRenderer.sendSync('schema-post', {
+      name: dataState.name,
+      definition: dataState.definition,
+      sync: true,
+    });
+    dispatch({
+      type: 'SCHEMA_DATA_CHANGE',
+      payload: newSchema,
+    });
   };
 
   return (
@@ -70,31 +104,20 @@ export default function SchemaPage() {
       <Paper square key={name}>
         <Tabs
           value={tab}
-          onChange={handleChange}
+          onChange={handleTabChange}
           aria-label="simple tabs example"
           indicatorColor="primary"
           textColor="primary"
         >
-          <Tab
-            label={t('Browse')}
-            {...a11yProps(0)}
-          />
-          <Tab
-            label={t('Structure')}
-            {...a11yProps(1)}
-          />
-          <Tab
-            label={t('Export')}
-            {...a11yProps(2)}
-          />
-          <Tab
-            label={t('Import')}
-            {...a11yProps(3)}
-          />
+          <Tab label={t('Browse')} {...a11yProps(0)} />
+          <Tab label={t('Structure')} {...a11yProps(1)} />
+          <Tab label={t('Export')} {...a11yProps(2)} />
+          <Tab label={t('Import')} {...a11yProps(3)} />
         </Tabs>
         <TabPanel value={tab} index={0}>
           <DataTable
             schemaName={name}
+            dataState={dataState}
             readonly={false}
             dialogContent={(props) => (
               <DetailForm {...props} />
@@ -102,13 +125,22 @@ export default function SchemaPage() {
           />
         </TabPanel>
         <TabPanel value={tab} index={1}>
-          <SchemaTable schemaName={name} />
+          <SchemaTable
+            dataState={dataState}
+            dispatch={dispatch}
+            handleSaveSchema={handleSaveSchema}
+          />
         </TabPanel>
         <TabPanel value={tab} index={2}>
-          <ExportTable schemaName={name} />
+          <ExportTable
+            dataState={dataState}
+          />
         </TabPanel>
         <TabPanel value={tab} index={3}>
-          <ImportTable schemaName={name} />
+          <ImportTable
+            dispatch={dispatch}
+            dataState={dataState}
+          />
         </TabPanel>
       </Paper>
     </GenericTemplate>

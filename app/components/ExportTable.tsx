@@ -16,15 +16,15 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 }));
 
-export default function ExportTable({ schemaName }) {
+export default function ExportTable({ dataState }) {
   const classes = useStyles();
   const { t } = useTranslation();
-  const [result, setResult] = useState('');
+  const [msg, setMsg] = useState('');
 
   useEffect(() => {
     const exportCSVListener = (event, arg) => {
       console.log(arg);
-      setResult(arg);
+      setMsg(arg);
     };
     ipcRenderer.on('export-csv', exportCSVListener);
     return () => {
@@ -37,7 +37,7 @@ export default function ExportTable({ schemaName }) {
         variant="contained"
         color="secondary"
         startIcon={<ListIcon />}
-        onClick={() => ipcRenderer.send('export-csv', schemaName)}
+        onClick={() => ipcRenderer.send('export-csv', dataState.name)}
       >
         {t('Export to CSV')}
       </Button>
@@ -50,7 +50,7 @@ export default function ExportTable({ schemaName }) {
         {t('Export to Excel')}
       </Button>
       <Typography variant="body1" gutterBottom>
-        {result}
+        {msg}
       </Typography>
     </div>
   );

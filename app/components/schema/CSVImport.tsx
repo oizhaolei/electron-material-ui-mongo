@@ -80,12 +80,6 @@ export default function CSVImport({ dataState, onChange }) {
             {dataState.name}
           </Typography>
         </ListItem>
-        <ListItem className={classes.listItem}>
-          <ListItemText primary={t('Label')} />
-          <Typography variant="subtitle2" className={classes.total}>
-          {dataState.label}
-          </Typography>
-        </ListItem>
       </List>
       <DropzoneArea
         acceptedFiles={['text/csv']}
