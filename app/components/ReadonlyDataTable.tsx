@@ -42,7 +42,6 @@ export default function ReadonlyDataTable({
 
   useEffect(() => {
     const schemaListener = (event, schema) => {
-      console.log('schema:', schema);
       if (schemaName === schema.name) {
         setColumns(
           Object.keys(schema.definition).map((k) => ({
@@ -68,43 +67,45 @@ export default function ReadonlyDataTable({
 
   return (
     <>
-      <MaterialTable
-        title={schemaName}
-        options={{
-          pageSize,
-          filtering: true,
-          pageSizeOptions: [20, 50, 100],
-        }}
-        columns={columns}
-        data={(query) =>
-          new Promise((resolve, reject) => {
-            const options = {
-              limit: query.pageSize,
-              skip: query.page * query.pageSize,
-              page: query.page,
-            };
-            const results = ipcRenderer.sendSync('find', {
-              name: schemaName,
-              filter,
-              options,
-              sync: true,
-            });
+      {columns.length > 0 && (
+        <MaterialTable
+          title={schemaName}
+          options={{
+            pageSize,
+            filtering: true,
+            pageSizeOptions: [20, 50, 100],
+          }}
+          columns={columns}
+          data={(query) =>
+            new Promise((resolve, reject) => {
+              const options = {
+                limit: query.pageSize,
+                skip: query.page * query.pageSize,
+                page: query.page,
+              };
+              const results = ipcRenderer.sendSync('find', {
+                name: schemaName,
+                filter,
+                options,
+                sync: true,
+              });
 
-            resolve({
-              ...results,
-            });
-          })
-        }
-        onChangeRowsPerPage={handleChangeRowsPerPage}
-        actions={[
-          {
-            icon: 'comment',
-            tooltip: 'Detail',
-            onClick: handleClickDetailOpen,
-          },
-        ]}
-        {...otherProps}
-      />
+              resolve({
+                ...results,
+              });
+            })
+          }
+          onChangeRowsPerPage={handleChangeRowsPerPage}
+          actions={dialogContent ? [
+            {
+              icon: 'comment',
+              tooltip: 'Detail',
+              onClick: handleClickDetailOpen,
+            },
+          ] : undefined}
+          {...otherProps}
+        />
+      )}
       <Dialog
         disableBackdropClick
         disableEscapeKeyDown

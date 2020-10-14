@@ -45,7 +45,8 @@ const useTreeItemStyles = makeStyles((theme: Theme) =>
       },
     },
     tree: {
-      minHeight: 500,
+      height: 500,
+      overflowY: "scroll",
     },
     expanded: {},
     selected: {},

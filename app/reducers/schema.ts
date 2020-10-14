@@ -3,6 +3,8 @@ export const initialState = {
   name: '',
   definition: {},
   suggests: {},
+  changeList: [],
+  changes: {},
 };
 export const dataReducer = (state = initialState, { type, payload }) => {
   let newDefinition;
@@ -42,10 +44,25 @@ export const dataReducer = (state = initialState, { type, payload }) => {
         ...state,
         definition: newDefinition,
       };
-    case 'SCHEMA_DATA_CHANGE':
+    case 'SCHEMA_CHANGE':
       return {
         ...state,
         ...payload,
+      };
+    case 'SCHEMA_DATA_CLEAR':
+      return {
+        ...state,
+        changeList: [],
+        changes: {},
+      };
+    case 'SCHEMA_DATA_CHANGE':
+      return {
+        ...state,
+        changeList: payload.list,
+        changes: {
+          ...state.changes,
+          [payload.field]: payload.value,
+        },
       };
     default:
       return state;

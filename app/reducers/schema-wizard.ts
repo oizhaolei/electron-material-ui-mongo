@@ -7,7 +7,7 @@ export const initialState = {
 };
 export const dataReducer = (state = initialState, action) => {
   switch (action.type) {
-    case 'SCHEMA_DATA_CHANGE':
+    case 'SCHEMA_WIZARD_CHANGE':
       return {
         ...state,
         ...action.payload,

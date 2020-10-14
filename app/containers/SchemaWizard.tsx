@@ -104,7 +104,7 @@ function SchemaWizard() {
         <NameForm
           dataState={dataState}
           onChange={(payload) => dispatch({
-            type: 'SCHEMA_DATA_CHANGE',
+            type: 'SCHEMA_WIZARD_CHANGE',
             payload,
           })}
         />
@@ -114,7 +114,7 @@ function SchemaWizard() {
         <CSVImport
           dataState={dataState}
           onChange={(payload) => dispatch({
-            type: 'SCHEMA_DATA_CHANGE',
+            type: 'SCHEMA_WIZARD_CHANGE',
             payload,
           })}
         />

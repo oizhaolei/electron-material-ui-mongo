@@ -12,13 +12,14 @@ import Snackbar from '@material-ui/core/Snackbar';
 
 import MaterialTable from 'material-table';
 
+import DetailForm from './DetailForm';
 import { mongo2MaterialType } from '../utils/utils';
 
 const store = new Store();
 
 export default function DataTable({
   dataState,
-  dialogContent,
+  dispatch,
   filter = {},
   ...otherProps
 }) {
@@ -44,6 +45,23 @@ export default function DataTable({
     setDetailOpen(true);
   };
 
+  const handleDetailSave = () => {
+    //
+    console.log('dataState.changeList', dataState.changeList);
+    console.log('dataState.changes', dataState.changes);
+    const results = ipcRenderer.sendSync('update', {
+      name: dataState.name,
+      filter: {
+        _id: {
+          $in: dataState.changeList.map((r) => r._id),
+        }
+      },
+      doc: dataState.changes,
+      sync: true,
+    });
+    console.log('results', results);
+    setDetailOpen(false);
+  };
   const handleDetailClose = () => {
     setDetailOpen(false);
   };
@@ -154,19 +172,18 @@ export default function DataTable({
       >
         <DialogTitle>Fill the form</DialogTitle>
         <DialogContent>
-          {dialogContent &&
-           dialogContent({
-             columns,
-             list: selected,
-             onChange: console.log,
-           })
-          }
+          <DetailForm
+            definition={dataState.definition}
+            suggests={dataState.suggests}
+            list={selected}
+            dispatch={dispatch}
+          />
         </DialogContent>
         <DialogActions>
           <Button onClick={handleDetailClose}>
             {t('Cancel')}
           </Button>
-          <Button onClick={handleDetailClose} color="primary">
+          <Button onClick={handleDetailSave} color="primary">
             {t('Ok')}
           </Button>
         </DialogActions>

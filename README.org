@@ -47,8 +47,8 @@
 
 * BUGS
 ** TODO find & pagination
-** Tables   => useContext
-** TODO Treeview
+** CANCELED Tables   => useContext
+** DONE Treeview
 
 ** 機能一覧整理
 ** DONE i18n

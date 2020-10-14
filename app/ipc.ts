@@ -148,11 +148,16 @@ export default function ipc() {
   });
 
   // mdb.update
-  ipcMain.on('update', async (event, { name, filter, doc, options }) => {
+  ipcMain.on('update', async (event, { name, filter, doc, options, sync = false }) => {
     console.log('update');
     const Model = await mdb.getSchemaModel(name);
     const numAffected = await Model.update(filter, doc, options);
-    event.reply('update', { numAffected });
+
+    if (sync) {
+      event.returnValue = numAffected;
+    } else {
+      event.reply('update', numAffected);
+    }
   });
 
   // mdb.export

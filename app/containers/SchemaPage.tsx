@@ -14,7 +14,6 @@ import DataTable from '../components/DataTable';
 import SchemaTable from '../components/SchemaTable';
 import ExportTable from '../components/ExportTable';
 import ImportTable from '../components/ImportTable';
-import DetailForm from '../components/DetailForm';
 
 import { initialState, dataReducer } from '../reducers/schema';
 
@@ -72,7 +71,7 @@ export default function SchemaPage() {
   useEffect(() => {
     const schemaListener = (event, schema) => {
       dispatch({
-        type: 'SCHEMA_DATA_CHANGE',
+        type: 'SCHEMA_CHANGE',
         payload: schema,
       });
     };
@@ -94,7 +93,7 @@ export default function SchemaPage() {
       sync: true,
     });
     dispatch({
-      type: 'SCHEMA_DATA_CHANGE',
+      type: 'SCHEMA_CHANGE',
       payload: newSchema,
     });
   };
@@ -116,12 +115,9 @@ export default function SchemaPage() {
         </Tabs>
         <TabPanel value={tab} index={0}>
           <DataTable
-            schemaName={name}
             dataState={dataState}
+            dispatch={dispatch}
             readonly={false}
-            dialogContent={(props) => (
-              <DetailForm {...props} />
-            )}
           />
         </TabPanel>
         <TabPanel value={tab} index={1}>
