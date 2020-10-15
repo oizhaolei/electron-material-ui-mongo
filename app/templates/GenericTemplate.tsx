@@ -37,7 +37,7 @@ import AddIcon from '@material-ui/icons/Add';
 import Badge from '@material-ui/core/Badge';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
-import GridOnIcon from '@material-ui/icons/GridOn';
+import StorageIcon from '@material-ui/icons/Storage';
 import FindInPageIcon from '@material-ui/icons/FindInPage';
 
 import Copyright from '../components/Copyright';
@@ -176,12 +176,12 @@ const GenericTemplate = ({ children, title, id }) => {
     setDarkMode(newDarkMode);
   };
   const [primary, setPrimary] = useState(
-    store.get('primary', {
+    store.get('palette.primary', {
       main: '#3f50b5',
     })
   );
   const [secondary, setSecondary] = useState(
-    store.get('secondary', {
+    store.get('palette.secondary', {
       main: '#f44336',
     })
   );
@@ -195,14 +195,14 @@ const GenericTemplate = ({ children, title, id }) => {
   });
 
   // menu open
-  const [open, setOpen] = useState(store.get('open', true));
+  const [open, setOpen] = useState(store.get('drawer.open', true));
   const handleDrawerOpen = () => {
     setOpen(true);
-    store.set('open', true);
+    store.set('drawer.open', true);
   };
   const handleDrawerClose = () => {
     setOpen(false);
-    store.set('open', false);
+    store.set('drawer.open', false);
   };
 
   const [anchorEl, setAnchorEl] = useState(null);
@@ -215,7 +215,7 @@ const GenericTemplate = ({ children, title, id }) => {
   };
   const addActions = [
     {
-      icon: <GridOnIcon fontSize="small" />,
+      icon: <StorageIcon fontSize="small" />,
       name: t('Add Table'),
       link: '/schema-wizard',
     },
@@ -231,9 +231,9 @@ const GenericTemplate = ({ children, title, id }) => {
   useEffect(() => {
     const paletteColorsListener = (event, arg) => {
       setPrimary(arg.primary);
-      store.set('primary', arg.primary);
+      store.set('palette.primary', arg.primary);
       setSecondary(arg.secondary);
-      store.set('secondary', arg.secondary);
+      store.set('palette.secondary', arg.secondary);
     };
     ipcRenderer.on('paletteColors', paletteColorsListener);
 

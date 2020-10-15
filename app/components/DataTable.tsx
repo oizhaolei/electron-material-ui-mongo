@@ -24,7 +24,9 @@ export default function DataTable({
   ...otherProps
 }) {
   const { t } = useTranslation();
-  const [pageSize, setPageSize] = useState(store.get('pageSize', 20));
+  const [pageSize, setPageSize] = useState(
+    store.get(`schema.${dataState.name}.pageSize`, 20)
+  );
 
   const [detailOpen, setDetailOpen] = useState(false);
   const [selected, setSelected] = useState([]);
@@ -34,7 +36,7 @@ export default function DataTable({
     field: k,
     type: mongo2MaterialType(dataState.definition[k].type),
     headerStyle: {
-      whiteSpace: "nowrap",
+      whiteSpace: 'nowrap',
     },
     lookup: dataState.suggests[k]
       ? dataState.suggests[k].reduce((r, v) => (r[v] = v, r), {})
@@ -47,26 +49,31 @@ export default function DataTable({
 
   const handleDetailSave = () => {
     //
-    console.log('dataState.changeList', dataState.changeList);
-    console.log('dataState.changes', dataState.changes);
     const results = ipcRenderer.sendSync('update', {
       name: dataState.name,
       filter: {
         _id: {
           $in: dataState.changeList.map((r) => r._id),
-        }
+        },
       },
       doc: dataState.changes,
       sync: true,
     });
     console.log('results', results);
+    dispatch({
+      type: 'SCHEMA_DATA_CLEAR',
+    })
     setDetailOpen(false);
   };
   const handleDetailClose = () => {
+    dispatch({
+      type: 'SCHEMA_DATA_CLEAR',
+    })
     setDetailOpen(false);
   };
   const handleChangeRowsPerPage = (size) => {
     setPageSize(size);
+    store.set(`schema.${dataState.name}.pageSize`, size);
   };
 
   // snackbar
@@ -102,7 +109,13 @@ export default function DataTable({
             };
             const results = ipcRenderer.sendSync('find', {
               name: dataState.name,
-              filter,
+              filter: {
+                ...filter,
+                ...query.filters.reduce((r, v) => {
+                  r[v.column] = v.value;
+                  return r;
+                }, {}),
+              },
               options,
               sync: true,
             });
@@ -112,14 +125,6 @@ export default function DataTable({
             });
           })
         }
-        cellEditable={{
-          onCellEditApproved: (newValue, oldValue, rowData, columnDef) => {
-            return new Promise((resolve, reject) => {
-              console.log('newValue: ' + newValue);
-              setTimeout(resolve, 1000);
-            });
-          },
-        }}
         onChangeRowsPerPage={handleChangeRowsPerPage}
         onSelectionChange={(rows) => {
           if (rows.length === 1 && selected.length === 0) {

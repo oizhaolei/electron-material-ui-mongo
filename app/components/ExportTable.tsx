@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 
 import { makeStyles, Theme } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
-import GridOnIcon from '@material-ui/icons/GridOn';
+import StorageIcon from '@material-ui/icons/Storage';
 import ListIcon from '@material-ui/icons/List';
 import Button from '@material-ui/core/Button';
 
@@ -21,30 +21,27 @@ export default function ExportTable({ dataState }) {
   const { t } = useTranslation();
   const [msg, setMsg] = useState('');
 
-  useEffect(() => {
-    const exportCSVListener = (event, arg) => {
-      console.log(arg);
-      setMsg(arg);
-    };
-    ipcRenderer.on('export-csv', exportCSVListener);
-    return () => {
-      ipcRenderer.removeListener('export-csv', exportCSVListener);
-    };
-  }, []);
   return (
     <div className={classes.root}>
       <Button
         variant="contained"
         color="secondary"
         startIcon={<ListIcon />}
-        onClick={() => ipcRenderer.send('export-csv', dataState.name)}
+        onClick={() => {
+          const result = ipcRenderer.sendSync('export-csv', {
+            name: dataState.name,
+            sync: true,
+          });
+          console.log(result);
+          setMsg(result);
+        }}
       >
         {t('Export to CSV')}
       </Button>
       <Button
         variant="contained"
         color="primary"
-        startIcon={<GridOnIcon />}
+        startIcon={<StorageIcon />}
         onClick={() => console.log('Export to Excel')}
       >
         {t('Export to Excel')}

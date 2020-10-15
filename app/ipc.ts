@@ -69,39 +69,43 @@ export default function ipc() {
   });
 
   // mdb.schema
-  ipcMain.on('schema', async (event, name) => {
+  ipcMain.on('schema', async (event, { name, sync = false }) => {
     console.log('schema');
     const schema = await mdb.getSchema(name);
-    event.reply('schema', schema);
+    if (sync) {
+      event.returnValue = schema;
+    } else {
+      event.reply('schema', schema);
+    }
   });
 
   // mdb.schema delete
-  ipcMain.on('schema-delete', async (event, { name }) => {
+  ipcMain.on('schema-delete', async (event, { name, sync = false }) => {
     console.log('schema-delete');
     const result = await mdb.removeSchema(name);
-    event.reply('schema-delete', { result });
-  });
-
-  // analysis
-  ipcMain.on('analysis', async (event, arg) => {
-    console.log('analysis');
-    const schemaNames = arg
-      ? [arg]
-      : await mdb.getSchemaNames();
-    const definitions = await Promise.all(schemaNames.map((t) => mdb.analysisSchema(t)));
-
-    event.reply('analysis', definitions);
+    if (sync) {
+      event.returnValue = { result };
+    } else {
+      event.reply('schema-delete', { result });
+    }
   });
 
   // csv-read
-  ipcMain.on('csv-read', async (event, arg) => {
+  ipcMain.on('csv-read', async (event, { file, sync = false}) => {
     console.log('csv-read');
-    csv().fromFile(arg).then((data)=>{
+    csv().fromFile(file).then((data)=>{
       const definition = genSchemaDefinition(data);
-      event.reply('csv-read', {
-        definition,
-        data,
-      });
+      if (sync) {
+        event.returnValue = {
+          definition,
+          data,
+        };
+      } else {
+        event.reply('csv-read', {
+          definition,
+          data,
+        });
+      }
     });
   });
 
@@ -125,33 +129,57 @@ export default function ipc() {
   });
 
   // mdb.insert
-  ipcMain.on('insert', async (event, { name, doc }) => {
+  ipcMain.on('insert', async (event, { name, doc, sync = false }) => {
     console.log('insert');
     const Model = await mdb.getSchemaModel(name);
     const newDoc = new Model(doc);
     await newDoc.save();
-    event.reply('insert', { newDoc });
+    if (sync) {
+      event.returnValue = {
+        newDoc,
+      };
+    } else {
+      event.reply('insert', {
+        newDoc,
+      });
+    }
   });
-  ipcMain.on('insert-many', async (event, { name, docs }) => {
+  ipcMain.on('insert-many', async (event, { name, docs, sync = false }) => {
     console.log('insert');
     const Model = await mdb.getSchemaModel(name);
     const newDocs = await Model.insertMany(docs);
-    event.reply('insert-many', { newDocs });
+    if (sync) {
+      event.returnValue = {
+        newDocs,
+      };
+    } else {
+      event.reply('insert-many', {
+        newDocs,
+      });
+    }
   });
 
   // mdb.remove
-  ipcMain.on('remove', async (event, { name, filter, options }) => {
+  ipcMain.on('remove', async (event, { name, filter, options, sync = false }) => {
     console.log('remove');
     const Model = await mdb.getSchemaModel(name);
     const numRemoved = await Model.deleteMany(filter, options);
-    event.reply('remove', { numRemoved });
+    if (sync) {
+      event.returnValue = {
+        numRemoved,
+      };
+    } else {
+      event.reply('remove', {
+        numRemoved,
+      });
+    }
   });
 
   // mdb.update
   ipcMain.on('update', async (event, { name, filter, doc, options, sync = false }) => {
     console.log('update');
     const Model = await mdb.getSchemaModel(name);
-    const numAffected = await Model.update(filter, doc, options);
+    const numAffected = await Model.updateMany(filter, doc, options);
 
     if (sync) {
       event.returnValue = numAffected;
@@ -161,7 +189,7 @@ export default function ipc() {
   });
 
   // mdb.export
-  ipcMain.on('export-csv', async (event, name) => {
+  ipcMain.on('export-csv', async (event, { name, sync = false }) => {
     console.log('export-csv');
     const file = path.resolve(
       app.getPath('home'),
@@ -169,7 +197,11 @@ export default function ipc() {
     );
     mdb.writeCSV(name, file);
     shell.showItemInFolder(file);
-    event.reply('export-csv', file);
+    if (sync) {
+      event.returnValue = file;
+    } else {
+      event.reply('export-csv', file);
+    }
   });
 
   ipcMain.on('queries', async (event, { sync = false }) => {
@@ -183,23 +215,35 @@ export default function ipc() {
   });
 
   // mdb.query
-  ipcMain.on('query', async (event, name) => {
+  ipcMain.on('query', async (event, { name, sync = false }) => {
     console.log('query', name);
     const query = await mdb.getQuery(name);
-    event.reply('query', query);
+    if (sync) {
+      event.returnValue = query;
+    } else {
+      event.reply('query', query);
+    }
   });
 
-  ipcMain.on('query-post', async (event, { name, data }) => {
+  ipcMain.on('query-post', async (event, { name, data, sync = false }) => {
     console.log('query-post');
     const newQuery = await mdb.createQuery(name, data);
-    event.reply('query-post', newQuery);
+    if (sync) {
+      event.returnValue = newQuery;
+    } else {
+      event.reply('query-post', newQuery);
+    }
   });
 
   // mdb.query delete
-  ipcMain.on('query-delete', async (event, { name }) => {
+  ipcMain.on('query-delete', async (event, { name, sync = false }) => {
     console.log('query-delete');
     const result = await mdb.removeQuery(name);
-    event.reply('query-delete', { result });
+    if (sync) {
+      event.returnValue = { result };
+    } else {
+      event.reply('query-delete', { result });
+    }
   });
 
   // query-data
@@ -211,9 +255,16 @@ export default function ipc() {
     }
     const data = await mdb.queryCode(code, filter, projection, options);
     const definition = genSchemaDefinition(data);
-    event.reply('query-data', {
-      definition,
-      data,
-    });
+    if (sync) {
+      event.returnValue = {
+        definition,
+        data,
+      };
+    } else {
+      event.reply('query-data', {
+        definition,
+        data,
+      });
+    }
   });
 }

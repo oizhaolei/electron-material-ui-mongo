@@ -3,12 +3,13 @@ import { ipcRenderer } from 'electron';
 
 import { makeStyles, Theme, createStyles } from '@material-ui/core/styles';
 
+import Paper from '@material-ui/core/Paper';
 import TreeView from '@material-ui/lab/TreeView';
 import TreeItem from '@material-ui/lab/TreeItem';
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import ArrowRightIcon from '@material-ui/icons/ArrowRight';
 import Typography from '@material-ui/core/Typography';
-import GridOnIcon from '@material-ui/icons/GridOn';
+import StorageIcon from '@material-ui/icons/Storage';
 import Label from '@material-ui/icons/Label';
 import Grid from '@material-ui/core/Grid';
 
@@ -43,10 +44,6 @@ const useTreeItemStyles = makeStyles((theme: Theme) =>
       '& $content': {
         paddingLeft: theme.spacing(2),
       },
-    },
-    tree: {
-      height: 500,
-      overflowY: "scroll",
     },
     expanded: {},
     selected: {},
@@ -106,9 +103,10 @@ function StyledTreeItem(props) {
 const useStyles = makeStyles(
   createStyles({
     root: {
-      height: 264,
+      height: 500,
       flexGrow: 1,
       maxWidth: 400,
+      overflowY: 'scroll',
     },
   }),
 );
@@ -122,11 +120,11 @@ export default function TableView({ label, onChange }) {
   }, []);
 
   return (
-    <div className={classes.root}>
+    <Paper className={classes.root}>
       <Typography variant="h6" gutterBottom>
         {label}
       </Typography>
-      <Grid container spacing={3} className={classes.tree}>
+      <Grid container spacing={3}>
         <TreeView
           className={classes.root}
           defaultExpanded={schemas.map((t) => t.name)}
@@ -145,7 +143,7 @@ export default function TableView({ label, onChange }) {
                 key={t.name}
                 nodeId={t.name}
                 labelText={t.name}
-                labelIcon={GridOnIcon}
+                labelIcon={StorageIcon}
               >
                 {
                   Object.keys(t.definition).map((f) => (
@@ -165,6 +163,6 @@ export default function TableView({ label, onChange }) {
           }
         </TreeView>
       </Grid>
-    </div>
+    </Paper>
   );
 }

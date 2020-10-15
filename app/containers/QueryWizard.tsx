@@ -53,17 +53,7 @@ function QueryWizard() {
   const [activeStep, setActiveStep] = useState(0);
   const [snackOpen, setSnackOpen] = useState(false);
   const [dataState, dispatch] = useReducer(dataReducer, initialState);
-  useEffect(() => {
-    const queryPostListener = (event, args) => {
-      console.log('query-post:', args);
-      setSnackOpen(true);
-    };
-    ipcRenderer.on('query-post', queryPostListener);
 
-    return () => {
-      ipcRenderer.removeListener('query-post', queryPostListener);
-    };
-  }, []);
   const handleSnackClose = (event, reason) => {
     setSnackOpen(false);
     history.replace(`/query/${dataState.name}`);
@@ -84,14 +74,17 @@ function QueryWizard() {
     () => {}, // 'Next'
     () => {}, // 'Next'
     () => {   // 'Create Query'
-      ipcRenderer.send('query-post', {
+      const result = ipcRenderer.sendSync('query-post', {
         name: dataState.name,
         data: {
           type: dataState.type,
           relations: dataState.relations,
           code: dataState.code,
         },
+        sync: true,
       });
+      console.log('query-post:', result);
+      setSnackOpen(true);
     },
   ];
 

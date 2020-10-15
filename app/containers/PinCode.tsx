@@ -41,6 +41,8 @@ export default function PinCode({ auth }) {
   const classes = useStyles();
   const { t } = useTranslation();
   const history = useHistory();
+  const [value, setValue] = useState('');
+  const [error, setError] = useState('');
 
   // theme
   const [darkMode] = useState(store.get('darkMode', 'light'));
@@ -62,16 +64,35 @@ export default function PinCode({ auth }) {
           </Typography>
           <ReactCodeInput
             type="password"
+            value={value}
             fields={PINCODE_LENGTH}
-            onChange={(value) => {
-              if (value.length === PINCODE_LENGTH) {
-                auth.authenticate(value, (err) => {
+            onChange={(v) => {
+              if (v.length === PINCODE_LENGTH) {
+                auth.authenticate(v, (err) => {
                   console.log('err', err);
-                  history.replace('/');
+                  if (err) {
+                    setError(err);
+                    setValue('');
+                  } else {
+                    if (auth.isAuthenticated) {
+                      history.replace('/');
+                    }
+                  }
                 });
+              } else {
+                setError('');
               }
+              setValue(v);
             }}
           />
+          <Typography
+            color="error"
+            variant="h5"
+            display="block"
+            gutterBottom
+          >
+            {error}
+          </Typography>
         </Paper>
         <Box mt={8}>
           <Copyright />

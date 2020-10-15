@@ -7,10 +7,8 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import ListSubheader from '@material-ui/core/ListSubheader';
-import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
-import PeopleIcon from '@material-ui/icons/People';
-import BarChartIcon from '@material-ui/icons/BarChart';
-import GridOnIcon from '@material-ui/icons/GridOn';
+import LockOpenIcon from '@material-ui/icons/LockOpen';
+import StorageIcon from '@material-ui/icons/Storage';
 import FindInPageIcon from '@material-ui/icons/FindInPage';
 
 import { Link } from 'react-router-dom';
@@ -44,7 +42,7 @@ export const TableListItems = ({ current }) => {
         >
           <ListItem button selected={current === t.name}>
             <ListItemIcon>
-              <GridOnIcon/>
+              <StorageIcon/>
             </ListItemIcon>
             <ListItemText primary={t.name} />
           </ListItem>
@@ -80,26 +78,10 @@ export const QueryListItems= ({ current }) => {
           </ListItem>
         </Link>
       ))}
-      <Link to="/tabs" className={classes.link}>
-        <ListItem button>
-          <ListItemIcon>
-            <ShoppingCartIcon />
-          </ListItemIcon>
-          <ListItemText primary="Tabs" />
-        </ListItem>
-      </Link>
-      <Link to="/test" className={classes.link}>
-        <ListItem button>
-          <ListItemIcon>
-            <PeopleIcon />
-          </ListItemIcon>
-          <ListItemText primary="Test" />
-        </ListItem>
-      </Link>
       <Link to="/pincode" className={classes.link}>
         <ListItem button>
           <ListItemIcon>
-            <BarChartIcon />
+            <LockOpenIcon />
           </ListItemIcon>
           <ListItemText primary="Pincode" />
         </ListItem>

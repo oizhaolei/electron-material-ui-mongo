@@ -69,17 +69,14 @@ export default function SchemaPage() {
   });
 
   useEffect(() => {
-    const schemaListener = (event, schema) => {
-      dispatch({
-        type: 'SCHEMA_CHANGE',
-        payload: schema,
-      });
-    };
-    ipcRenderer.on('schema', schemaListener);
-    ipcRenderer.send('schema', name);
-    return () => {
-      ipcRenderer.removeListener('schema', schemaListener);
-    };
+    const schema = ipcRenderer.sendSync('schema', {
+      name,
+      sync: true,
+     });
+    dispatch({
+      type: 'SCHEMA_CHANGE',
+      payload: schema,
+    });
   }, [name]);
 
   const handleTabChange = (event, newTab) => {

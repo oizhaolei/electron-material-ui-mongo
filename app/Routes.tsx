@@ -1,6 +1,8 @@
 /* eslint react/jsx-props-no-spreading: off */
 import React from 'react';
 import { Switch, Route, Redirect } from 'react-router-dom';
+import dayjs from 'dayjs';
+
 import App from './containers/App';
 
 import SchemaWizard from './containers/SchemaWizard';
@@ -10,14 +12,13 @@ import SchemaPage from './containers/SchemaPage';
 import HomePage from './containers/HomePage';
 import Color from './containers/ColorPage';
 import PinCode from './containers/PinCode';
-import TestPage from './containers/TestPage';
-import TabsPage from './containers/TabsPage';
 
 const fakeAuth = {
-  isAuthenticated: false,
+  isAuthenticated: true,
   authenticate(value, cb) {
-    this.isAuthenticated = true;
-    if (cb) cb(null);
+    const check = value === dayjs().format('MMDD');
+    this.isAuthenticated = check;
+    if (cb) cb(check ? null : 'wrong password.');
   },
   signout(cb) {
     this.isAuthenticated = false;
@@ -26,7 +27,6 @@ const fakeAuth = {
 };
 
 function PrivateRoute({ component: Component, ...rest }) {
-  console.log('fakeAuth:', fakeAuth);
   return (
     <Route
       {...rest}
@@ -36,7 +36,7 @@ function PrivateRoute({ component: Component, ...rest }) {
         ) : (
           <Redirect
             to={{
-              pathname: "/pincode",
+              pathname: '/pincode',
             }}
           />
         )
@@ -52,30 +52,12 @@ export default function Routes() {
         <Route path="/pincode" exact >
           <PinCode auth={fakeAuth} />
         </Route>
-        <PrivateRoute path="/schema-wizard" exact >
-          <SchemaWizard />
-        </PrivateRoute>
-        <PrivateRoute path="/query-wizard" exact >
-          <QueryWizard />
-        </PrivateRoute>
-        <PrivateRoute path="/query/:name" exact >
-          <QueryPage />
-        </PrivateRoute>
-        <PrivateRoute path="/table/:name" exact >
-          <SchemaPage />
-        </PrivateRoute>
-        <PrivateRoute path="/test" exact >
-          <TestPage />
-        </PrivateRoute>
-        <PrivateRoute path="/tabs" exact >
-          <TabsPage />
-        </PrivateRoute>
-        <PrivateRoute path="/color" exact >
-          <Color />
-        </PrivateRoute>
-        <PrivateRoute path="/" exact >
-          <HomePage />
-        </PrivateRoute>
+        <PrivateRoute path="/schema-wizard" exact component={SchemaWizard} />
+        <PrivateRoute path="/query-wizard" exact component={QueryWizard} />
+        <PrivateRoute path="/query/:name" exact component={QueryPage} />
+        <PrivateRoute path="/table/:name" exact component={SchemaPage} />
+        <PrivateRoute path="/color" exact component={Color} />
+        <PrivateRoute path="/" exact component={HomePage} />
       </Switch>
     </App>
   );

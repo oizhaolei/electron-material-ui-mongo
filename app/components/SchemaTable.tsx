@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
+import { ipcRenderer } from 'electron';
 import { useTranslation } from 'react-i18next';
+import { useHistory } from 'react-router-dom';
 
 import Button from '@material-ui/core/Button';
 import Snackbar from '@material-ui/core/Snackbar';
 import MaterialTable from 'material-table';
 import SaveIcon from '@material-ui/icons/Save';
+import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
 
 const columns = [
   {
@@ -24,7 +27,8 @@ const columns = [
 ];
 export default function SchemaTable({ dataState, dispatch, handleSaveSchema }) {
   const { t } = useTranslation();
-  console.log('dataState.definition:', dataState.definition);
+  const history = useHistory();
+
   const data = Object.keys(dataState.definition).map((k) => ({
     field: k,
     type: dataState.definition[k].type,
@@ -43,10 +47,26 @@ export default function SchemaTable({ dataState, dispatch, handleSaveSchema }) {
 
   return (
     <>
+      <Button
+        variant="contained"
+        startIcon={<DeleteForeverIcon />}
+        color="secondary"
+        onClick={() => {
+          const results = ipcRenderer.sendSync('schema-delete', {
+            name: dataState.name,
+            sync: true,
+          });
+          console.log('schema-delete:', results);
+          history.replace('/');
+        }}
+      >
+        {t('Drop Table')}
+      </Button>
+
       {changed && (
         <Button
           variant="contained"
-          color="secondary"
+          color="primary"
           startIcon={<SaveIcon />}
           onClick={handleSaveSchema}
         >
@@ -61,14 +81,6 @@ export default function SchemaTable({ dataState, dispatch, handleSaveSchema }) {
         }}
         columns={columns}
         data={data}
-        cellEditable={{
-          onCellEditApproved: (newValue, oldValue, rowData, columnDef) => {
-            return new Promise((resolve, reject) => {
-              console.log('newValue: ' + newValue);
-              setTimeout(resolve, 1000);
-            });
-          },
-        }}
         editable={{
           onRowAdd: (newData) =>
             new Promise((resolve, reject) => {

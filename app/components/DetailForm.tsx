@@ -36,16 +36,13 @@ const useStyles = makeStyles((theme) => ({
 export default function DetailForm({ definition, suggests, list, dispatch }) {
   const [values, setValues] = useState(sameValue(list));
 
-  useEffect(() => {
-  }, [list]);
-
   const handleChange = (field, value) => {
     setValues({
       ...values,
       [field]: value,
     });
     dispatch({
-      type: '',
+      type: 'SCHEMA_DATA_CHANGE',
       payload: {
         list, field, value,
       }
@@ -55,10 +52,7 @@ export default function DetailForm({ definition, suggests, list, dispatch }) {
   return (
     <Grid container spacing={3}>
       {Object.keys(definition).map((field) => (
-        <Grid
-          key={field}
-          item
-          xs={12}>
+        <Grid key={field} item xs={12} >
           {
             suggests[field] ? (
               <Autocomplete

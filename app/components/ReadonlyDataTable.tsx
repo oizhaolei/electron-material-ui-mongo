@@ -23,7 +23,9 @@ export default function ReadonlyDataTable({
 }) {
   const { t } = useTranslation();
   const [columns, setColumns] = useState([]);
-  const [pageSize, setPageSize] = useState(store.get('pageSize', 20));
+  const [pageSize, setPageSize] = useState(
+    store.get(`query.${schemaName}.pageSize`, 20)
+  );
 
   const [detailOpen, setDetailOpen] = useState(false);
   const [selected, setSelected] = useState([]);
@@ -38,31 +40,29 @@ export default function ReadonlyDataTable({
   };
   const handleChangeRowsPerPage = (size) => {
     setPageSize(size);
+    store.set(`query.${schemaName}.pageSize`, size);
   };
 
   useEffect(() => {
-    const schemaListener = (event, schema) => {
-      if (schemaName === schema.name) {
-        setColumns(
-          Object.keys(schema.definition).map((k) => ({
-            title: k,
-            field: k,
-            type: mongo2MaterialType(schema.definition[k].type),
-            headerStyle: {
-              whiteSpace: 'nowrap',
-            },
-            lookup: schema.suggests[k]
-              ? schema.suggests[k].reduce((r, v) => (r[v] = v, r), {})
-              : undefined,
-          }))
-        );
-      }
-    };
-    ipcRenderer.on('schema', schemaListener);
-    ipcRenderer.send('schema', schemaName);
-    return () => {
-      ipcRenderer.removeListener('schema', schemaListener);
-    };
+    const schema = ipcRenderer.sendSync('schema', {
+      name: schemaName,
+      sync: true,
+    });
+    if (schemaName === schema.name) {
+      setColumns(
+        Object.keys(schema.definition).map((k) => ({
+          title: k,
+          field: k,
+          type: mongo2MaterialType(schema.definition[k].type),
+          headerStyle: {
+            whiteSpace: 'nowrap',
+          },
+          lookup: schema.suggests[k]
+            ? schema.suggests[k].reduce((r, v) => (r[v] = v, r), {})
+            : undefined,
+        }))
+      );
+    }
   }, [schemaName]);
 
   return (
@@ -85,7 +85,13 @@ export default function ReadonlyDataTable({
               };
               const results = ipcRenderer.sendSync('find', {
                 name: schemaName,
-                filter,
+                filter: {
+                  ...filter,
+                  ...query.filters.reduce((r, v) => {
+                    r[v.column] = v.value;
+                    return r;
+                  }, {}),
+                },
                 options,
                 sync: true,
               });

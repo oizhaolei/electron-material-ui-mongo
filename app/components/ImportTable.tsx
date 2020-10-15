@@ -61,25 +61,6 @@ export default function ImportTable({ dataState }) {
   const [definition, setDefinition] = useState([]);
   const [warning, setWarning] = useState([]);
 
-  useEffect(() => {
-    const csvReadListener = (event, { definition, data }) => {
-      setLoading(false);
-      setDefinition(definition);
-      setData(data);
-
-      if (isEqual(definition, dataState.definition)) {
-        setWarning();
-      } else {
-        setWarning('既存のデータ構造と一致していません。');
-      }
-    };
-    ipcRenderer.on('csv-read', csvReadListener);
-
-    return () => {
-      ipcRenderer.removeListener('csv-read', csvReadListener);
-    };
-  }, []);
-
   return (
     <div className={classes.root}>
       {loading && <CircularProgress />}
@@ -89,7 +70,19 @@ export default function ImportTable({ dataState }) {
         onChange={(files) => {
           if (files && files.length > 0) {
             setLoading(true);
-            ipcRenderer.send('csv-read', files[0].path);
+            const { definition, data } = ipcRenderer.sendSync('csv-read', {
+              file: files[0].path,
+              sync: true,
+            });
+            setLoading(false);
+            setDefinition(definition);
+            setData(data);
+
+            if (isEqual(definition, dataState.definition)) {
+              setWarning();
+            } else {
+              setWarning('既存のデータ構造と一致していません。');
+            }
           }
         }}
       />
@@ -100,7 +93,7 @@ export default function ImportTable({ dataState }) {
             field: k,
             type: mongo2MaterialType(definition[k].type),
             headerStyle: {
-              whiteSpace: "nowrap",
+              whiteSpace: 'nowrap',
             },
           }))}
           data={data}
@@ -119,9 +112,10 @@ export default function ImportTable({ dataState }) {
           color="secondary"
           startIcon={<SaveIcon />}
           onClick={() =>
-            ipcRenderer.send('insert-many', {
+            ipcRenderer.sendSync('insert-many', {
               name: dataState.name,
               docs: data,
+              sync: true,
             })
           }
         >

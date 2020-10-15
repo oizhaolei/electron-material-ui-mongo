@@ -16,15 +16,10 @@ export default function NameForm({ dataState, onChange }) {
   const [helperText, setHelperText] = useState();
 
   useEffect(() => {
-    const queriesListener = (event, arg) => {
-      setQueries(arg.map((s) => pluralize(s.name.toLowerCase())));
-    };
-    ipcRenderer.on('queries', queriesListener);
-    ipcRenderer.send('queries');
-
-    return () => {
-      ipcRenderer.removeListener('queries', queriesListener);
-    };
+    const qs = ipcRenderer.sendSync('queries', {
+      sync: true,
+    });
+    setQueries(qs.map((s) => pluralize(s.name.toLowerCase())));
   }, []);
 
   const handleChange = (v) => {

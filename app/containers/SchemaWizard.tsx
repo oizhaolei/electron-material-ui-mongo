@@ -51,17 +51,7 @@ function SchemaWizard() {
   const [activeStep, setActiveStep] = useState(0);
   const [snackOpen, setSnackOpen] = useState(false);
   const [dataState, dispatch] = useReducer(dataReducer, initialState);
-  useEffect(() => {
-    const schemaPostListener = (event, args) => {
-      console.log('schema-post:', args);
-      setSnackOpen(true);
-    };
-    ipcRenderer.on('schema-post', schemaPostListener);
 
-    return () => {
-      ipcRenderer.removeListener('schema-post', schemaPostListener);
-    };
-  }, []);
   const handleSnackClose = (event, reason) => {
     setSnackOpen(false);
     history.replace(`/table/${dataState.name}`);
@@ -80,11 +70,14 @@ function SchemaWizard() {
   const stepActionss = [
     () => {}, // 'Next'
     () => {   // 'Create Table'
-      ipcRenderer.send('schema-post', {
+    const newSchema = ipcRenderer.sendSync('schema-post', {
         name: dataState.name,
         definition: dataState.definition,
         docs: dataState.data,
+        sync: true,
       });
+      console.log('schema-post:', newSchema);
+      setSnackOpen(true);
     },
   ];
 

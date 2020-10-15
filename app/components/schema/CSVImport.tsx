@@ -55,21 +55,6 @@ export default function CSVImport({ dataState, onChange }) {
   const [loading, setLoading] = useState(false);
   const classes = useStyles();
 
-  useEffect(() => {
-    const csvReadListener = (event, { definition, data }) => {
-      setLoading(false);
-      onChange({
-        definition,
-        data,
-      });
-    };
-    ipcRenderer.on('csv-read', csvReadListener);
-
-    return () => {
-      ipcRenderer.removeListener('csv-read', csvReadListener);
-    };
-  }, []);
-
   return (
     <>
       {loading && <CircularProgress />}
@@ -87,7 +72,15 @@ export default function CSVImport({ dataState, onChange }) {
         onChange={(files) => {
           if (files && files.length > 0) {
             setLoading(true);
-            ipcRenderer.send('csv-read', files[0].path);
+            const { definition, data } = ipcRenderer.sendSync('csv-read', {
+              file: files[0].path,
+              sync: true,
+            });
+            setLoading(false);
+            onChange({
+              definition,
+              data,
+            });
           }
         }}
       />
@@ -107,7 +100,7 @@ export default function CSVImport({ dataState, onChange }) {
             field: k,
             type: mongo2MaterialType(dataState.definition[k].type),
             headerStyle: {
-              whiteSpace: "nowrap",
+              whiteSpace: 'nowrap',
             },
           }))}
           data={dataState.data}

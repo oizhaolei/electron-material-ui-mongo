@@ -1,5 +1,5 @@
 {
-  "name": "electron-react-boilerplate",
+  "name": "electron-material-ui-mongo",
   "productName": "PersonalDB",
   "version": "1.3.0",
   "description": "Electron application boilerplate based on React, React Router, Webpack, React Hot Loader for rapid application development",
@@ -96,19 +96,19 @@
     },
     "publish": {
       "provider": "github",
-      "owner": "electron-react-boilerplate",
-      "repo": "electron-react-boilerplate",
+      "owner": "electron-material-ui-mongo",
+      "repo": "electron-material-ui-mongo",
       "private": false
     }
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/electron-react-boilerplate/electron-react-boilerplate.git"
+    "url": "git+https://github.com/oizhaolei/electron-material-ui-mongo.git"
   },
   "author": {
     "name": "Electron React Boilerplate Maintainers",
-    "email": "electronreactboilerplate@gmail.com",
-    "url": "https://electron-react-boilerplate.js.org"
+    "email": "oizhaolei@gmail.com",
+    "url": "https://electron-material-ui-mongo.js.org"
   },
   "contributors": [
     {
@@ -129,7 +129,7 @@
   ],
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/electron-react-boilerplate/electron-react-boilerplate/issues"
+    "url": "https://github.com/oizhaolei/electron-material-ui-mongo/issues"
   },
   "keywords": [
     "electron",
@@ -143,7 +143,7 @@
     "hot",
     "reload"
   ],
-  "homepage": "https://github.com/electron-react-boilerplate/electron-react-boilerplate#readme",
+  "homepage": "https://github.com/oizhaolei/electron-material-ui-mongo#readme",
   "jest": {
     "testURL": "http://localhost/",
     "moduleNameMapper": {
@@ -316,7 +316,7 @@
     "yarn": ">=0.21.3"
   },
   "collective": {
-    "url": "https://opencollective.com/electron-react-boilerplate-594"
+    "url": "https://opencollective.com/oizhaolei-594"
   },
   "browserslist": [],
   "prettier": {
