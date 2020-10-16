@@ -6,7 +6,7 @@ export const initialState = {
   changeList: [],
   changes: {},
 };
-export const dataReducer = (state = initialState, { type, payload }) => {
+export default (state = initialState, { type, payload }) => {
   let newDefinition;
   switch (type) {
     case 'COLUMN_ADDED':

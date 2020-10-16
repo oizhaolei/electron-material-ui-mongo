@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { ipcRenderer } from 'electron';
 import { useTranslation } from 'react-i18next';
 import Store from 'electron-store';
@@ -28,8 +28,15 @@ export default function DataTable({
     store.get(`schema.${dataState.name}.pageSize`, 20)
   );
 
+  const tableRef = useRef();
   const [detailOpen, setDetailOpen] = useState(false);
   const [selected, setSelected] = useState([]);
+
+  useEffect(() => {
+    if (tableRef) {
+      tableRef.current.onQueryChange();
+    }
+  }, []);
 
   const columns = Object.keys(dataState.definition).map((k) => ({
     title: k,
@@ -92,6 +99,7 @@ export default function DataTable({
   return (
     <>
       <MaterialTable
+        tableRef={tableRef}
         title={dataState.name}
         options={{
           pageSize,
@@ -112,7 +120,7 @@ export default function DataTable({
               filter: {
                 ...filter,
                 ...query.filters.reduce((r, v) => {
-                  r[v.column] = v.value;
+                  r[v.column.field] = v.value;
                   return r;
                 }, {}),
               },
@@ -126,13 +134,6 @@ export default function DataTable({
           })
         }
         onChangeRowsPerPage={handleChangeRowsPerPage}
-        onSelectionChange={(rows) => {
-          if (rows.length === 1 && selected.length === 0) {
-            setDetailOpen(true);
-          }
-          console.log('You selected ' + rows.length + ' rows');
-          setSelected(rows);
-        }}
         actions={[
           {
             icon: 'add',
@@ -158,14 +159,35 @@ export default function DataTable({
             onClick: (event, rows) => {
               console.log('You want to delete ' + rows.length + ' rows');
               setSelected(rows);
-              handleSnackbarClick();
+              const results = ipcRenderer.sendSync('remove', {
+                name: dataState.name,
+                filter: {
+                  _id: {
+                    $in: rows.map((r) => r._id),
+                  },
+                },
+                sync: true,
+              });
+              console.log(results);
             },
           },
         ]}
         editable={{
-          onRowAdd: (newData) => console.log('onRowAdd: ', newData),
-          onRowUpdate: (newData, oldData) =>console.log('onRowUpdate: ', newData, oldData),
-          onRowDelete: (oldData) => console.log('onRowDelete: ', oldData),
+          onRowAdd: (newData) =>
+            new Promise((resolve, reject) => {
+              console.log('onRowAdd: ', newData);
+              resolve();
+            }),
+          onRowUpdate: (newData, oldData) =>
+            new Promise((resolve, reject) => {
+              console.log('onRowUpdate: ', newData, oldData);
+              resolve();
+            }),
+          onRowDelete: (oldData) =>
+            new Promise((resolve, reject) => {
+              console.log('onRowDelete: ', oldData);
+              resolve();
+            }),
         }}
         {...otherProps}
       />
@@ -202,7 +224,7 @@ export default function DataTable({
         open={snackbarOpen}
         autoHideDuration={6000}
         onClose={handleSnackbarClose}
-        message={t('Deleting...')}
+        message={t('deleting')}
         action={
           <Button
             color="secondary"

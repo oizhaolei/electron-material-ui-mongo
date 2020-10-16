@@ -1,5 +1,3 @@
-import fs from 'fs';
-
 // 'boolean', 'numeric', 'date', 'datetime', 'time', 'currency'
 //
 export const mongo2MaterialType = (from) => {

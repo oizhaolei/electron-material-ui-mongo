@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useReducer } from 'react';
+import React, { useState, useContext } from 'react';
 import { ipcRenderer } from 'electron';
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
@@ -12,12 +12,12 @@ import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import Snackbar from '@material-ui/core/Snackbar';
 
-
 import GenericTemplate from '../templates/GenericTemplate';
 import NameForm from '../components/query/NameForm';
 import RelationForm from '../components/query/RelationForm';
 import Review from '../components/query/Review';
-import { initialState, dataReducer } from '../reducers/query-wizard';
+
+import StoreContext from '../store/StoreContext';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -52,7 +52,7 @@ function QueryWizard() {
 
   const [activeStep, setActiveStep] = useState(0);
   const [snackOpen, setSnackOpen] = useState(false);
-  const [dataState, dispatch] = useReducer(dataReducer, initialState);
+  const [{ queryWizard: dataState }, dispatch] = useContext(StoreContext);
 
   const handleSnackClose = (event, reason) => {
     setSnackOpen(false);
@@ -99,8 +99,8 @@ function QueryWizard() {
 
   const getStepContent = (step) => {
     switch (step) {
-      case 0:
-        return (
+    case 0:
+      return (
         <NameForm
           dataState={dataState}
           onChange={(payload) => dispatch({
@@ -108,9 +108,9 @@ function QueryWizard() {
             payload,
           })}
         />
-        );
-      case 1:
-        return (
+      );
+    case 1:
+      return (
         <RelationForm
           dataState={dataState}
           onChange={(payload) => dispatch({
@@ -118,9 +118,9 @@ function QueryWizard() {
             payload,
           })}
         />
-        );
-      case 2:
-        return (
+      );
+    case 2:
+      return (
         <Review
           dataState={dataState}
           onChange={(payload) => dispatch({
@@ -128,9 +128,9 @@ function QueryWizard() {
             payload,
           })}
         />
-        );
-      default:
-        throw new Error('Unknown step');
+      );
+    default:
+      throw new Error('Unknown step');
     }
   };
 
@@ -191,7 +191,7 @@ function QueryWizard() {
         open={snackOpen}
         autoHideDuration={2000}
         onClose={handleSnackClose}
-        message={t('Query created, redirect...')}
+        message={t('Query created redirect')}
       />
       </Paper>
     </GenericTemplate>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import Store from 'electron-store';
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
@@ -16,6 +16,8 @@ import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
 import Paper from '@material-ui/core/Paper';
 import ReactCodeInput from 'react-code-input';
+
+import StoreContext from '../store/StoreContext';
 
 import Copyright from '../components/Copyright';
 
@@ -37,15 +39,22 @@ const useStyles = makeStyles((theme) => ({
 
 const PINCODE_LENGTH = 4;
 
-export default function PinCode({ auth }) {
+export default function PinCode() {
   const classes = useStyles();
   const { t } = useTranslation();
   const history = useHistory();
   const [value, setValue] = useState('');
-  const [error, setError] = useState('');
+  const [{ auth }, dispatch] = useContext(StoreContext);
 
   // theme
   const [darkMode] = useState(store.get('darkMode', 'light'));
+
+  useEffect(() => {
+    if (auth.isAuthenticated) {
+      history.replace('/');
+    }
+  }, [auth]);
+
   const theme = createMuiTheme({
     palette: {
       type: darkMode,
@@ -67,22 +76,15 @@ export default function PinCode({ auth }) {
             value={value}
             fields={PINCODE_LENGTH}
             onChange={(v) => {
-              if (v.length === PINCODE_LENGTH) {
-                auth.authenticate(v, (err) => {
-                  console.log('err', err);
-                  if (err) {
-                    setError(err);
-                    setValue('');
-                  } else {
-                    if (auth.isAuthenticated) {
-                      history.replace('/');
-                    }
-                  }
-                });
-              } else {
-                setError('');
-              }
               setValue(v);
+              if (v.length === PINCODE_LENGTH) {
+                dispatch({
+                  type: 'AUTHENTICATE',
+                  payload: {
+                    value,
+                  },
+                });
+              }
             }}
           />
           <Typography
@@ -91,7 +93,7 @@ export default function PinCode({ auth }) {
             display="block"
             gutterBottom
           >
-            {error}
+            {auth.error}
           </Typography>
         </Paper>
         <Box mt={8}>

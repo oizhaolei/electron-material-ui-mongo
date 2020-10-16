@@ -27,7 +27,7 @@ const genCode = ({ one, many }) => `
 })
 `;
 
-export const dataReducer = (state = initialState, action) => {
+export default (state = initialState, action) => {
   switch (action.type) {
   case 'QUERY_DATA_CHANGE':
     return {
@@ -39,7 +39,14 @@ export const dataReducer = (state = initialState, action) => {
       ...state.relations,
       ...action.payload,
     };
-    const error = !relations.one || !relations.many;
+    const error = (
+      relations.one
+      && relations.one.table
+      && relations.one.field
+      && relations.many
+      && relations.many.table
+      && relations.many.field
+    );
     const code = relations.one && relations.many && genCode(relations);
     return {
       ...state,

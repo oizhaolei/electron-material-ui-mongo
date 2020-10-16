@@ -5,7 +5,7 @@ export const initialState = {
   suggests: {},
   data: {},
 };
-export const dataReducer = (state = initialState, action) => {
+export default (state = initialState, action) => {
   switch (action.type) {
     case 'SCHEMA_WIZARD_CHANGE':
       return {

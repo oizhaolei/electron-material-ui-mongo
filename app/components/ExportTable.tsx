@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { ipcRenderer } from 'electron';
 import { useTranslation } from 'react-i18next';
 
@@ -37,14 +37,6 @@ export default function ExportTable({ dataState }) {
         }}
       >
         {t('Export to CSV')}
-      </Button>
-      <Button
-        variant="contained"
-        color="primary"
-        startIcon={<StorageIcon />}
-        onClick={() => console.log('Export to Excel')}
-      >
-        {t('Export to Excel')}
       </Button>
       <Typography variant="body1" gutterBottom>
         {msg}

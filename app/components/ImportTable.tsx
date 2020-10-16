@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ipcRenderer } from 'electron';
 
@@ -81,7 +81,7 @@ export default function ImportTable({ dataState }) {
             if (isEqual(definition, dataState.definition)) {
               setWarning();
             } else {
-              setWarning('既存のデータ構造と一致していません。');
+              setWarning(t('different data structure'));
             }
           }
         }}

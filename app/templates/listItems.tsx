@@ -10,6 +10,8 @@ import ListSubheader from '@material-ui/core/ListSubheader';
 import LockOpenIcon from '@material-ui/icons/LockOpen';
 import StorageIcon from '@material-ui/icons/Storage';
 import FindInPageIcon from '@material-ui/icons/FindInPage';
+import IconButton from '@material-ui/core/IconButton';
+import AddIcon from '@material-ui/icons/Add';
 
 import { Link } from 'react-router-dom';
 
@@ -33,7 +35,14 @@ export const TableListItems = ({ current }) => {
 
   return (
     <>
-      <ListSubheader inset>{t('Tables')}</ListSubheader>
+      <ListSubheader inset>
+        {t('Tables')}
+        <Link to="/schema-wizard" className={classes.link}>
+          <IconButton aria-label="add table" size="small">
+            <AddIcon fontSize="inherit" />
+          </IconButton>
+        </Link>
+      </ListSubheader>
       {schemas.map((t) => (
         <Link
           key={t.name}
@@ -63,7 +72,14 @@ export const QueryListItems= ({ current }) => {
 
   return (
     <>
-      <ListSubheader inset>{t('Query')}</ListSubheader>
+      <ListSubheader inset>
+        {t('Query')}
+        <Link to="/query-wizard" className={classes.link}>
+          <IconButton aria-label="add query" size="small">
+            <AddIcon fontSize="inherit" />
+          </IconButton>
+        </Link>
+      </ListSubheader>
       {queries.map((q) => (
         <Link
           key={q.name}

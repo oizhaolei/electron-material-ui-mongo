@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useReducer } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { ipcRenderer } from 'electron';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
@@ -15,7 +15,7 @@ import SchemaTable from '../components/SchemaTable';
 import ExportTable from '../components/ExportTable';
 import ImportTable from '../components/ImportTable';
 
-import { initialState, dataReducer } from '../reducers/schema';
+import StoreContext from '../store/StoreContext';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -63,10 +63,7 @@ export default function SchemaPage() {
   const { name } = useParams();
   const [tab, setTab] = useState(0);
 
-  const [dataState, dispatch] = useReducer(dataReducer, {
-    ...initialState,
-    name,
-  });
+  const [{ schema: dataState }, dispatch] = useContext(StoreContext);
 
   useEffect(() => {
     const schema = ipcRenderer.sendSync('schema', {
@@ -77,7 +74,7 @@ export default function SchemaPage() {
       type: 'SCHEMA_CHANGE',
       payload: schema,
     });
-  }, [name]);
+  }, [name, dispatch]);
 
   const handleTabChange = (event, newTab) => {
     setTab(newTab);

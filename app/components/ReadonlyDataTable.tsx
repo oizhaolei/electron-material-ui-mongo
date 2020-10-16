@@ -88,7 +88,7 @@ export default function ReadonlyDataTable({
                 filter: {
                   ...filter,
                   ...query.filters.reduce((r, v) => {
-                    r[v.column] = v.value;
+                    r[v.column.field] = v.value;
                     return r;
                   }, {}),
                 },

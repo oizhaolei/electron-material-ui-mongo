@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
 
@@ -27,7 +27,7 @@ export default function RelationForm({ dataState, onChange }) {
           />
         </Grid>
         <Grid item xs={6}>
-        <TableView
+          <TableView
             label="Many"
             onChange={(table, field) => handleRelationChange('many', table, field)}
           />

@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useReducer } from 'react';
-import { useTranslation } from 'react-i18next';
+import React, { useState, useContext } from 'react';
 import { ipcRenderer } from 'electron';
+import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
 
 import { makeStyles } from '@material-ui/core/styles';
@@ -15,7 +15,7 @@ import Snackbar from '@material-ui/core/Snackbar';
 import GenericTemplate from '../templates/GenericTemplate';
 import NameForm from '../components/schema/NameForm';
 import CSVImport from '../components/schema/CSVImport';
-import { initialState, dataReducer } from '../reducers/schema-wizard';
+import StoreContext from '../store/StoreContext';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -50,7 +50,7 @@ function SchemaWizard() {
 
   const [activeStep, setActiveStep] = useState(0);
   const [snackOpen, setSnackOpen] = useState(false);
-  const [dataState, dispatch] = useReducer(dataReducer, initialState);
+  const [{ schemaWizard: dataState }, dispatch] = useContext(StoreContext);
 
   const handleSnackClose = (event, reason) => {
     setSnackOpen(false);

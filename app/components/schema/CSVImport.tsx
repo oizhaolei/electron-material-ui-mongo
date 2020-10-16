@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { ipcRenderer } from 'electron';
 import { useTranslation } from 'react-i18next';
 

@@ -1,7 +1,8 @@
 /* eslint react/jsx-props-no-spreading: off */
-import React from 'react';
+import React, { useContext } from 'react';
 import { Switch, Route, Redirect } from 'react-router-dom';
-import dayjs from 'dayjs';
+
+import StoreContext from './store/StoreContext';
 
 import App from './containers/App';
 
@@ -13,25 +14,13 @@ import HomePage from './containers/HomePage';
 import Color from './containers/ColorPage';
 import PinCode from './containers/PinCode';
 
-const fakeAuth = {
-  isAuthenticated: true,
-  authenticate(value, cb) {
-    const check = value === dayjs().format('MMDD');
-    this.isAuthenticated = check;
-    if (cb) cb(check ? null : 'wrong password.');
-  },
-  signout(cb) {
-    this.isAuthenticated = false;
-    if (cb) cb(null);
-  }
-};
-
 function PrivateRoute({ component: Component, ...rest }) {
+  const [{ auth }] = useContext(StoreContext);
   return (
     <Route
       {...rest}
       render={(props) =>
-        fakeAuth.isAuthenticated ? (
+        auth.isAuthenticated ? (
           <Component {...props} />
         ) : (
           <Redirect
@@ -49,9 +38,7 @@ export default function Routes() {
   return (
     <App>
       <Switch>
-        <Route path="/pincode" exact >
-          <PinCode auth={fakeAuth} />
-        </Route>
+        <Route path="/pincode" exact component={PinCode} />
         <PrivateRoute path="/schema-wizard" exact component={SchemaWizard} />
         <PrivateRoute path="/query-wizard" exact component={QueryWizard} />
         <PrivateRoute path="/query/:name" exact component={QueryPage} />
