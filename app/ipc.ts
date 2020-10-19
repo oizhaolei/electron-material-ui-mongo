@@ -80,20 +80,20 @@ export default function ipc() {
   });
 
   // mdb.schema delete
-  ipcMain.on('schema-delete', async (event, { name, sync = false }) => {
-    console.log('schema-delete');
-    const result = await mdb.removeSchema(name);
+  ipcMain.on('schema-drop', async (event, { name, sync = false }) => {
+    console.log('schema-drop');
+    const result = await mdb.dropSchema(name);
     if (sync) {
       event.returnValue = { result };
     } else {
-      event.reply('schema-delete', { result });
+      event.reply('schema-drop', { result });
     }
   });
 
   // csv-read
   ipcMain.on('csv-read', async (event, { file, sync = false }) => {
     console.log('csv-read');
-    csv().fromFile(file).then((data)=>{
+    csv().fromFile(file).then((data) => {
       const definition = genSchemaDefinition(data);
       if (sync) {
         event.returnValue = {
@@ -113,13 +113,16 @@ export default function ipc() {
   ipcMain.on(
     'find',
     async (event, { name, filter = {}, projection, options, sync = false }) => {
-      console.log('find');
+      console.log('find', name, filter, projection, options, sync);
       const Model = await mdb.getSchemaModel(name);
       const data = await Model.find(filter, projection, options).lean();
       const totalCount = await Model.countDocuments(filter);
 
       const result = {
-        data,
+        data: data.map((d) => ({
+          ...d,
+          _id: d._id.toString(),
+        })),
         page: options.page,
         totalCount,
       };
@@ -162,6 +165,22 @@ export default function ipc() {
     }
   });
 
+  // mdb.update
+  ipcMain.on(
+    'update',
+    async (event, { name, filter, doc, options, sync = false }) => {
+      console.log('update', name, filter, doc, options, sync);
+      const Model = await mdb.getSchemaModel(name);
+      const numAffected = await Model.updateMany(filter, doc, options);
+
+      if (sync) {
+        event.returnValue = numAffected;
+      } else {
+        event.reply('update', numAffected);
+      }
+    }
+  );
+
   // mdb.remove
   ipcMain.on(
     'remove',
@@ -177,22 +196,6 @@ export default function ipc() {
         event.reply('remove', {
           numRemoved,
         });
-      }
-    }
-  );
-
-  // mdb.update
-  ipcMain.on(
-    'update',
-    async (event, { name, filter, doc, options, sync = false }) => {
-      console.log('update');
-      const Model = await mdb.getSchemaModel(name);
-      const numAffected = await Model.updateMany(filter, doc, options);
-
-      if (sync) {
-        event.returnValue = numAffected;
-      } else {
-        event.reply('update', numAffected);
       }
     }
   );
@@ -247,7 +250,7 @@ export default function ipc() {
   // mdb.query delete
   ipcMain.on('query-delete', async (event, { name, sync = false }) => {
     console.log('query-delete');
-    const result = await mdb.removeQuery(name);
+    const result = await mdb.dropQuery(name);
     if (sync) {
       event.returnValue = { result };
     } else {

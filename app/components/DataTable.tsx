@@ -13,7 +13,7 @@ import Snackbar from '@material-ui/core/Snackbar';
 import MaterialTable from 'material-table';
 
 import DetailForm from './DetailForm';
-import { mongo2MaterialType } from '../utils/utils';
+import { mongo2Material } from '../utils/utils';
 
 const store = new Store();
 
@@ -32,45 +32,37 @@ export default function DataTable({
   const [detailOpen, setDetailOpen] = useState(false);
   const [selected, setSelected] = useState([]);
 
-  useEffect(() => {
-    if (tableRef) {
-      tableRef.current.onQueryChange();
-    }
-  }, []);
-
-  const columns = Object.keys(dataState.definition).map((k) => ({
-    title: k,
-    field: k,
-    type: mongo2MaterialType(dataState.definition[k].type),
-    headerStyle: {
-      whiteSpace: 'nowrap',
-    },
-    lookup: dataState.suggests[k]
-      ? dataState.suggests[k].reduce((r, v) => (r[v] = v, r), {})
-      : undefined,
-  }));
-
   const handleClickDetailOpen = () => {
     setDetailOpen(true);
   };
 
   const handleDetailSave = () => {
     //
-    const results = ipcRenderer.sendSync('update', {
-      name: dataState.name,
-      filter: {
-        _id: {
-          $in: dataState.changeList.map((r) => r._id),
+    if (dataState.changeList.length > 0) {
+      const results = ipcRenderer.sendSync('update', {
+        name: dataState.name,
+        filter: {
+          _id: {
+            $in: dataState.changeList.map((r) => r._id),
+          },
         },
-      },
-      doc: dataState.changes,
-      sync: true,
-    });
-    console.log('results', results);
+        doc: dataState.changes,
+        sync: true,
+      });
+      console.log('update results', results);
+    } else {
+      const results = ipcRenderer.sendSync('insert-many', {
+        name: dataState.name,
+        docs: [dataState.changes],
+        sync: true,
+      });
+      console.log('insert results', results);
+    }
     dispatch({
       type: 'SCHEMA_DATA_CLEAR',
-    })
+    });
     setDetailOpen(false);
+    tableRef.current.onQueryChange();
   };
   const handleDetailClose = () => {
     dispatch({
@@ -89,10 +81,6 @@ export default function DataTable({
     setSnackbarOpen(true);
   };
   const handleSnackbarClose = (event, reason) => {
-    if (reason === 'clickaway') {
-      return;
-    }
-
     setSnackbarOpen(false);
   };
 
@@ -107,20 +95,29 @@ export default function DataTable({
           filtering: true,
           pageSizeOptions: [20, 50, 100],
         }}
-        columns={columns}
+        columns={mongo2Material(dataState)}
         data={(query) =>
           new Promise((resolve, reject) => {
             const options = {
               limit: query.pageSize,
               skip: query.page * query.pageSize,
               page: query.page,
+              sort: query.orderBy
+                ? {
+                    [query.orderBy.field]: query.orderDirection,
+                  }
+                : undefined,
             };
             const results = ipcRenderer.sendSync('find', {
               name: dataState.name,
               filter: {
                 ...filter,
                 ...query.filters.reduce((r, v) => {
-                  r[v.column.field] = v.value;
+                  if (typeof v.value === 'object' && v.value.length === 0) {
+                    // nothing
+                  } else {
+                    r[v.column.field] = v.value;
+                  }
                   return r;
                 }, {}),
               },
@@ -129,7 +126,7 @@ export default function DataTable({
             });
 
             resolve({
-            ...results,
+              ...results,
             });
           })
         }
@@ -137,7 +134,7 @@ export default function DataTable({
         actions={[
           {
             icon: 'add',
-            tooltip: 'Add',
+            tooltip: t('Add'),
             isFreeAction: true,
             onClick: () => {
               setSelected([]);
@@ -145,7 +142,7 @@ export default function DataTable({
             },
           },
           {
-            tooltip: 'Edit Selected Rows',
+            tooltip: t('Edit Selected Rows'),
             icon: 'edit',
             onClick: (event, rows) => {
               console.log('You want to edit ' + rows.length + ' rows');
@@ -154,10 +151,11 @@ export default function DataTable({
             },
           },
           {
-            tooltip: 'Remove Selected Rows',
+            tooltip: t('Remove Selected Rows'),
             icon: 'delete',
             onClick: (event, rows) => {
               console.log('You want to delete ' + rows.length + ' rows');
+              handleSnackbarClick();
               setSelected(rows);
               const results = ipcRenderer.sendSync('remove', {
                 name: dataState.name,
@@ -168,27 +166,11 @@ export default function DataTable({
                 },
                 sync: true,
               });
+              tableRef.current.onQueryChange();
               console.log(results);
             },
           },
         ]}
-        editable={{
-          onRowAdd: (newData) =>
-            new Promise((resolve, reject) => {
-              console.log('onRowAdd: ', newData);
-              resolve();
-            }),
-          onRowUpdate: (newData, oldData) =>
-            new Promise((resolve, reject) => {
-              console.log('onRowUpdate: ', newData, oldData);
-              resolve();
-            }),
-          onRowDelete: (oldData) =>
-            new Promise((resolve, reject) => {
-              console.log('onRowDelete: ', oldData);
-              resolve();
-            }),
-        }}
         {...otherProps}
       />
       <Dialog
@@ -196,8 +178,10 @@ export default function DataTable({
         disableEscapeKeyDown
         open={detailOpen}
         onClose={handleDetailClose}
+        fullWidth
+        maxWidth="lg"
       >
-        <DialogTitle>Fill the form</DialogTitle>
+        <DialogTitle>Detail</DialogTitle>
         <DialogContent>
           <DetailForm
             definition={dataState.definition}
@@ -224,16 +208,7 @@ export default function DataTable({
         open={snackbarOpen}
         autoHideDuration={6000}
         onClose={handleSnackbarClose}
-        message={t('deleting')}
-        action={
-          <Button
-            color="secondary"
-            size="small"
-            onClick={handleSnackbarClose}
-          >
-            {t('UNDO')}
-          </Button>
-        }
+        message={t('deleted')}
       />
     </>
   );

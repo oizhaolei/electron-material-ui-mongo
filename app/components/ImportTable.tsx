@@ -10,7 +10,7 @@ import SaveIcon from '@material-ui/icons/Save';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 
-import { mongo2MaterialType } from '../utils/utils';
+import { mongo2Material } from '../utils/utils';
 
 const isEqual = (obj1, obj2) => {
   const obj1Keys = Object.keys(obj1);
@@ -88,14 +88,7 @@ export default function ImportTable({ dataState }) {
       />
       {data && data.length > 0 && (
         <CSVDataTable
-          columns={Object.keys(definition).map((k) => ({
-            title: k,
-            field: k,
-            type: mongo2MaterialType(definition[k].type),
-            headerStyle: {
-              whiteSpace: 'nowrap',
-            },
-          }))}
+          columns={mongo2Material(definition)}
           data={data}
         />
       )}

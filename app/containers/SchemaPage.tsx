@@ -80,25 +80,13 @@ export default function SchemaPage() {
     setTab(newTab);
   };
 
-  const handleSaveSchema = () => {
-    const newSchema = ipcRenderer.sendSync('schema-post', {
-      name: dataState.name,
-      definition: dataState.definition,
-      sync: true,
-    });
-    dispatch({
-      type: 'SCHEMA_CHANGE',
-      payload: newSchema,
-    });
-  };
-
   return (
     <GenericTemplate id={name}>
       <Paper square key={name}>
         <Tabs
           value={tab}
           onChange={handleTabChange}
-          aria-label="simple tabs example"
+          aria-label={t('tabs')}
           indicatorColor="primary"
           textColor="primary"
         >
@@ -118,7 +106,6 @@ export default function SchemaPage() {
           <SchemaTable
             dataState={dataState}
             dispatch={dispatch}
-            handleSaveSchema={handleSaveSchema}
           />
         </TabPanel>
         <TabPanel value={tab} index={2}>

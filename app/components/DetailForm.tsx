@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { makeStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
@@ -27,6 +28,53 @@ const sameValue = (list) => {
   return commonValues;
 };
 
+const FreeSolo = ({ value, onChange, options }) => {
+  const { t } = useTranslation();
+  return (
+    <Autocomplete
+      value={value}
+      onChange={onChange}
+      filterOptions={(options, params) => {
+        const filtered = filter(options, params);
+
+        // Suggest the creation of a new value
+        if (params.inputValue !== '') {
+          filtered.push({
+            inputValue: params.inputValue,
+            title: `Add "${params.inputValue}"`,
+          });
+        }
+
+        return filtered;
+      }}
+      selectOnFocus
+      clearOnBlur
+      handleHomeEndKeys
+      id="free-solo-with-text-demo"
+      options={options}
+      getOptionLabel={(option) => {
+        console.log('FreeSolo option:', option);
+        // Value selected with enter, right from the input
+        if (typeof option === 'string') {
+          return option;
+        }
+        // Add "xxx" option created dynamically
+        if (option && option.inputValue) {
+          return option.inputValue;
+        }
+        // Regular option
+        return option.title || '';
+      }}
+      renderOption={(option) => option.title}
+      style={{ width: 300 }}
+      freeSolo
+      renderInput={(params) => (
+        <TextField {...params} label={t('Select or Free Input')} variant="outlined" />
+      )}
+    />
+  );
+};
+
 const useStyles = makeStyles((theme) => ({
   root: {
     minHeight: 800,
@@ -52,77 +100,41 @@ export default function DetailForm({ definition, suggests, list, dispatch }) {
   return (
     <Grid container spacing={3}>
       {Object.keys(definition).map((field) => (
-        <Grid key={field} item xs={12} >
-          {
-            suggests[field] ? (
-              <Autocomplete
-                value={{
-                  title: values[field],
-                }}
-                onChange={(event, newValue) => {
-                  let theValue = newValue;
-                  if (typeof newValue === 'string') {
-                    theValue = newValue;
-                  } else if (newValue && newValue.inputValue) {
-                    // Create a new value from the user input
-                    theValue = newValue.inputValue;
-                  } else if (newValue && newValue.title) {
-                    theValue = newValue.title;
-                  }
-                  handleChange([field], theValue);
-                }}
-                filterOptions={(options, params) => {
-                  const filtered = filter(options, params);
-
-                  // Suggest the creation of a new value
-                  if (params.inputValue !== '') {
-                    filtered.push({
-                      inputValue: params.inputValue,
-                      title: `Add "${params.inputValue}"`,
-                    });
-                  }
-
-                  return filtered;
-                }}
-                selectOnFocus
-                clearOnBlur
-                handleHomeEndKeys
-                id="free-solo-with-text-demo"
-                options={suggests[field].map((v) => { title: v })}
-                getOptionLabel={(option) => {
-                  console.log('option:', option);
-                  // Value selected with enter, right from the input
-                  if (typeof option === 'string') {
-                    return option;
-                  }
-                  // Add "xxx" option created dynamically
-                  if (option && option.inputValue) {
-                    return option.inputValue;
-                  }
-                  // Regular option
-                  return option.title;
-                }}
-                renderOption={(option) => option.title}
-                style={{ width: 300 }}
-                freeSolo
-                renderInput={(params) => (
-                  <TextField {...params} label="Select or Free Input" variant="outlined" />
-                )}
-              />
-            ) : (
-              <TextField
-                required
-                id={field}
-                name={field}
-                label={field}
-                fullWidth
-                value={values[field]}
-                onChange={(event) => {
-                  handleChange([field], event.target.value);
-                }}
-              />
-            )
-          }
+        <Grid key={field} item xs={12}>
+          {suggests[field] ? (
+            <FreeSolo
+              value={{
+                title: values[field],
+              }}
+              onChange={(event, newValue) => {
+                let theValue = newValue;
+                if (typeof newValue === 'string') {
+                  theValue = newValue;
+                } else if (newValue && newValue.inputValue) {
+                  // Create a new value from the user input
+                  theValue = newValue.inputValue;
+                } else if (newValue && newValue.title) {
+                  theValue = newValue.title;
+                }
+                handleChange([field], theValue);
+              }}
+              options={suggests[field].map((v) => ({
+                title: v,
+              }))}
+            />
+          ) : (
+            <TextField
+              required
+              id={field}
+              name={field}
+              label={field}
+              fullWidth
+              value={values[field]}
+              onChange={(event) => {
+                handleChange([field], event.target.value);
+              }}
+            />
+          )}
         </Grid>
       ))}
     </Grid>

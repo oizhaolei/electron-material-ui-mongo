@@ -7,6 +7,7 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import ListSubheader from '@material-ui/core/ListSubheader';
+import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import LockOpenIcon from '@material-ui/icons/LockOpen';
 import StorageIcon from '@material-ui/icons/Storage';
 import FindInPageIcon from '@material-ui/icons/FindInPage';
@@ -37,11 +38,13 @@ export const TableListItems = ({ current }) => {
     <>
       <ListSubheader inset>
         {t('Tables')}
-        <Link to="/schema-wizard" className={classes.link}>
-          <IconButton aria-label="add table" size="small">
-            <AddIcon fontSize="inherit" />
-          </IconButton>
-        </Link>
+        <ListItemSecondaryAction>
+          <Link to="/schema-wizard" className={classes.link}>
+            <IconButton aria-label={t('Add Table')} size="small">
+              <AddIcon fontSize="inherit" />
+            </IconButton>
+          </Link>
+        </ListItemSecondaryAction>
       </ListSubheader>
       {schemas.map((t) => (
         <Link
@@ -61,7 +64,7 @@ export const TableListItems = ({ current }) => {
   );
 };
 
-export const QueryListItems= ({ current }) => {
+export const QueryListItems = ({ current }) => {
   const classes = useStyles();
   const { t } = useTranslation();
   const [queries, setQueries] = useState([]);
@@ -74,11 +77,13 @@ export const QueryListItems= ({ current }) => {
     <>
       <ListSubheader inset>
         {t('Query')}
-        <Link to="/query-wizard" className={classes.link}>
-          <IconButton aria-label="add query" size="small">
-            <AddIcon fontSize="inherit" />
-          </IconButton>
-        </Link>
+        <ListItemSecondaryAction>
+          <Link to="/query-wizard" className={classes.link}>
+            <IconButton aria-label={t('Add Query')} size="small">
+              <AddIcon fontSize="inherit" />
+            </IconButton>
+          </Link>
+        </ListItemSecondaryAction>
       </ListSubheader>
       {queries.map((q) => (
         <Link

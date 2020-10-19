@@ -25,7 +25,6 @@ import { Link } from 'react-router-dom';
 import MenuIcon from '@material-ui/icons/Menu';
 import IconButton from '@material-ui/core/IconButton';
 import HomeIcon from '@material-ui/icons/Home';
-import NotificationsIcon from '@material-ui/icons/Notifications';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
@@ -34,7 +33,6 @@ import Brightness4Icon from '@material-ui/icons/Brightness4';
 import TranslateIcon from '@material-ui/icons/Translate';
 import PaletteIcon from '@material-ui/icons/Palette';
 import AddIcon from '@material-ui/icons/Add';
-import Badge from '@material-ui/core/Badge';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import StorageIcon from '@material-ui/icons/Storage';
@@ -276,7 +274,7 @@ const GenericTemplate = ({ children, title, id }) => {
               noWrap
               className={classes.title}
             >
-              {t('personal.db')}
+              {t('personal db')}
             </Typography>
             <Tooltip title="Add">
               <IconButton color="inherit" onClick={handleAddClick}>
@@ -304,13 +302,6 @@ const GenericTemplate = ({ children, title, id }) => {
                 </IconButton>
               </Link>
             </Tooltip>
-            <Tooltip title="System Update">
-              <IconButton color="inherit">
-                <Badge color="secondary" variant="dot">
-                  <NotificationsIcon />
-                </Badge>
-              </IconButton>
-            </Tooltip>
           </Toolbar>
           <StyledMenu
             id="customized-menu"
@@ -319,18 +310,16 @@ const GenericTemplate = ({ children, title, id }) => {
             open={Boolean(anchorEl)}
             onClose={handleAddClose}
           >
-            {
-              addActions.map((a) => (
-                <Link key={a.link} to={a.link} className={classes.link}>
-                  <MenuItem>
-                    <ListItemIcon>
-                      {a.icon}
-                    </ListItemIcon>
-                    <ListItemText primary={a.name} />
-                  </MenuItem>
-                </Link>
-              ))
-            }
+            {addActions.map((a) => (
+              <Link key={a.link} to={a.link} className={classes.link}>
+                <MenuItem>
+                  <ListItemIcon>
+                    {a.icon}
+                  </ListItemIcon>
+                  <ListItemText primary={a.name} />
+                </MenuItem>
+              </Link>
+            ))}
           </StyledMenu>
         </AppBar>
         <Drawer
@@ -366,19 +355,17 @@ const GenericTemplate = ({ children, title, id }) => {
         <main className={classes.content}>
           <div className={classes.appBarSpacer} />
           <Container maxWidth={false} className={classes.container}>
-            {
-              title && (
-                <Typography
-                  component="h2"
-                  variant="h5"
-                  color="inherit"
-                  noWrap
-                  className={classes.pageTitle}
-                >
-                  {title}
-                </Typography>
-              )
-            }
+            {title && (
+              <Typography
+                component="h2"
+                variant="h5"
+                color="inherit"
+                noWrap
+                className={classes.pageTitle}
+              >
+                {title}
+              </Typography>
+            )}
             {children}
             <Box pt={4}>
               <Copyright />

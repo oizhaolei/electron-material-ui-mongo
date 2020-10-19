@@ -137,7 +137,7 @@ function SchemaWizard() {
                 {t('Congratulations.')}
               </Typography>
               <Typography variant="subtitle1">
-                {t('create.succeed')}
+                {t('create. succeed')}
               </Typography>
             </>
           ) : (

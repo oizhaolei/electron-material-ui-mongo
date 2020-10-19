@@ -25,7 +25,7 @@ const columns = [
     },
   },
 ];
-export default function SchemaTable({ dataState, dispatch, handleSaveSchema }) {
+export default function SchemaTable({ dataState, dispatch }) {
   const { t } = useTranslation();
   const history = useHistory();
 
@@ -45,20 +45,34 @@ export default function SchemaTable({ dataState, dispatch, handleSaveSchema }) {
     setSnackbarOpen(false);
   };
 
+  const handleSaveSchema = () => {
+    const newSchema = ipcRenderer.sendSync('schema-post', {
+      name: dataState.name,
+      definition: dataState.definition,
+      sync: true,
+    });
+    dispatch({
+      type: 'SCHEMA_CHANGE',
+      payload: newSchema,
+    });
+  };
+
+  const handleDropSchema = () => {
+    const results = ipcRenderer.sendSync('schema-drop', {
+      name: dataState.name,
+      sync: true,
+    });
+    console.log('schema-drop:', results);
+    history.replace('/');
+};
+
   return (
     <>
       <Button
         variant="contained"
         startIcon={<DeleteForeverIcon />}
         color="secondary"
-        onClick={() => {
-          const results = ipcRenderer.sendSync('schema-delete', {
-            name: dataState.name,
-            sync: true,
-          });
-          console.log('schema-delete:', results);
-          history.replace('/');
-        }}
+        onClick={handleDropSchema}
       >
         {t('Drop Table')}
       </Button>
@@ -129,15 +143,6 @@ export default function SchemaTable({ dataState, dispatch, handleSaveSchema }) {
         autoHideDuration={6000}
         onClose={handleSnackbarClose}
         message={t('Saving...')}
-        action={
-          <Button
-            color="secondary"
-            size="small"
-            onClick={handleSnackbarClose}
-          >
-            {t('UNDO')}
-          </Button>
-        }
       />
     </>
   );

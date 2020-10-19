@@ -47,9 +47,8 @@
 ** DONE flex search: filtering
 ** DONE export to csv
 ** DONE pincode page
-** TODO auto version upgrade
-** TODO import xlsx to table
-** TODO export to xlsx
+** DONE auto version upgrade
+** TODO Code Signing
 ** DONE db backup
 *** DONE snapshot at startup
  save to: ~/personaldb-xx.zip
@@ -60,10 +59,10 @@
 ** Query
 
 ** Data:
-*** TODO detail modal dialog
-*** TODO single row/multi row
-*** TODO add/remove row
-*** TODO edit cell
+*** DONE detail modal dialog
+*** DONE single row/multi row
+*** DONE add/remove row
+*** CANCELLED edit cell
 *** TODO onColumnDragged / onOrderChange
 
 
@@ -84,7 +83,7 @@
 ** TODO deploy to Win/Macos/Linux
 
 * BUGS
-** TODO find & pagination
+** DONE find & pagination
 ** CANCELED Tables   => useContext
 ** DONE Treeview
 
@@ -97,6 +96,9 @@
 ** DONE dashboard
 ** hotload
 ** DONE auth route for: pincode
+** DONE SOLO component
+** TODO schema change
+** DONE data crud
 
 * そもそもほしいがった機能
  - データ属性の拡張                             :OK

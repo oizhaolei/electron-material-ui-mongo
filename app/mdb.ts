@@ -122,7 +122,7 @@ export default class Mdb {
     return schemaDoc;
   }
 
-  async removeSchema(name) {
+  async dropSchema(name) {
     const result = await this.SchemaModel.deleteMany({
       name,
     });
@@ -273,7 +273,7 @@ export default class Mdb {
     return queryDoc;
   }
 
-  async removeQuery(name) {
+  async dropQuery(name) {
     const result = await this.QueryModel.deleteMany({
       name,
     });

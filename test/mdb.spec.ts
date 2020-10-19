@@ -23,13 +23,14 @@ const main = async () => {
       },
       sex: {
         type: 'String',
+        default: 'male',
       },
     },
     {
       suggests: {
         sex: ['male', 'female'],
       },
-    }
+    },
   );
   const symptomSchema = await mdb.createSchema(
     'symptoms',
@@ -75,17 +76,20 @@ const main = async () => {
     {
       name: {
         type: 'String',
-        fk: 'patient.name',
       },
       age: {
         type: 'String',
       },
       gendar: {
         type: 'String',
-        suggest: ['male', 'female'],
       },
-    }
-  );
+    },
+    {
+      suggests: {
+        gendar: ['male', 'female'],
+      },
+    },
+);
   console.log('newSchemaDoc', newSchemaDoc);
 
   await PatientModel.updateMany({}, { $rename: { sex: 'gendar' } });
@@ -105,10 +109,10 @@ const main = async () => {
   const schemas = await mdb.getSchemas();
   console.log('schemas', schemas);
 
-  // removeSchema
-  const removeResult = await mdb.removeSchema(patientSchema.name);
+  // dropSchema
+  const removeResult = await mdb.dropSchema(patientSchema.name);
   console.log('removeResult', removeResult);
-  await mdb.removeSchema(symptomSchema.name);
+  await mdb.dropSchema(symptomSchema.name);
 };
 
 mongoose.connect(config.mongoose.connect, config.mongoose.options).then(() => {

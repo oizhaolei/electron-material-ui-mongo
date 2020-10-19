@@ -11,7 +11,7 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 
 import MaterialTable from 'material-table';
 
-import { mongo2MaterialType } from '../utils/utils';
+import { mongo2Material } from '../utils/utils';
 
 const store = new Store();
 
@@ -49,19 +49,7 @@ export default function ReadonlyDataTable({
       sync: true,
     });
     if (schemaName === schema.name) {
-      setColumns(
-        Object.keys(schema.definition).map((k) => ({
-          title: k,
-          field: k,
-          type: mongo2MaterialType(schema.definition[k].type),
-          headerStyle: {
-            whiteSpace: 'nowrap',
-          },
-          lookup: schema.suggests[k]
-            ? schema.suggests[k].reduce((r, v) => (r[v] = v, r), {})
-            : undefined,
-        }))
-      );
+      setColumns(mongo2Material(schema));
     }
   }, [schemaName]);
 
@@ -105,7 +93,7 @@ export default function ReadonlyDataTable({
           actions={dialogContent ? [
             {
               icon: 'comment',
-              tooltip: 'Detail',
+              tooltip: t('Detail'),
               onClick: handleClickDetailOpen,
             },
           ] : undefined}
@@ -113,12 +101,12 @@ export default function ReadonlyDataTable({
         />
       )}
       <Dialog
-        disableBackdropClick
-        disableEscapeKeyDown
         open={detailOpen}
         onClose={handleDetailClose}
+        fullWidth
+        maxWidth="lg"
       >
-        <DialogTitle>Fill the form</DialogTitle>
+        <DialogTitle>Detail</DialogTitle>
         <DialogContent>
           {dialogContent &&
            dialogContent({
@@ -127,9 +115,6 @@ export default function ReadonlyDataTable({
            })}
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleDetailClose}>
-            {t('Cancel')}
-          </Button>
           <Button onClick={handleDetailClose} color="primary">
             {t('Ok')}
           </Button>
