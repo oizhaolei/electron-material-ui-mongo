@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import Store from 'electron-store';
 
 import Button from '@material-ui/core/Button';
+import MuiAlert, { AlertProps } from '@material-ui/lab/Alert';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
@@ -16,6 +17,10 @@ import DetailForm from './DetailForm';
 import { mongo2Material } from '../utils/utils';
 
 const store = new Store();
+
+const Alert = (props: AlertProps) => {
+  return <MuiAlert elevation={6} variant="filled" {...props} />;
+};
 
 export default function DataTable({
   dataState,
@@ -90,6 +95,7 @@ export default function DataTable({
         tableRef={tableRef}
         title={dataState.name}
         options={{
+          search: false,
           pageSize,
           selection: true,
           filtering: true,
@@ -201,15 +207,14 @@ export default function DataTable({
       </Dialog>
 
       <Snackbar
-        anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'left',
-        }}
         open={snackbarOpen}
         autoHideDuration={6000}
         onClose={handleSnackbarClose}
-        message={t('deleted')}
-      />
+      >
+        <Alert onClose={handleSnackbarClose} severity="success">
+          {t('deleted')}
+        </Alert>
+      </Snackbar>
     </>
   );
 }

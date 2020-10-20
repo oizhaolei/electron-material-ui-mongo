@@ -99,6 +99,9 @@
 ** DONE SOLO component
 ** TODO schema change
 ** DONE data crud
+** TODO rollbar
+** TODO loading
+** TODO ag-grid
 
 * そもそもほしいがった機能
  - データ属性の拡張                             :OK

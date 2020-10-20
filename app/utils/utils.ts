@@ -12,22 +12,21 @@ export const mongo2MaterialType = (from) => {
   return undefined;
 };
 
-const ID = {
-  title: '_id',
+const ID_COLUMN = {
   field: '_id',
   hidden: true,
 };
-// from: mongo schema definition
+// from: mongo schema { definition, suggests }
 // to: material table columns definition
-export const mongo2Material = (from) =>
-  Object.keys(from.definition).map((k) => ({
+export const mongo2Material = ({ definition, suggests }) =>
+  Object.keys(definition).map((k) => ({
     title: k,
     field: k,
-    type: mongo2MaterialType(from.definition[k].type),
+    type: mongo2MaterialType(definition[k].type),
     headerStyle: {
       whiteSpace: 'nowrap',
     },
-    lookup: (from.suggests && from.suggests[k])
-      ? from.suggests[k].reduce((r, v) => (r[v] = v, r), {})
+    lookup: (suggests && suggests[k])
+      ? suggests[k].reduce((r, v) => (r[v] = v, r), {})
       : undefined,
-  })).concat(ID);
+  })).concat(ID_COLUMN);

@@ -28,7 +28,7 @@ const sameValue = (list) => {
   return commonValues;
 };
 
-const FreeSolo = ({ value, onChange, options }) => {
+const FreeSolo = ({ label, value, onChange, options }) => {
   const { t } = useTranslation();
   return (
     <Autocomplete
@@ -69,7 +69,7 @@ const FreeSolo = ({ value, onChange, options }) => {
       style={{ width: 300 }}
       freeSolo
       renderInput={(params) => (
-        <TextField {...params} label={t('Select or Free Input')} variant="outlined" />
+        <TextField {...params} label={label} variant="outlined" />
       )}
     />
   );
@@ -103,6 +103,7 @@ export default function DetailForm({ definition, suggests, list, dispatch }) {
         <Grid key={field} item xs={12}>
           {suggests[field] ? (
             <FreeSolo
+              label={field}
               value={{
                 title: values[field],
               }}

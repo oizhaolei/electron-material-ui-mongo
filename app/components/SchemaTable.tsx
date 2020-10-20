@@ -4,10 +4,16 @@ import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
 
 import Button from '@material-ui/core/Button';
+import MuiAlert, { AlertProps } from '@material-ui/lab/Alert';
 import Snackbar from '@material-ui/core/Snackbar';
 import MaterialTable from 'material-table';
 import SaveIcon from '@material-ui/icons/Save';
 import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
+
+const Alert = (props: AlertProps) => {
+  return <MuiAlert elevation={6} variant="filled" {...props} />;
+};
+
 
 const columns = [
   {
@@ -34,7 +40,6 @@ export default function SchemaTable({ dataState, dispatch }) {
     type: dataState.definition[k].type,
   }));
 
-  const [changed, setChanged] = useState(false);
   // snackbar
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const handleSnackbarClose = (event, reason) => {
@@ -45,16 +50,18 @@ export default function SchemaTable({ dataState, dispatch }) {
     setSnackbarOpen(false);
   };
 
-  const handleSaveSchema = () => {
+  const saveSchemaDefinition = (definition) => {
     const newSchema = ipcRenderer.sendSync('schema-post', {
       name: dataState.name,
-      definition: dataState.definition,
+      definition,
       sync: true,
     });
     dispatch({
       type: 'SCHEMA_CHANGE',
       payload: newSchema,
     });
+
+    setSnackbarOpen(true);
   };
 
   const handleDropSchema = () => {
@@ -77,19 +84,10 @@ export default function SchemaTable({ dataState, dispatch }) {
         {t('Drop Table')}
       </Button>
 
-      {changed && (
-        <Button
-          variant="contained"
-          color="primary"
-          startIcon={<SaveIcon />}
-          onClick={handleSaveSchema}
-        >
-          {t('Save')}
-        </Button>
-      )}
       <MaterialTable
         title={dataState.name}
         options={{
+          search: false,
           pageSize: 20,
           pageSizeOptions: [20, 50, 100],
         }}
@@ -99,51 +97,38 @@ export default function SchemaTable({ dataState, dispatch }) {
           onRowAdd: (newData) =>
             new Promise((resolve, reject) => {
               console.log('newData:', newData);
-              setChanged(true);
-              dispatch({
-                type: 'COLUMN_ADDED',
-                payload: {
-                  newData,
+              const definition = {
+                ...dataState.definition,
+                [newData.field]: {
+                  type: newData.type,
                 },
-              });
-              resolve();
-            }),
-          onRowUpdate: (newData, oldData) =>
-            new Promise((resolve, reject) => {
-              setChanged(true);
-              dispatch({
-                type: 'COLUMN_UPDATED',
-                payload: {
-                  newData,
-                  oldData,
-                },
-              });
+              };
+              saveSchemaDefinition(definition);
+
               resolve();
             }),
           onRowDelete: (oldData) =>
             new Promise((resolve, reject) => {
-              setChanged(true);
-              dispatch({
-                type: 'COLUMN_DELETED',
-                payload: {
-                  oldData,
-                },
-              });
+              const definition = {
+                ...dataState.definition,
+              };
+              delete definition[oldData.field];
+              saveSchemaDefinition(definition);
+
               resolve();
             }),
         }}
       />
 
       <Snackbar
-        anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'left',
-        }}
         open={snackbarOpen}
         autoHideDuration={6000}
         onClose={handleSnackbarClose}
-        message={t('Saving...')}
-      />
+      >
+        <Alert onClose={handleSnackbarClose} severity="success">
+          {t('Saved')}
+        </Alert>
+      </Snackbar>
     </>
   );
 }

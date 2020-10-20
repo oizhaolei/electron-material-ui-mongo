@@ -59,6 +59,7 @@ export default function ReadonlyDataTable({
         <MaterialTable
           title={schemaName}
           options={{
+            search: false,
             pageSize,
             filtering: true,
             pageSizeOptions: [20, 50, 100],

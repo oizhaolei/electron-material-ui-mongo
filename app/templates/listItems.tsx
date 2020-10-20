@@ -8,7 +8,6 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import ListSubheader from '@material-ui/core/ListSubheader';
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
-import LockOpenIcon from '@material-ui/icons/LockOpen';
 import StorageIcon from '@material-ui/icons/Storage';
 import FindInPageIcon from '@material-ui/icons/FindInPage';
 import IconButton from '@material-ui/core/IconButton';
@@ -99,14 +98,6 @@ export const QueryListItems = ({ current }) => {
           </ListItem>
         </Link>
       ))}
-      <Link to="/pincode" className={classes.link}>
-        <ListItem button>
-          <ListItemIcon>
-            <LockOpenIcon />
-          </ListItemIcon>
-          <ListItemText primary="Pincode" />
-        </ListItem>
-      </Link>
     </>
   );
 };

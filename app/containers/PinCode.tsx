@@ -81,7 +81,7 @@ export default function PinCode() {
                 dispatch({
                   type: 'AUTHENTICATE',
                   payload: {
-                    value,
+                    value: v,
                   },
                 });
               }

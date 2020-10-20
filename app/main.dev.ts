@@ -16,10 +16,19 @@ import { app, BrowserWindow } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import windowStateKeeper from 'electron-window-state';
+import Rollbar from 'rollbar';
 
 import config from './config';
 import MenuBuilder from './menu';
 import ipc from './ipc';
+
+// include and initialize the rollbar library with your access token
+const rollbar = new Rollbar({
+  accessToken: '8cfe586e8a9742ddb42d1d00f7c973c4',
+  captureUncaught: true,
+  captureUnhandledRejections: true,
+});
+
 
 export default class AppUpdater {
   constructor() {

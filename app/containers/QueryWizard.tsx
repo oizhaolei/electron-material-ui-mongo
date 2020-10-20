@@ -11,6 +11,7 @@ import StepLabel from '@material-ui/core/StepLabel';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import Snackbar from '@material-ui/core/Snackbar';
+import MuiAlert, { AlertProps } from '@material-ui/lab/Alert';
 
 import GenericTemplate from '../templates/GenericTemplate';
 import NameForm from '../components/query/NameForm';
@@ -18,6 +19,11 @@ import RelationForm from '../components/query/RelationForm';
 import Review from '../components/query/Review';
 
 import StoreContext from '../store/StoreContext';
+
+
+const Alert = (props: AlertProps) => {
+  return <MuiAlert elevation={6} variant="filled" {...props} />;
+};
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -183,16 +189,15 @@ function QueryWizard() {
           )}
         </>
 
-      <Snackbar
-        anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'left',
-        }}
-        open={snackOpen}
-        autoHideDuration={2000}
-        onClose={handleSnackClose}
-        message={t('Query created redirect')}
-      />
+        <Snackbar
+          open={snackOpen}
+          autoHideDuration={2000}
+          onClose={handleSnackClose}
+        >
+          <Alert onClose={handleSnackClose} severity="success">
+            {t('Query created redirect')}
+          </Alert>
+        </Snackbar>
       </Paper>
     </GenericTemplate>
   );

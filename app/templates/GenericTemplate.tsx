@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import Store from 'electron-store';
 import { ipcRenderer } from 'electron';
+import { useHistory } from 'react-router-dom';
 
 import { useTranslation } from 'react-i18next';
 import clsx from 'clsx';
@@ -24,6 +25,7 @@ import Container from '@material-ui/core/Container';
 import { Link } from 'react-router-dom';
 import MenuIcon from '@material-ui/icons/Menu';
 import IconButton from '@material-ui/core/IconButton';
+import LockIcon from '@material-ui/icons/Lock';
 import HomeIcon from '@material-ui/icons/Home';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
@@ -40,6 +42,7 @@ import FindInPageIcon from '@material-ui/icons/FindInPage';
 
 import Copyright from '../components/Copyright';
 import { QueryListItems, TableListItems } from './listItems';
+import StoreContext from '../store/StoreContext';
 
 const store = new Store();
 const drawerWidth = 240;
@@ -159,6 +162,8 @@ const useStyles = makeStyles((theme) =>
 const GenericTemplate = ({ children, title, id }) => {
   const classes = useStyles();
   const { t, i18n } = useTranslation();
+  const [{ auth }, dispatch] = useContext(StoreContext);
+  const history = useHistory();
 
   const changeLanguage = () => {
     const getCurrentLng = i18n.language || window.localStorage.i18nextLng || '';
@@ -224,7 +229,11 @@ const GenericTemplate = ({ children, title, id }) => {
     },
   ];
 
-
+  useEffect(() => {
+    if (!auth.isAuthenticated) {
+      history.replace('/pincode');
+    }
+  }, [auth]);
 
   useEffect(() => {
     const paletteColorsListener = (event, arg) => {
@@ -301,6 +310,15 @@ const GenericTemplate = ({ children, title, id }) => {
                   <PaletteIcon />
                 </IconButton>
               </Link>
+            </Tooltip>
+            <Tooltip title="Lock Screen">
+              <IconButton color="inherit" onClick={() =>
+                dispatch({
+                  type: 'SIGNOUT',
+                })}
+              >
+                <LockIcon />
+              </IconButton>
             </Tooltip>
           </Toolbar>
           <StyledMenu
