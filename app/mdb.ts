@@ -52,7 +52,7 @@ const getType = (field, row) => {
 const getSuggests = (field, docs) => field.map((f) => {
   const colAllData = docs.map((r) => r[f]).filter(Boolean);
   const colUniqData = [...new Set(colAllData)];
-  if (colUniqData.length < 20) { // || (docs.length / colUniqData.length) > 10
+  if (colUniqData.length < 50 && (docs.length / colUniqData.length) > 10) {
     return {
       field: f,
       suggest: colUniqData,

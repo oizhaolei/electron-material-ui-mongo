@@ -7,7 +7,7 @@ import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import TextField from '@material-ui/core/TextField';
 
-export default function NameForm({ dataState, onChange }) {
+export default function NameForm({ dataState, dispatch }) {
   const { t } = useTranslation();
 
   const [name, setName] = useState(dataState.name);
@@ -16,9 +16,10 @@ export default function NameForm({ dataState, onChange }) {
   const [helperText, setHelperText] = useState();
 
   useEffect(() => {
-    setSchemaNames(ipcRenderer.sendSync('schemas', {
-      sync: true,
-    }).map((s) => pluralize(s.name.toLowerCase())));
+    ipcRenderer.invoke('schemas').then((schemas) => {
+      const names = schemas.map((s) => pluralize(s.name.toLowerCase()));
+      setSchemaNames(names);
+    });
   }, []);
 
   const handleChange = (v) => {
@@ -27,9 +28,12 @@ export default function NameForm({ dataState, onChange }) {
     const err = schemaNames.includes(pluralize(v.toLowerCase()));
     setError(err);
     setHelperText(err && 'duplicated name');
-    onChange({
-      name: v,
-      error: err,
+    dispatch({
+      type: 'SCHEMA_WIZARD_INIT',
+      payload: {
+        name: v,
+        error: err,
+      },
     });
   };
   return (

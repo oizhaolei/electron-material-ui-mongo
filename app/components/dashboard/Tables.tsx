@@ -28,7 +28,7 @@ export default function Tables() {
   const [schemas, setSchemas] = useState([]);
 
   useEffect(() => {
-    setSchemas(ipcRenderer.sendSync('dashboard-schemas', { sync: true }));
+    ipcRenderer.invoke('dashboard-schemas').then(setSchemas);
   }, []);
 
   return (

@@ -116,7 +116,7 @@ export default function TableView({ label, onChange }) {
   const [schemas, setSchemas] = useState([]);
 
   useEffect(() => {
-    setSchemas(ipcRenderer.sendSync('schemas', { sync: true }));
+    ipcRenderer.invoke('schemas').then(setSchemas);
   }, []);
 
   return (

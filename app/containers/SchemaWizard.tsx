@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { ipcRenderer } from 'electron';
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
@@ -57,6 +57,17 @@ function SchemaWizard() {
   const [snackOpen, setSnackOpen] = useState(false);
   const [{ schemaWizard: dataState }, dispatch] = useContext(StoreContext);
 
+  useEffect(() => {
+    dispatch({
+      type: 'SCHEMA_WIZARD_CLEAN',
+    });
+    return () => {
+      dispatch({
+        type: 'SCHEMA_WIZARD_CLEAN',
+      });
+    };
+  }, []);
+
   const handleSnackClose = (event, reason) => {
     setSnackOpen(false);
     history.replace(`/table/${dataState.name}`);
@@ -72,22 +83,23 @@ function SchemaWizard() {
     t('Create Table'),
   ];
 
-  const stepActionss = [
+  const stepActions = [
     () => {}, // 'Next'
     () => {   // 'Create Table'
-    const newSchema = ipcRenderer.sendSync('schema-post', {
+      console.log('dataState:', dataState);
+      ipcRenderer.invoke('schema-post', {
         name: dataState.name,
         definition: dataState.definition,
         docs: dataState.data,
-        sync: true,
+      }).then((newSchema) => {
+        console.log('schema-post:', newSchema);
+        setSnackOpen(true);
       });
-      console.log('schema-post:', newSchema);
-      setSnackOpen(true);
     },
   ];
 
   const handleNext = () => {
-    stepActionss[activeStep]();
+    stepActions[activeStep]();
     setActiveStep(activeStep + 1);
   };
 
@@ -97,27 +109,21 @@ function SchemaWizard() {
 
   const getStepContent = (step) => {
     switch (step) {
-    case 0:
+      case 0:
       return (
         <NameForm
           dataState={dataState}
-          onChange={(payload) => dispatch({
-            type: 'SCHEMA_WIZARD_CHANGE',
-            payload,
-          })}
+          dispatch={dispatch}
         />
       );
-    case 1:
+      case 1:
       return (
         <CSVImport
           dataState={dataState}
-          onChange={(payload) => dispatch({
-            type: 'SCHEMA_WIZARD_CHANGE',
-            payload,
-          })}
+          dispatch={dispatch}
         />
       );
-    default:
+      default:
       throw new Error('Unknown step');
     }
   };

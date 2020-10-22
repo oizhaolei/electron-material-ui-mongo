@@ -11,16 +11,6 @@ export default function ipc() {
   // snapshot at startup
   mdb.snapshot();
 
-  // ping
-  ipcMain.on('asynchronous-message', (event, { sync = false }) => {
-    console.log('asynchronous-message');
-    if (sync) {
-      event.returnValue = 'pong';
-    } else {
-      event.reply('asynchronous-reply', 'pong');
-    }
-  });
-
   // paletteColors
   ipcMain.on('paletteColors', (event, paletteColors) => {
     console.log('paletteColors');
@@ -34,86 +24,60 @@ export default function ipc() {
   });
 
   // schemaNames: add / update
-  ipcMain.on('schema-post', async (event, { name, definition, etc, docs, sync = false }) => {
-    console.log('schema-post');
+  ipcMain.handle('schema-post', async (event, { name, definition, etc, docs }) => {
+    console.log('schema-post', name, definition, docs);
     const newSchema = await mdb.createSchema(name, definition, etc);
     if (docs && docs.length > 0) {
       const Model = await mdb.getSchemaModel(name);
       await Model.insertMany(docs);
     }
-    if (sync) {
-      event.returnValue = newSchema;
-    } else {
-      event.reply('schema-post', newSchema);
-    }
+    return  newSchema;
   });
 
-  ipcMain.on('schemas', async (event, { sync = false }) => {
+  ipcMain.handle('schemas', async (event) => {
     console.log('schemas');
     const schemas = await mdb.getSchemas();
-    if (sync) {
-      event.returnValue = schemas;
-    } else {
-      event.reply('schemas', schemas);
-    }
+    return schemas;
   });
 
-  ipcMain.on('dashboard-schemas', async (event, { sync = false }) => {
+  ipcMain.handle('dashboard-schemas', async (event) => {
     console.log('dashboard-schemas');
     const schemas = await mdb.getDashboardSchemas();
-    if (sync) {
-      event.returnValue = schemas;
-    } else {
-      event.reply('dashboard-schemas', schemas);
-    }
+    return schemas;
   });
 
   // mdb.schema
-  ipcMain.on('schema', async (event, { name, sync = false }) => {
+  ipcMain.handle('schema', async (event, { name }) => {
     console.log('schema');
     const schema = await mdb.getSchema(name);
-    if (sync) {
-      event.returnValue = schema;
-    } else {
-      event.reply('schema', schema);
-    }
+    return schema;
   });
 
   // mdb.schema delete
-  ipcMain.on('schema-drop', async (event, { name, sync = false }) => {
+  ipcMain.handle('schema-drop', async (event, { name }) => {
     console.log('schema-drop');
     const result = await mdb.dropSchema(name);
-    if (sync) {
-      event.returnValue = { result };
-    } else {
-      event.reply('schema-drop', { result });
-    }
+    console.log('result:', result);
+    return result;
   });
 
   // csv-read
-  ipcMain.on('csv-read', async (event, { file, sync = false }) => {
+  ipcMain.handle('csv-read', async (event, { file }) => {
     console.log('csv-read');
     csv().fromFile(file).then((data) => {
       const definition = genSchemaDefinition(data);
-      if (sync) {
-        event.returnValue = {
-          definition,
-          data,
-        };
-      } else {
-        event.reply('csv-read', {
-          definition,
-          data,
-        });
-      }
+      return {
+        definition,
+        data,
+      };
     });
   });
 
   // mdb.find
-  ipcMain.on(
+  ipcMain.handle(
     'find',
-    async (event, { name, filter = {}, projection, options, sync = false }) => {
-      console.log('find', name, filter, projection, options, sync);
+    async (event, { name, filter = {}, projection, options }) => {
+      console.log('find', name, filter, projection, options);
       const Model = await mdb.getSchemaModel(name);
       const data = await Model.find(filter, projection, options).lean();
       const totalCount = await Model.countDocuments(filter);
@@ -126,82 +90,50 @@ export default function ipc() {
         page: options.page,
         totalCount,
       };
-      if (sync) {
-        event.returnValue = result;
-      } else {
-        event.reply('find', result);
-      }
+      return result;
     }
   );
 
   // mdb.insert
-  ipcMain.on('insert', async (event, { name, doc, sync = false }) => {
+  ipcMain.handle('insert', async (event, { name, doc }) => {
     console.log('insert');
     const Model = await mdb.getSchemaModel(name);
     const newDoc = new Model(doc);
     await newDoc.save();
-    if (sync) {
-      event.returnValue = {
-        newDoc,
-      };
-    } else {
-      event.reply('insert', {
-        newDoc,
-      });
-    }
+    return newDoc;
   });
-  ipcMain.on('insert-many', async (event, { name, docs, sync = false }) => {
+  ipcMain.handle('insert-many', async (event, { name, docs }) => {
     console.log('insert');
     const Model = await mdb.getSchemaModel(name);
     const newDocs = await Model.insertMany(docs);
-    if (sync) {
-      event.returnValue = {
-        newDocs,
-      };
-    } else {
-      event.reply('insert-many', {
-        newDocs,
-      });
-    }
+    return newDocs;
   });
 
   // mdb.update
-  ipcMain.on(
+  ipcMain.handle(
     'update',
-    async (event, { name, filter, doc, options, sync = false }) => {
-      console.log('update', name, filter, doc, options, sync);
+    async (event, { name, filter, doc, options }) => {
+      console.log('update', name, filter, doc, options);
       const Model = await mdb.getSchemaModel(name);
       const numAffected = await Model.updateMany(filter, doc, options);
 
-      if (sync) {
-        event.returnValue = numAffected;
-      } else {
-        event.reply('update', numAffected);
-      }
+      return numAffected;
     }
   );
 
   // mdb.remove
-  ipcMain.on(
+  ipcMain.handle(
     'remove',
-    async (event, { name, filter, options, sync = false }) => {
+    async (event, { name, filter, options }) => {
       console.log('remove');
       const Model = await mdb.getSchemaModel(name);
       const numRemoved = await Model.deleteMany(filter, options);
-      if (sync) {
-        event.returnValue = {
-          numRemoved,
-        };
-      } else {
-        event.reply('remove', {
-          numRemoved,
-        });
-      }
+      return numRemoved;
     }
   );
 
   // mdb.export
-  ipcMain.on('export-csv', async (event, { name, sync = false }) => {
+  ipcMain.handle('export-csv', async (event, { name }) => {
     console.log('export-csv');
     const file = path.resolve(
       app.getPath('home'),
@@ -209,61 +141,41 @@ export default function ipc() {
     );
     mdb.writeCSV(name, file);
     shell.showItemInFolder(file);
-    if (sync) {
-      event.returnValue = file;
-    } else {
-      event.reply('export-csv', file);
-    }
+    return file;
   });
 
-  ipcMain.on('queries', async (event, { sync = false }) => {
+  ipcMain.handle('queries', async (event) => {
     console.log('queries');
     const queries = await mdb.getQueries();
-    if (sync) {
-      event.returnValue = queries;
-    } else {
-      event.reply('queries', queries);
-    }
+    return queries;
   });
 
   // mdb.query
-  ipcMain.on('query', async (event, { name, sync = false }) => {
+  ipcMain.handle('query', async (event, { name }) => {
     console.log('query', name);
     const query = await mdb.getQuery(name);
-    if (sync) {
-      event.returnValue = query;
-    } else {
-      event.reply('query', query);
-    }
+    return query;
   });
 
-  ipcMain.on('query-post', async (event, { name, data, sync = false }) => {
+  ipcMain.handle('query-post', async (event, { name, data }) => {
     console.log('query-post');
     const newQuery = await mdb.createQuery(name, data);
-    if (sync) {
-      event.returnValue = newQuery;
-    } else {
-      event.reply('query-post', newQuery);
-    }
+    return newQuery;
   });
 
   // mdb.query delete
-  ipcMain.on('query-delete', async (event, { name, sync = false }) => {
+  ipcMain.handle('query-delete', async (event, { name }) => {
     console.log('query-delete');
     const result = await mdb.dropQuery(name);
-    if (sync) {
-      event.returnValue = { result };
-    } else {
-      event.reply('query-delete', { result });
-    }
+    return result;
   });
 
   // query-data
-  ipcMain.on(
+  ipcMain.handle(
     'query-data',
     async (
       event,
-      { name, filter = {}, projection, options, code, sync = false }
+      { name, filter = {}, projection, options, code }
     ) => {
       console.log('query-data');
       if (name) {
@@ -272,17 +184,10 @@ export default function ipc() {
       }
       const data = await mdb.queryCode(code, filter, projection, options);
       const definition = genSchemaDefinition(data);
-      if (sync) {
-        event.returnValue = {
-          definition,
-          data,
-        };
-      } else {
-        event.reply('query-data', {
-          definition,
-          data,
-        });
-      }
+      return {
+        definition,
+        data,
+      };
     }
   );
 }

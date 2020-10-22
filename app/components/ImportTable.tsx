@@ -70,19 +70,19 @@ export default function ImportTable({ dataState }) {
         onChange={(files) => {
           if (files && files.length > 0) {
             setLoading(true);
-            const { definition, data } = ipcRenderer.sendSync('csv-read', {
+            ipcRenderer.invoke('csv-read', {
               file: files[0].path,
-              sync: true,
-            });
-            setLoading(false);
-            setDefinition(definition);
-            setData(data);
+            }).then(({ definition, data }) => {
+              setLoading(false);
+              setDefinition(definition);
+              setData(data);
 
-            if (isEqual(definition, dataState.definition)) {
-              setWarning();
-            } else {
-              setWarning(t('different data structure'));
-            }
+              if (isEqual(definition, dataState.definition)) {
+                setWarning();
+              } else {
+                setWarning(t('different data structure'));
+              }
+            });
           }
         }}
       />
@@ -105,10 +105,9 @@ export default function ImportTable({ dataState }) {
           color="secondary"
           startIcon={<SaveIcon />}
           onClick={() =>
-            ipcRenderer.sendSync('insert-many', {
+            ipcRenderer.invoke('insert-many', {
               name: dataState.name,
               docs: data,
-              sync: true,
             })
           }
         >

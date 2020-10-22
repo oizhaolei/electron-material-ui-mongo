@@ -12,18 +12,45 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import { DropzoneArea } from 'material-ui-dropzone';
 import MaterialTable from 'material-table';
 
-import { mongo2Material } from '../../utils/utils';
+const MATERIAL_DEFINITION = [
+  {
+    title: 'Field',
+    field: 'field',
+    editable: 'never',
+  },
+  {
+    title: 'Type',
+    field: 'type',
+    lookup: {
+      Number: 'Number',
+      Boolean: 'Boolean',
+      Date: 'Date',
+      String: 'String',
+    },
+  },
+];
 
-const SchemaTable = ({ data }) => {
-  const columns = [
-    { title: 'Field', field: 'field' },
-    { title: 'Type', field: 'type' },
-  ];
+const SchemaTable = ({ columns, data, dispatch }) => {
   return (
     <MaterialTable
       title="Schema"
       columns={columns}
       data={data}
+      cellEditable={{
+        onCellEditApproved: (newValue, oldValue, rowData, columnDef) => {
+          return new Promise((resolve, reject) => {
+            console.log('newValue: ', newValue, rowData, columnDef);
+            dispatch({
+              type: 'SCHEMA_WIZARD_SCHEMA_TYPE_CHANGE',
+              payload: {
+                field: rowData.field,
+                type: newValue,
+              },
+            });
+            resolve();
+          });
+        }
+      }}
     />
   );
 };
@@ -50,7 +77,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function CSVImport({ dataState, onChange }) {
+export default function CSVImport({ dataState, dispatch }) {
   const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
   const classes = useStyles();
@@ -72,30 +99,35 @@ export default function CSVImport({ dataState, onChange }) {
         onChange={(files) => {
           if (files && files.length > 0) {
             setLoading(true);
-            const { definition, data } = ipcRenderer.sendSync('csv-read', {
+            ipcRenderer.invoke('csv-read', {
               file: files[0].path,
-              sync: true,
-            });
-            setLoading(false);
-            onChange({
-              definition,
-              data,
+            }).then(({ definition, data }) => {
+              setLoading(false);
+              dispatch({
+                type: 'SCHEMA_WIZARD_INIT',
+                payload: {
+                  definition,
+                  data,
+                },
+              });
             });
           }
         }}
       />
       {dataState.definition && Object.keys(dataState.definition).length > 0 && (
-        <SchemaTable data={Object.keys(dataState.definition).map((k) => ({
-            title: k,
+        <SchemaTable
+          columns={MATERIAL_DEFINITION}
+          data={Object.keys(dataState.definition).map((k) => ({
             field: k,
             type: dataState.definition[k].type,
           }))}
+          dispatch={dispatch}
         />
       )}
 
       {dataState.data && dataState.data.length > 0 && (
         <CSVDataTable
-          columns={mongo2Material(dataState)}
+          columns={dataState.materialDefinition}
           data={dataState.data}
         />
       )}

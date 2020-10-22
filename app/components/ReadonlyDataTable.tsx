@@ -44,13 +44,13 @@ export default function ReadonlyDataTable({
   };
 
   useEffect(() => {
-    const schema = ipcRenderer.sendSync('schema', {
+    ipcRenderer.invoke('schema', {
       name: schemaName,
-      sync: true,
+    }).then((schema) => {
+      if (schemaName === schema.name) {
+        setColumns(mongo2Material(schema));
+      }
     });
-    if (schemaName === schema.name) {
-      setColumns(mongo2Material(schema));
-    }
   }, [schemaName]);
 
   return (
@@ -72,7 +72,7 @@ export default function ReadonlyDataTable({
                 skip: query.page * query.pageSize,
                 page: query.page,
               };
-              const results = ipcRenderer.sendSync('find', {
+              ipcRenderer.invoke('find', {
                 name: schemaName,
                 filter: {
                   ...filter,
@@ -82,11 +82,10 @@ export default function ReadonlyDataTable({
                   }, {}),
                 },
                 options,
-                sync: true,
-              });
-
-              resolve({
-                ...results,
+              }).then((results) => {
+                resolve({
+                  ...results,
+                });
               });
             })
           }

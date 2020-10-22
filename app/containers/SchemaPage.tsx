@@ -66,14 +66,19 @@ export default function SchemaPage() {
   const [{ schema: dataState }, dispatch] = useContext(StoreContext);
 
   useEffect(() => {
-    const schema = ipcRenderer.sendSync('schema', {
+    ipcRenderer.invoke('schema', {
       name,
-      sync: true,
-     });
-    dispatch({
-      type: 'SCHEMA_CHANGE',
-      payload: schema,
+    }).then((schema) => {
+      dispatch({
+        type: 'SCHEMA_INIT',
+        payload: schema,
+      });
     });
+    return () => {
+      dispatch({
+        type: 'SCHEMA_CLEAN',
+      });
+    };
   }, [name, dispatch]);
 
   const handleTabChange = (event, newTab) => {

@@ -67,10 +67,11 @@
 
 
 ** Schema:
-*** TODO add
+*** DONE add
 *** TODO rename
-*** TODO remove
+*** DONE remove
 *** TODO change type
+*** TODO default
 
 * memo
 ** DONE sqlite => nedb => mongo
@@ -99,7 +100,7 @@
 ** DONE SOLO component
 ** TODO schema change
 ** DONE data crud
-** TODO rollbar
+** DONE rollbar
 ** TODO loading
 ** TODO ag-grid
 

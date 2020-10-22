@@ -28,7 +28,7 @@ export default function Queries() {
   const [queries, setQueries] = useState([]);
 
   useEffect(() => {
-    setQueries(ipcRenderer.sendSync('queries', { sync: true }));
+    ipcRenderer.invoke('queries').then(setQueries);
   }, []);
 
   return (

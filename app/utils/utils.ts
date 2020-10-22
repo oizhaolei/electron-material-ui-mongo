@@ -30,3 +30,13 @@ export const mongo2Material = ({ definition, suggests }) =>
       ? suggests[k].reduce((r, v) => (r[v] = v, r), {})
       : undefined,
   })).concat(ID_COLUMN);
+
+export const mongo2AgGrid = ({ definition }) =>
+  Object.keys(definition).map((k) => ({
+    headerName: k,
+    field: k,
+    type: definition[k].type,
+  })).concat({
+    field: '_id',
+    hide: true,
+  });

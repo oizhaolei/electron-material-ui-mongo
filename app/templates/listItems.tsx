@@ -30,7 +30,7 @@ export const TableListItems = ({ current }) => {
   const [schemas, setSchemas] = useState([]);
 
   useEffect(() => {
-    setSchemas(ipcRenderer.sendSync('schemas', { sync: true }));
+    ipcRenderer.invoke('schemas').then(setSchemas);
   }, []);
 
   return (
@@ -69,7 +69,7 @@ export const QueryListItems = ({ current }) => {
   const [queries, setQueries] = useState([]);
 
   useEffect(() => {
-    setQueries(ipcRenderer.sendSync('queries', { sync: true }));
+    ipcRenderer.invoke('queries').then(setQueries);
   }, []);
 
   return (

@@ -7,7 +7,6 @@ import Button from '@material-ui/core/Button';
 import MuiAlert, { AlertProps } from '@material-ui/lab/Alert';
 import Snackbar from '@material-ui/core/Snackbar';
 import MaterialTable from 'material-table';
-import SaveIcon from '@material-ui/icons/Save';
 import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
 
 const Alert = (props: AlertProps) => {
@@ -17,12 +16,12 @@ const Alert = (props: AlertProps) => {
 
 const columns = [
   {
-    field: 'field',
     title: 'Field',
+    field: 'field',
   },
   {
-    field: 'type',
     title: 'Type',
+    field: 'type',
     lookup: {
       Number: 'Number',
       Boolean: 'Boolean',
@@ -51,26 +50,27 @@ export default function SchemaTable({ dataState, dispatch }) {
   };
 
   const saveSchemaDefinition = (definition) => {
-    const newSchema = ipcRenderer.sendSync('schema-post', {
+    ipcRenderer.invoke('schema-post', {
       name: dataState.name,
       definition,
-      sync: true,
-    });
-    dispatch({
-      type: 'SCHEMA_CHANGE',
-      payload: newSchema,
-    });
+    }).then((newSchema) => {
+      dispatch({
+        type: 'SCHEMA_INIT',
+        payload: newSchema,
+      });
 
-    setSnackbarOpen(true);
+      setSnackbarOpen(true);
+    });
   };
 
   const handleDropSchema = () => {
-    const results = ipcRenderer.sendSync('schema-drop', {
+    console.log('dataState:', dataState);
+    ipcRenderer.invoke('schema-drop', {
       name: dataState.name,
-      sync: true,
+    }).then((results) => {
+      console.log('schema-drop:', results);
+      history.replace('/');
     });
-    console.log('schema-drop:', results);
-    history.replace('/');
 };
 
   return (

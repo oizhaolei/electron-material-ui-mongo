@@ -28,12 +28,12 @@ export default function ExportTable({ dataState }) {
         color="secondary"
         startIcon={<ListIcon />}
         onClick={() => {
-          const result = ipcRenderer.sendSync('export-csv', {
+          ipcRenderer.invoke('export-csv', {
             name: dataState.name,
-            sync: true,
+          }).then((result) => {
+            console.log(result);
+            setMsg(result);
           });
-          console.log(result);
-          setMsg(result);
         }}
       >
         {t('Export to CSV')}

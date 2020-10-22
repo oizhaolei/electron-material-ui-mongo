@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import { ipcRenderer } from 'electron';
 import { useTranslation } from 'react-i18next';
 import Store from 'electron-store';
@@ -14,7 +14,6 @@ import Snackbar from '@material-ui/core/Snackbar';
 import MaterialTable from 'material-table';
 
 import DetailForm from './DetailForm';
-import { mongo2Material } from '../utils/utils';
 
 const store = new Store();
 
@@ -36,6 +35,7 @@ export default function DataTable({
   const tableRef = useRef();
   const [detailOpen, setDetailOpen] = useState(false);
   const [selected, setSelected] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleClickDetailOpen = () => {
     setDetailOpen(true);
@@ -44,7 +44,7 @@ export default function DataTable({
   const handleDetailSave = () => {
     //
     if (dataState.changeList.length > 0) {
-      const results = ipcRenderer.sendSync('update', {
+      ipcRenderer.invoke('update', {
         name: dataState.name,
         filter: {
           _id: {
@@ -52,16 +52,16 @@ export default function DataTable({
           },
         },
         doc: dataState.changes,
-        sync: true,
+      }).then((results) => {
+        console.log('update results', results);
       });
-      console.log('update results', results);
     } else {
-      const results = ipcRenderer.sendSync('insert-many', {
+      ipcRenderer.invoke('insert-many', {
         name: dataState.name,
         docs: [dataState.changes],
-        sync: true,
+      }).then((results) => {
+        console.log('insert results', results);
       });
-      console.log('insert results', results);
     }
     dispatch({
       type: 'SCHEMA_DATA_CLEAR',
@@ -91,94 +91,99 @@ export default function DataTable({
 
   return (
     <>
-      <MaterialTable
-        tableRef={tableRef}
-        title={dataState.name}
-        options={{
-          search: false,
-          pageSize,
-          selection: true,
-          filtering: true,
-          pageSizeOptions: [20, 50, 100],
-        }}
-        columns={mongo2Material(dataState)}
-        data={(query) =>
-          new Promise((resolve, reject) => {
-            const options = {
-              limit: query.pageSize,
-              skip: query.page * query.pageSize,
-              page: query.page,
-              sort: query.orderBy
-                ? {
+      {(dataState.materialDefinition && dataState.materialDefinition.length > 0) && (
+        <MaterialTable
+          tableRef={tableRef}
+          isLoading={isLoading}
+          title={dataState.name}
+          options={{
+            search: false,
+            pageSize,
+            selection: true,
+            filtering: true,
+            pageSizeOptions: [20, 50, 100],
+          }}
+          columns={dataState.materialDefinition}
+          data={(query) =>
+            new Promise((resolve, reject) => {
+              setIsLoading(true);
+              const options = {
+                limit: query.pageSize,
+                skip: query.page * query.pageSize,
+                page: query.page,
+                sort: query.orderBy
+                  ? {
                     [query.orderBy.field]: query.orderDirection,
                   }
                 : undefined,
-            };
-            const results = ipcRenderer.sendSync('find', {
-              name: dataState.name,
-              filter: {
-                ...filter,
-                ...query.filters.reduce((r, v) => {
-                  if (typeof v.value === 'object' && v.value.length === 0) {
-                    // nothing
-                  } else {
-                    r[v.column.field] = v.value;
-                  }
-                  return r;
-                }, {}),
-              },
-              options,
-              sync: true,
-            });
-
-            resolve({
-              ...results,
-            });
-          })
-        }
-        onChangeRowsPerPage={handleChangeRowsPerPage}
-        actions={[
-          {
-            icon: 'add',
-            tooltip: t('Add'),
-            isFreeAction: true,
-            onClick: () => {
-              setSelected([]);
-              handleClickDetailOpen();
-            },
-          },
-          {
-            tooltip: t('Edit Selected Rows'),
-            icon: 'edit',
-            onClick: (event, rows) => {
-              console.log('You want to edit ' + rows.length + ' rows');
-              setSelected(rows);
-              handleClickDetailOpen();
-            },
-          },
-          {
-            tooltip: t('Remove Selected Rows'),
-            icon: 'delete',
-            onClick: (event, rows) => {
-              console.log('You want to delete ' + rows.length + ' rows');
-              handleSnackbarClick();
-              setSelected(rows);
-              const results = ipcRenderer.sendSync('remove', {
+              };
+              ipcRenderer.invoke('find', {
                 name: dataState.name,
                 filter: {
-                  _id: {
-                    $in: rows.map((r) => r._id),
-                  },
+                  ...filter,
+                  ...query.filters.reduce((r, v) => {
+                    if (typeof v.value === 'object' && v.value.length === 0) {
+                      // nothing
+                    } else {
+                      r[v.column.field] = v.value;
+                    }
+                    return r;
+                  }, {}),
                 },
-                sync: true,
+                options,
+              }).then((results) => {
+                setIsLoading(false);
+                resolve({
+                  ...results,
+                });
               });
-              tableRef.current.onQueryChange();
-              console.log(results);
+
+            })
+          }
+          onChangeRowsPerPage={handleChangeRowsPerPage}
+          actions={[
+            {
+              icon: 'add',
+              tooltip: t('Add'),
+              isFreeAction: true,
+              onClick: () => {
+                setSelected([]);
+                handleClickDetailOpen();
+              },
             },
-          },
-        ]}
-        {...otherProps}
-      />
+            {
+              tooltip: t('Edit Selected Rows'),
+              icon: 'edit',
+              onClick: (event, rows) => {
+                console.log('You want to edit ' + rows.length + ' rows');
+                setSelected(rows);
+                handleClickDetailOpen();
+              },
+            },
+            {
+              tooltip: t('Remove Selected Rows'),
+              icon: 'delete',
+              onClick: (event, rows) => {
+                console.log('You want to delete ' + rows.length + ' rows');
+                handleSnackbarClick();
+                setSelected(rows);
+                ipcRenderer.invoke('remove', {
+                  name: dataState.name,
+                  filter: {
+                    _id: {
+                      $in: rows.map((r) => r._id),
+                    },
+                  },
+                }).then((results) => {
+                  tableRef.current.onQueryChange();
+                  console.log(results);
+                });
+              },
+            },
+          ]}
+          {...otherProps}
+        />
+      )}
       <Dialog
         disableBackdropClick
         disableEscapeKeyDown

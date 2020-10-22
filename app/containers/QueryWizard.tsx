@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { ipcRenderer } from 'electron';
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
@@ -60,6 +60,17 @@ function QueryWizard() {
   const [snackOpen, setSnackOpen] = useState(false);
   const [{ queryWizard: dataState }, dispatch] = useContext(StoreContext);
 
+  useEffect(() => {
+    dispatch({
+      type: 'QUERY_WIZARD_CLEAN',
+    });
+    return () => {
+      dispatch({
+        type: 'QUERY_WIZARD_CLEAN',
+      });
+    };
+  }, []);
+
   const handleSnackClose = (event, reason) => {
     setSnackOpen(false);
     history.replace(`/query/${dataState.name}`);
@@ -76,26 +87,26 @@ function QueryWizard() {
     t('Create Query'),
   ];
 
-  const stepActionss = [
+  const stepActions = [
     () => {}, // 'Next'
     () => {}, // 'Next'
     () => {   // 'Create Query'
-      const result = ipcRenderer.sendSync('query-post', {
+      ipcRenderer.invoke('query-post', {
         name: dataState.name,
         data: {
           type: dataState.type,
           relations: dataState.relations,
           code: dataState.code,
         },
-        sync: true,
+      }).then((result) => {
+        console.log('query-post:', result);
+        setSnackOpen(true);
       });
-      console.log('query-post:', result);
-      setSnackOpen(true);
     },
   ];
 
   const handleNext = () => {
-    stepActionss[activeStep]();
+    stepActions[activeStep]();
     setActiveStep(activeStep + 1);
   };
 

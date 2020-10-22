@@ -29,32 +29,36 @@ const genCode = ({ one, many }) => `
 
 export default (state = initialState, action) => {
   switch (action.type) {
-  case 'QUERY_DATA_CHANGE':
-    return {
-      ...state,
-      ...action.payload,
-    };
-  case 'QUERY_RELATION_CHANGE':
-    const relations = {
-      ...state.relations,
-      ...action.payload,
-    };
-    const error = (
-      relations.one
-      && relations.one.table
-      && relations.one.field
-      && relations.many
-      && relations.many.table
-      && relations.many.field
-    );
-    const code = relations.one && relations.many && genCode(relations);
-    return {
-      ...state,
-      relations,
-      error,
-      code,
-    };
-  default:
-    return state;
+    case 'QUERY_WIZARD_CLEAN':
+       return {
+         ...initialState,
+       };
+    case 'QUERY_DATA_CHANGE':
+      return {
+        ...state,
+        ...action.payload,
+      };
+    case 'QUERY_RELATION_CHANGE':
+      const relations = {
+        ...state.relations,
+        ...action.payload,
+      };
+      const error = (
+        relations.one
+        && relations.one.table
+        && relations.one.field
+        && relations.many
+        && relations.many.table
+        && relations.many.field
+      );
+      const code = relations.one && relations.many && genCode(relations);
+      return {
+        ...state,
+        relations,
+        error,
+        code,
+      };
+    default:
+      return state;
   }
 };

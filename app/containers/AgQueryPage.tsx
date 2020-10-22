@@ -9,7 +9,7 @@ import Button from '@material-ui/core/Button';
 import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
 
 import GenericTemplate from '../templates/GenericTemplate';
-import ReadonlyDataTable from '../components/ReadonlyDataTable';
+import ReadonlyAgGrid from '../components/ReadonlyAgGrid';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -18,7 +18,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function QueryPage() {
+export default function AgQueryPage() {
   const classes = useStyles();
   const { t } = useTranslation();
   const history = useHistory();
@@ -56,11 +56,11 @@ export default function QueryPage() {
           && query.relations.one
           && query.relations.one.table
           && (
-            <ReadonlyDataTable
+            <ReadonlyAgGrid
               schemaName={query.relations.one.table}
               dialogContent={({ list }) =>
                 list.length > 0 && (
-                  <ReadonlyDataTable
+                  <ReadonlyAgGrid
                     schemaName={query.relations.many.table}
                     filter={{
                       [query.relations.many.field]: list[0][query.relations.one.field],

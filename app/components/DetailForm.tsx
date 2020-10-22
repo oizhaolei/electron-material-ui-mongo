@@ -92,8 +92,10 @@ export default function DetailForm({ definition, suggests, list, dispatch }) {
     dispatch({
       type: 'SCHEMA_DATA_CHANGE',
       payload: {
-        list, field, value,
-      }
+        list,
+        field,
+        value,
+      },
     });
   };
 
