@@ -26,11 +26,13 @@ export default function AgQueryPage() {
   const [query, setQuery] = useState({});
 
   useEffect(() => {
-    ipcRenderer.invoke('query', {
-      name,
-    }).then((query) => {
-      setQuery(query);
-    });
+    ipcRenderer
+      .invoke('query', {
+        name,
+      })
+      .then((query) => {
+        setQuery(query);
+      });
   }, [name]);
 
   return (
@@ -40,12 +42,14 @@ export default function AgQueryPage() {
         startIcon={<DeleteForeverIcon />}
         color="secondary"
         onClick={() => {
-          ipcRenderer.invoke('query-delete', {
-            name,
-          }).then((results) => {
-            console.log('query-delete:', results);
-            history.replace('/');
-          });
+          ipcRenderer
+            .invoke('query-delete', {
+              name,
+            })
+            .then((results) => {
+              console.log('query-delete:', results);
+              history.replace('/');
+            });
         }}
       >
         {t('Drop Query')}

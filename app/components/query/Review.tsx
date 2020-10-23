@@ -40,13 +40,20 @@ export default function Review({ dataState, onChange }) {
         </ListItem>
         <ListItem className={classes.listItem}>
           <ListItemText primary={t('Relation')} />
-          <Typography variant="body1" className={classes.total}>
+          <Typography variant="body2" className={classes.total}>
             {dataState.code}
           </Typography>
         </ListItem>
       </List>
 
-      <ReadonlyDataTable schemaName={dataState.relations.one.table} />
+      <ReadonlyDataTable
+        name={dataState.name}
+        schemaName={dataState.relations.one.table}
+      />
+
+      <Typography variant="body2" gutterBottom>
+        データを確認した後、クエリを作成できます。
+      </Typography>
     </>
   );
 }

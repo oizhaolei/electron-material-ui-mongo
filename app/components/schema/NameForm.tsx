@@ -16,10 +16,12 @@ export default function NameForm({ dataState, dispatch }) {
   const [helperText, setHelperText] = useState();
 
   useEffect(() => {
-    ipcRenderer.invoke('schemas').then((schemas) => {
-      const names = schemas.map((s) => pluralize(s.name.toLowerCase()));
-      setSchemaNames(names);
-    });
+    ipcRenderer
+      .invoke('schemas')
+      .then((schemas) => {
+        const names = schemas.map((s) => pluralize(s.name.toLowerCase()));
+        setSchemaNames(names);
+      });
   }, []);
 
   const handleChange = (v) => {
@@ -40,6 +42,9 @@ export default function NameForm({ dataState, dispatch }) {
     <>
       <Typography variant="h6" gutterBottom>
         {t('Table Name')}
+      </Typography>
+      <Typography variant="body2" gutterBottom>
+        テーブル名はユニックが必要、既存のテーブルと重複しないでください。
       </Typography>
       <Grid container spacing={3}>
         <Grid item xs={12}>

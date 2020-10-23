@@ -69,19 +69,20 @@ export default function ReadonlyDataTable({
       skip: query.page * query.pageSize,
       page: query.page,
     };
-    ipcRenderer.invoke('find', {
-      name: schemaName,
-      filter: {
-        ...filter,
-        ...query.filters.reduce((r, v) => {
-          r[v.column.field] = v.value;
-          return r;
-        }, {}),
-      },
-      options,
-    }).then((results) => {
-      setRowData(results);
-    });
+    ipcRenderer
+      .invoke('find', {
+        name: schemaName,
+        filter: {
+          ...filter,
+          ...query.filters.reduce((r, v) => {
+            r[v.column.field] = v.value;
+            return r;
+          }, {}),
+        },
+        options,
+      }).then((results) => {
+        setRowData(results);
+      });
   };
   const onSelectionChanged = () => {
     const rows = gridApi.getSelectedRows();
@@ -95,13 +96,15 @@ export default function ReadonlyDataTable({
   };
 
   useEffect(() => {
-    ipcRenderer.invoke('schema', {
-      name: schemaName,
-    }).then((schema => {
-      if (schemaName === schema.name) {
-        setColumns(mongo2AgGrid(schema));
-      }
-    }));
+    ipcRenderer
+      .invoke('schema', {
+        name: schemaName,
+      })
+      .then((schema => {
+        if (schemaName === schema.name) {
+          setColumns(mongo2AgGrid(schema));
+        }
+      }));
   }, [schemaName]);
 
   return (

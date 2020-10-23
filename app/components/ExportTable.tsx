@@ -4,7 +4,6 @@ import { useTranslation } from 'react-i18next';
 
 import { makeStyles, Theme } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
-import StorageIcon from '@material-ui/icons/Storage';
 import ListIcon from '@material-ui/icons/List';
 import Button from '@material-ui/core/Button';
 
@@ -23,22 +22,27 @@ export default function ExportTable({ dataState }) {
 
   return (
     <div className={classes.root}>
+      <Typography variant="body2" gutterBottom>
+        テーブルをCSVファイルに出力することができます。
+      </Typography>
       <Button
         variant="contained"
         color="secondary"
         startIcon={<ListIcon />}
         onClick={() => {
-          ipcRenderer.invoke('export-csv', {
-            name: dataState.name,
-          }).then((result) => {
-            console.log(result);
-            setMsg(result);
-          });
+          ipcRenderer
+            .invoke('export-csv', {
+              name: dataState.name,
+            })
+            .then((result) => {
+              console.log(result);
+              setMsg(result);
+            });
         }}
       >
         {t('Export to CSV')}
       </Button>
-      <Typography variant="body1" gutterBottom>
+      <Typography variant="body2" gutterBottom>
         {msg}
       </Typography>
     </div>

@@ -7,7 +7,7 @@ import Paper from '@material-ui/core/Paper';
 
 import Chart from '../components/dashboard/Chart';
 import Deposits from '../components/dashboard/Deposits';
-import Orders from '../components/dashboard/Orders';
+import Typography from '@material-ui/core/Typography';
 import Tables from '../components/dashboard/Tables';
 import Queries from '../components/dashboard/Queries';
 
@@ -32,6 +32,9 @@ function Dashboard() {
 
   return (
     <GenericTemplate title="Dashboard" id="dashboard">
+      <Typography variant="body2" gutterBottom>
+          テーブルとクエリの概要情報を表示されます。
+      </Typography>
       <Grid container spacing={3}>
         {/* Chart */}
         <Grid item xs={12} md={8} lg={9}>

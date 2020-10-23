@@ -14,7 +14,6 @@ import Title from './Title';
 
 const useStyles = makeStyles((theme) => ({
   link: {
-    textDecoration: 'none',
     color: 'inherit',
   },
   seeMore: {

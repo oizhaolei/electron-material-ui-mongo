@@ -16,9 +16,11 @@ export default function NameForm({ dataState, onChange }) {
   const [helperText, setHelperText] = useState();
 
   useEffect(() => {
-    ipcRenderer.invoke('queries').then((qs) => {
-      setQueries(qs.map((s) => pluralize(s.name.toLowerCase())));
-    });
+    ipcRenderer
+      .invoke('queries')
+      .then((qs) => {
+        setQueries(qs.map((s) => pluralize(s.name.toLowerCase())));
+      });
   }, []);
 
   const handleChange = (v) => {
@@ -35,7 +37,10 @@ export default function NameForm({ dataState, onChange }) {
   return (
     <>
       <Typography variant="h6" gutterBottom>
-      {t('Query Name')}
+        {t('Query Name')}
+      </Typography>
+      <Typography variant="body2" gutterBottom>
+        クエリ名はユニックが必要、既存のクエリと重複しないでください。
       </Typography>
       <Grid container spacing={3}>
         <Grid item xs={12}>

@@ -91,17 +91,19 @@ function QueryWizard() {
     () => {}, // 'Next'
     () => {}, // 'Next'
     () => {   // 'Create Query'
-      ipcRenderer.invoke('query-post', {
-        name: dataState.name,
-        data: {
-          type: dataState.type,
-          relations: dataState.relations,
-          code: dataState.code,
-        },
-      }).then((result) => {
-        console.log('query-post:', result);
-        setSnackOpen(true);
-      });
+      ipcRenderer
+        .invoke('query-post', {
+          name: dataState.name,
+          data: {
+            type: dataState.type,
+            relations: dataState.relations,
+            code: dataState.code,
+          },
+        })
+        .then((result) => {
+          console.log('query-post:', result);
+          setSnackOpen(true);
+        });
     },
   ];
 

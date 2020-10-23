@@ -16,6 +16,7 @@ import { mongo2Material } from '../utils/utils';
 const store = new Store();
 
 export default function ReadonlyDataTable({
+  name,
   schemaName,
   dialogContent,
   filter = {},
@@ -24,7 +25,7 @@ export default function ReadonlyDataTable({
   const { t } = useTranslation();
   const [columns, setColumns] = useState([]);
   const [pageSize, setPageSize] = useState(
-    store.get(`query.${schemaName}.pageSize`, 20)
+    store.get(`query.${name}.${schemaName}.pageSize`, 20)
   );
 
   const [detailOpen, setDetailOpen] = useState(false);
@@ -40,15 +41,20 @@ export default function ReadonlyDataTable({
   };
   const handleChangeRowsPerPage = (size) => {
     setPageSize(size);
-    store.set(`query.${schemaName}.pageSize`, size);
+    store.set(`query.${name}.${schemaName}.pageSize`, size);
   };
+
+  const defaultFilter = (columns) => columns.map((col) => ({
+    ...col,
+    defaultFilter: store.get(`query.${name}.${schemaName}.filter.${col.field}`),
+  }));
 
   useEffect(() => {
     ipcRenderer.invoke('schema', {
       name: schemaName,
     }).then((schema) => {
       if (schemaName === schema.name) {
-        setColumns(mongo2Material(schema));
+        setColumns(defaultFilter(mongo2Material(schema)));
       }
     });
   }, [schemaName]);
@@ -72,21 +78,26 @@ export default function ReadonlyDataTable({
                 skip: query.page * query.pageSize,
                 page: query.page,
               };
-              ipcRenderer.invoke('find', {
-                name: schemaName,
-                filter: {
-                  ...filter,
-                  ...query.filters.reduce((r, v) => {
-                    r[v.column.field] = v.value;
-                    return r;
-                  }, {}),
-                },
-                options,
-              }).then((results) => {
-                resolve({
-                  ...results,
+              const queryFilter = query.filters.reduce((r, v) => {
+                r[v.column.field] = v.value;
+                return r;
+              }, {});
+              store.set(`query.${name}.${schemaName}.filter`, queryFilter);
+
+              ipcRenderer
+                .invoke('find', {
+                  name: schemaName,
+                  filter: {
+                    ...filter,
+                    ...queryFilter,
+                  },
+                  options,
+                })
+                .then((results) => {
+                  resolve({
+                    ...results,
+                  });
                 });
-              });
             })
           }
           onChangeRowsPerPage={handleChangeRowsPerPage}

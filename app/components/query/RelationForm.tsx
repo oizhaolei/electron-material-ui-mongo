@@ -23,6 +23,9 @@ export default function RelationForm({ dataState, onChange }) {
       <Typography variant="h6" gutterBottom>
         One-to-Many relation - {dataState.name}
       </Typography>
+      <Typography variant="body2" gutterBottom>
+        二つテーブルを選んで、One-Manyの関係を指定してください。
+      </Typography>
       <Grid container spacing={3}>
         <Grid item xs={6}>
           <TableView

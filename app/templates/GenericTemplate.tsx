@@ -353,7 +353,7 @@ const GenericTemplate = ({ children, title, id }) => {
           <Divider />
           <List>
             <Link to="/" className={classes.link}>
-              <ListItem button>
+              <ListItem button selected={id === 'dashboard'}>
                 <ListItemIcon>
                   <HomeIcon />
                 </ListItemIcon>

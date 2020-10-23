@@ -84,6 +84,10 @@ export default function CSVImport({ dataState, dispatch }) {
 
   return (
     <>
+      <Typography variant="body2" gutterBottom>
+        CSVファイルをアップロードした後、テーブル構造を手動で変更できます。
+        データを確認した後、テーブルを作成できます。
+      </Typography>
       {loading && <CircularProgress />}
       <List disablePadding>
         <ListItem className={classes.listItem}>
@@ -99,18 +103,20 @@ export default function CSVImport({ dataState, dispatch }) {
         onChange={(files) => {
           if (files && files.length > 0) {
             setLoading(true);
-            ipcRenderer.invoke('csv-read', {
-              file: files[0].path,
-            }).then(({ definition, data }) => {
-              setLoading(false);
-              dispatch({
-                type: 'SCHEMA_WIZARD_INIT',
-                payload: {
-                  definition,
-                  data,
-                },
+            ipcRenderer
+              .invoke('csv-read', {
+                file: files[0].path,
+              })
+              .then(({ definition, data }) => {
+                setLoading(false);
+                dispatch({
+                  type: 'SCHEMA_WIZARD_INIT',
+                  payload: {
+                    definition,
+                    data,
+                  },
+                });
               });
-            });
           }
         }}
       />

@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { makeStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
 import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete';
+
+import StoreContext from '../store/StoreContext';
 
 const filter = createFilterOptions();
 
@@ -75,14 +76,9 @@ const FreeSolo = ({ label, value, onChange, options }) => {
   );
 };
 
-const useStyles = makeStyles((theme) => ({
-  root: {
-    minHeight: 800,
-  },
-}));
-
-export default function DetailForm({ definition, suggests, list, dispatch }) {
+export default function DetailForm({ list }) {
   const [values, setValues] = useState(sameValue(list));
+  const [{ schema: dataState }, dispatch] = useContext(StoreContext);
 
   const handleChange = (field, value) => {
     setValues({
@@ -101,9 +97,9 @@ export default function DetailForm({ definition, suggests, list, dispatch }) {
 
   return (
     <Grid container spacing={3}>
-      {Object.keys(definition).map((field) => (
+      {Object.keys(dataState.definition).map((field) => (
         <Grid key={field} item xs={12}>
-          {suggests[field] ? (
+          {dataState.suggests[field] ? (
             <FreeSolo
               label={field}
               value={{
@@ -121,7 +117,7 @@ export default function DetailForm({ definition, suggests, list, dispatch }) {
                 }
                 handleChange([field], theValue);
               }}
-              options={suggests[field].map((v) => ({
+              options={dataState.suggests[field].map((v) => ({
                 title: v,
               }))}
             />

@@ -3,6 +3,7 @@ import { ipcRenderer } from 'electron';
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
 
+import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import MuiAlert, { AlertProps } from '@material-ui/lab/Alert';
 import Snackbar from '@material-ui/core/Snackbar';
@@ -50,31 +51,38 @@ export default function SchemaTable({ dataState, dispatch }) {
   };
 
   const saveSchemaDefinition = (definition) => {
-    ipcRenderer.invoke('schema-post', {
-      name: dataState.name,
-      definition,
-    }).then((newSchema) => {
-      dispatch({
-        type: 'SCHEMA_INIT',
-        payload: newSchema,
-      });
+    ipcRenderer
+      .invoke('schema-post', {
+        name: dataState.name,
+        definition,
+      })
+      .then((newSchema) => {
+        dispatch({
+          type: 'SCHEMA_INIT',
+          payload: newSchema,
+        });
 
-      setSnackbarOpen(true);
-    });
+        setSnackbarOpen(true);
+      });
   };
 
   const handleDropSchema = () => {
     console.log('dataState:', dataState);
-    ipcRenderer.invoke('schema-drop', {
-      name: dataState.name,
-    }).then((results) => {
-      console.log('schema-drop:', results);
-      history.replace('/');
-    });
+    ipcRenderer
+      .invoke('schema-drop', {
+        name: dataState.name,
+      })
+      .then((results) => {
+        console.log('schema-drop:', results);
+        history.replace('/');
+      });
 };
 
   return (
     <>
+      <Typography variant="body2" gutterBottom>
+        テーブル構造の追加、削除ができます。
+      </Typography>
       <Button
         variant="contained"
         startIcon={<DeleteForeverIcon />}

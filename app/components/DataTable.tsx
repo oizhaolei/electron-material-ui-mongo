@@ -1,8 +1,9 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useContext } from 'react';
 import { ipcRenderer } from 'electron';
 import { useTranslation } from 'react-i18next';
 import Store from 'electron-store';
 
+import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import MuiAlert, { AlertProps } from '@material-ui/lab/Alert';
 import Dialog from '@material-ui/core/Dialog';
@@ -14,6 +15,7 @@ import Snackbar from '@material-ui/core/Snackbar';
 import MaterialTable from 'material-table';
 
 import DetailForm from './DetailForm';
+import StoreContext from '../store/StoreContext';
 
 const store = new Store();
 
@@ -21,54 +23,141 @@ const Alert = (props: AlertProps) => {
   return <MuiAlert elevation={6} variant="filled" {...props} />;
 };
 
-export default function DataTable({
-  dataState,
-  dispatch,
-  filter = {},
-  ...otherProps
-}) {
+const ConfirmDialog = (({ open, onClose, onOK }) => {
   const { t } = useTranslation();
-  const [pageSize, setPageSize] = useState(
-    store.get(`schema.${dataState.name}.pageSize`, 20)
-  );
+  const [{ schema: dataState }] = useContext(StoreContext);
 
-  const tableRef = useRef();
-  const [detailOpen, setDetailOpen] = useState(false);
-  const [selected, setSelected] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
+  return (
+    <>
+      <Dialog
+        disableBackdropClick
+        disableEscapeKeyDown
+        open={open}
+        onClose={onClose}
+        fullWidth
+        maxWidth="md"
+      >
+        <DialogTitle>
+          {dataState.changeList.length > 1 ? `${dataState.changeList.length}件修正` : '新規'}
+        </DialogTitle>
+        <DialogContent>
+          {Object.keys(dataState.changes).map((field) => (
+            <div key={field}>
+              <Typography variant="h6" display="inline" gutterBottom>
+                {field}:
+              </Typography>
+              <Typography variant="body2" display="inline" gutterBottom>
+                {dataState.changes[field]}
+              </Typography>
+            </div>
+          ))}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={onClose}>
+            {t('Cancel')}
+          </Button>
+          <Button onClick={() => {
+            onOK();
+            onClose();
+          }} color="primary">
+            {t('Ok')}
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </>
+  );
+});
+
+const DetailDialog = (({ list, open, onClose, onChange }) => {
+  const { t } = useTranslation();
+  const [{ schema: dataState }] = useContext(StoreContext);
+  const [confirmOpen, setConfirmOpen] = useState(false);
+
+  const handleSave = () => {
+    // confirm
+    setConfirmOpen(true);
+  };
+  const confirmedSave = () => {
+    if (dataState.changeList.length > 0) {
+      ipcRenderer
+        .invoke('update', {
+          name: dataState.name,
+          filter: {
+            _id: {
+              $in: dataState.changeList.map((r) => r._id),
+            },
+          },
+          doc: dataState.changes,
+        })
+        .then((results) => {
+          console.log('update results', results);
+        });
+    } else {
+      ipcRenderer
+        .invoke('insert-many', {
+          name: dataState.name,
+          docs: [dataState.changes],
+        })
+        .then((results) => {
+          console.log('insert results', results);
+        });
+    }
+    onClose();
+    onChange();
+  };
+
+  return (
+    <>
+      <Dialog
+        disableBackdropClick
+        disableEscapeKeyDown
+        open={open}
+        onClose={onClose}
+        fullWidth
+        maxWidth="lg"
+      >
+        <DialogTitle>
+          {dataState.changeList.length > 1 ? `${dataState.changeList.length}件修正` : '新規'}
+        </DialogTitle>
+        <DialogContent>
+          <DetailForm
+            list={list}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={onClose}>
+            {t('Cancel')}
+          </Button>
+          <Button onClick={handleSave} color="primary">
+            {t('Ok')}
+          </Button>
+        </DialogActions>
+      </Dialog>
+      <ConfirmDialog
+        open={confirmOpen}
+        onClose={() => setConfirmOpen(false)}
+        onOK={confirmedSave}
+      />
+    </>
+  );
+});
+
+export default function DataTable() {
+  const { t } = useTranslation();
+  const [{ schema: dataState }, dispatch] = useContext(StoreContext);
+    const [pageSize, setPageSize] = useState(
+      store.get(`schema.${dataState.name}.pageSize`, 20)
+    );
+
+    const tableRef = useRef();
+    const [detailOpen, setDetailOpen] = useState(false);
+    const [selected, setSelected] = useState([]);
+    const [isLoading, setIsLoading] = useState(false);
 
   const handleClickDetailOpen = () => {
     setDetailOpen(true);
   };
 
-  const handleDetailSave = () => {
-    //
-    if (dataState.changeList.length > 0) {
-      ipcRenderer.invoke('update', {
-        name: dataState.name,
-        filter: {
-          _id: {
-            $in: dataState.changeList.map((r) => r._id),
-          },
-        },
-        doc: dataState.changes,
-      }).then((results) => {
-        console.log('update results', results);
-      });
-    } else {
-      ipcRenderer.invoke('insert-many', {
-        name: dataState.name,
-        docs: [dataState.changes],
-      }).then((results) => {
-        console.log('insert results', results);
-      });
-    }
-    dispatch({
-      type: 'SCHEMA_DATA_CLEAR',
-    });
-    setDetailOpen(false);
-    tableRef.current.onQueryChange();
-  };
   const handleDetailClose = () => {
     dispatch({
       type: 'SCHEMA_DATA_CLEAR',
@@ -91,7 +180,10 @@ export default function DataTable({
 
   return (
     <>
-      {(dataState.materialDefinition && dataState.materialDefinition.length > 0) && (
+      <Typography variant="body2" gutterBottom>
+        テーブルデータの内容を表示されます。
+      </Typography>
+      {dataState.materialDefinition && dataState.materialDefinition.length > 0 && (
         <MaterialTable
           tableRef={tableRef}
           isLoading={isLoading}
@@ -113,31 +205,31 @@ export default function DataTable({
                 page: query.page,
                 sort: query.orderBy
                   ? {
-                    [query.orderBy.field]: query.orderDirection,
-                  }
-                : undefined,
-              };
-              ipcRenderer.invoke('find', {
-                name: dataState.name,
-                filter: {
-                  ...filter,
-                  ...query.filters.reduce((r, v) => {
-                    if (typeof v.value === 'object' && v.value.length === 0) {
-                      // nothing
-                    } else {
-                      r[v.column.field] = v.value;
+                      [query.orderBy.field]: query.orderDirection,
                     }
-                    return r;
-                  }, {}),
-                },
-                options,
-              }).then((results) => {
-                setIsLoading(false);
-                resolve({
-                  ...results,
+                  : undefined,
+              };
+              ipcRenderer
+                .invoke('find', {
+                  name: dataState.name,
+                  filter: {
+                    ...query.filters.reduce((r, v) => {
+                      if (typeof v.value === 'object' && v.value.length === 0) {
+                        //  nothing
+                      } else {
+                        r[v.column.field] = v.value;
+                      }
+                      return r;
+                    }, {}),
+                  },
+                  options,
+                })
+                .then((results) => {
+                  setIsLoading(false);
+                  resolve({
+                    ...results,
+                  });
                 });
-              });
-
             })
           }
           onChangeRowsPerPage={handleChangeRowsPerPage}
@@ -167,49 +259,30 @@ export default function DataTable({
                 console.log('You want to delete ' + rows.length + ' rows');
                 handleSnackbarClick();
                 setSelected(rows);
-                ipcRenderer.invoke('remove', {
-                  name: dataState.name,
-                  filter: {
-                    _id: {
-                      $in: rows.map((r) => r._id),
+                ipcRenderer
+                  .invoke('remove', {
+                    name: dataState.name,
+                    filter: {
+                      _id: {
+                        $in: rows.map((r) => r._id),
+                      },
                     },
-                  },
-                }).then((results) => {
-                  tableRef.current.onQueryChange();
-                  console.log(results);
-                });
+                  })
+                  .then((results) => {
+                    tableRef.current && tableRef.current.onQueryChange();
+                    console.log(results);
+                  });
               },
             },
           ]}
-          {...otherProps}
         />
       )}
-      <Dialog
-        disableBackdropClick
-        disableEscapeKeyDown
+      <DetailDialog
         open={detailOpen}
         onClose={handleDetailClose}
-        fullWidth
-        maxWidth="lg"
-      >
-        <DialogTitle>Detail</DialogTitle>
-        <DialogContent>
-          <DetailForm
-            definition={dataState.definition}
-            suggests={dataState.suggests}
-            list={selected}
-            dispatch={dispatch}
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleDetailClose}>
-            {t('Cancel')}
-          </Button>
-          <Button onClick={handleDetailSave} color="primary">
-            {t('Ok')}
-          </Button>
-        </DialogActions>
-      </Dialog>
+        list={selected}
+        onChange={tableRef.current && tableRef.current.onQueryChange}
+      />
 
       <Snackbar
         open={snackbarOpen}

@@ -87,14 +87,16 @@ function SchemaWizard() {
     () => {}, // 'Next'
     () => {   // 'Create Table'
       console.log('dataState:', dataState);
-      ipcRenderer.invoke('schema-post', {
-        name: dataState.name,
-        definition: dataState.definition,
-        docs: dataState.data,
-      }).then((newSchema) => {
-        console.log('schema-post:', newSchema);
-        setSnackOpen(true);
-      });
+      ipcRenderer
+        .invoke('schema-post', {
+          name: dataState.name,
+          definition: dataState.definition,
+          docs: dataState.data,
+        })
+        .then((newSchema) => {
+          console.log('schema-post:', newSchema);
+          setSnackOpen(true);
+        });
     },
   ];
 

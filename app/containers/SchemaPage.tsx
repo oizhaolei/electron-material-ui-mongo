@@ -66,14 +66,16 @@ export default function SchemaPage() {
   const [{ schema: dataState }, dispatch] = useContext(StoreContext);
 
   useEffect(() => {
-    ipcRenderer.invoke('schema', {
-      name,
-    }).then((schema) => {
-      dispatch({
-        type: 'SCHEMA_INIT',
-        payload: schema,
+    ipcRenderer
+      .invoke('schema', {
+        name,
+      })
+      .then((schema) => {
+        dispatch({
+          type: 'SCHEMA_INIT',
+          payload: schema,
+        });
       });
-    });
     return () => {
       dispatch({
         type: 'SCHEMA_CLEAN',
@@ -101,11 +103,7 @@ export default function SchemaPage() {
           <Tab label={t('Import')} {...a11yProps(3)} />
         </Tabs>
         <TabPanel value={tab} index={0}>
-          <DataTable
-            dataState={dataState}
-            dispatch={dispatch}
-            readonly={false}
-          />
+          <DataTable />
         </TabPanel>
         <TabPanel value={tab} index={1}>
           <SchemaTable

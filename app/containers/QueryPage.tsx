@@ -26,11 +26,13 @@ export default function QueryPage() {
   const [query, setQuery] = useState({});
 
   useEffect(() => {
-    ipcRenderer.invoke('query', {
-      name,
-    }).then((query) => {
-      setQuery(query);
-    });
+    ipcRenderer
+      .invoke('query', {
+        name,
+      })
+      .then((query) => {
+        setQuery(query);
+      });
   }, [name]);
 
   return (
@@ -40,12 +42,14 @@ export default function QueryPage() {
         startIcon={<DeleteForeverIcon />}
         color="secondary"
         onClick={() => {
-          ipcRenderer.invoke('query-delete', {
-            name,
-          }).then((results) => {
-            console.log('query-delete:', results);
-            history.replace('/');
-          });
+          ipcRenderer
+            .invoke('query-delete', {
+              name,
+            })
+            .then((results) => {
+              console.log('query-delete:', results);
+              history.replace('/');
+            });
         }}
       >
         {t('Drop Query')}
@@ -57,10 +61,12 @@ export default function QueryPage() {
           && query.relations.one.table
           && (
             <ReadonlyDataTable
+              name={name}
               schemaName={query.relations.one.table}
               dialogContent={({ list }) =>
                 list.length > 0 && (
                   <ReadonlyDataTable
+                    name={name}
                     schemaName={query.relations.many.table}
                     filter={{
                       [query.relations.many.field]: list[0][query.relations.one.field],

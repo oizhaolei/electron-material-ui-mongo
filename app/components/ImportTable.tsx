@@ -53,7 +53,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 }));
 
-export default function ImportTable({ dataState }) {
+export default function ImportTable({ dispatch, dataState }) {
   const classes = useStyles();
   const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
@@ -63,6 +63,9 @@ export default function ImportTable({ dataState }) {
 
   return (
     <div className={classes.root}>
+      <Typography variant="body2" gutterBottom>
+        CSVファイルをインポートして、既存データに追加することができます。
+      </Typography>
       {loading && <CircularProgress />}
       <DropzoneArea
         acceptedFiles={['text/csv']}
@@ -70,19 +73,21 @@ export default function ImportTable({ dataState }) {
         onChange={(files) => {
           if (files && files.length > 0) {
             setLoading(true);
-            ipcRenderer.invoke('csv-read', {
-              file: files[0].path,
-            }).then(({ definition, data }) => {
-              setLoading(false);
-              setDefinition(definition);
-              setData(data);
+            ipcRenderer
+              .invoke('csv-read', {
+                file: files[0].path,
+              })
+              .then(({ definition, data }) => {
+                setLoading(false);
+                setDefinition(definition);
+                setData(data);
 
-              if (isEqual(definition, dataState.definition)) {
-                setWarning();
-              } else {
-                setWarning(t('different data structure'));
-              }
-            });
+                if (isEqual(definition, dataState.definition)) {
+                  setWarning();
+                } else {
+                  setWarning(t('different data structure'));
+                }
+              });
           }
         }}
       />
