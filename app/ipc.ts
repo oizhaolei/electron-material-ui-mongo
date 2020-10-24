@@ -62,14 +62,15 @@ export default function ipc() {
   });
 
   // csv-read
-  ipcMain.handle('csv-read', async (event, { file }) => {
-    console.log('csv-read');
+  ipcMain.on('csv-read', async (event, file) => {
+    console.log('csv-read', file);
     csv().fromFile(file).then((data) => {
       const definition = genSchemaDefinition(data);
-      return {
+      console.log('definition:', definition);
+      event.reply('csv-read', {
         definition,
         data,
-      };
+      });
     });
   });
 

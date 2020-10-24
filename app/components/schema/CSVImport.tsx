@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ipcRenderer } from 'electron';
 import { useTranslation } from 'react-i18next';
 
@@ -82,6 +82,24 @@ export default function CSVImport({ dataState, dispatch }) {
   const [loading, setLoading] = useState(false);
   const classes = useStyles();
 
+  useEffect(() => {
+    const csvReadListener = (event, { definition, data }) => {
+      setLoading(false);
+      dispatch({
+        type: 'SCHEMA_WIZARD_INIT',
+        payload: {
+          definition,
+          data,
+        },
+      });
+    };
+    ipcRenderer.on('csv-read', csvReadListener);
+
+    return () => {
+      ipcRenderer.removeListener('csv-read', csvReadListener);
+    };
+  }, []);
+
   return (
     <>
       <Typography variant="body2" gutterBottom>
@@ -103,20 +121,7 @@ export default function CSVImport({ dataState, dispatch }) {
         onChange={(files) => {
           if (files && files.length > 0) {
             setLoading(true);
-            ipcRenderer
-              .invoke('csv-read', {
-                file: files[0].path,
-              })
-              .then(({ definition, data }) => {
-                setLoading(false);
-                dispatch({
-                  type: 'SCHEMA_WIZARD_INIT',
-                  payload: {
-                    definition,
-                    data,
-                  },
-                });
-              });
+            ipcRenderer.send('csv-read', files[0].path);
           }
         }}
       />
