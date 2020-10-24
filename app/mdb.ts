@@ -154,8 +154,8 @@ export default class Mdb {
     const Model = await this.getSchemaModel(name);
     const docs = await Model.find().lean();
 
-    const fields = genSchemaDefinition(docs).map((f) => f.field);
-    const opts = { fields: Object.keys(fields) };
+    const definition = genSchemaDefinition(docs);
+    const opts = { fields: Object.keys(definition) };
 
     const parser = new json2csv.Parser(opts);
     const csv = parser.parse(docs);
