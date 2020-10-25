@@ -4,10 +4,10 @@ import clsx from 'clsx';
 import { makeStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
+import Typography from '@material-ui/core/Typography';
 
 import Chart from '../components/dashboard/Chart';
 import Deposits from '../components/dashboard/Deposits';
-import Typography from '@material-ui/core/Typography';
 import Tables from '../components/dashboard/Tables';
 import Queries from '../components/dashboard/Queries';
 
@@ -36,18 +36,6 @@ function Dashboard() {
           テーブルとクエリの概要情報を表示されます。
       </Typography>
       <Grid container spacing={3}>
-        {/* Chart */}
-        <Grid item xs={12} md={8} lg={9}>
-          <Paper className={fixedHeightPaper}>
-            <Chart />
-          </Paper>
-        </Grid>
-        {/* Recent Deposits */}
-        <Grid item xs={12} md={4} lg={3}>
-          <Paper className={fixedHeightPaper}>
-            <Deposits />
-          </Paper>
-        </Grid>
         <Grid item xs={6}>
           <Paper className={classes.paper}>
             <Tables />
@@ -56,6 +44,16 @@ function Dashboard() {
         <Grid item xs={6}>
           <Paper className={classes.paper}>
             <Queries />
+          </Paper>
+        </Grid>
+        <Grid item xs={12} md={8} lg={9}>
+          <Paper className={fixedHeightPaper}>
+            <Chart />
+          </Paper>
+        </Grid>
+        <Grid item xs={12} md={4} lg={3}>
+          <Paper className={fixedHeightPaper}>
+            <Deposits />
           </Paper>
         </Grid>
       </Grid>

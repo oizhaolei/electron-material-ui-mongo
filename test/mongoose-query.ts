@@ -6,11 +6,11 @@ import config from '../app/config';
 const fk = {
   one: {
     table: 'patients',
-    field: 'patientid',
+    field: '患者番号',
   },
   many: {
-    table: 'symptoms',
-    field: 'patient',
+    table: 'diseases',
+    field: '患者番号',
   },
 };
 const main = async () => {

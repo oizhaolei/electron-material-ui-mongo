@@ -13,6 +13,7 @@ import SchemaPage from './containers/SchemaPage';
 import HomePage from './containers/HomePage';
 import Color from './containers/ColorPage';
 import PinCode from './containers/PinCode';
+import TestPage from './containers/TestPage';
 
 function PrivateRoute({ component: Component, ...rest }) {
   const [{ auth }] = useContext(StoreContext);
@@ -44,6 +45,7 @@ export default function Routes() {
         <PrivateRoute path="/query/:name" exact component={QueryPage} />
         <PrivateRoute path="/table/:name" exact component={SchemaPage} />
         <PrivateRoute path="/color" exact component={Color} />
+        <PrivateRoute path="/test" exact component={TestPage} />
         <PrivateRoute path="/" exact component={HomePage} />
       </Switch>
     </App>

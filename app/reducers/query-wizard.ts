@@ -43,7 +43,7 @@ export default (state = initialState, action) => {
         ...state.relations,
         ...action.payload,
       };
-      const error = (
+      const error = !(
         relations.one
         && relations.one.table
         && relations.one.field

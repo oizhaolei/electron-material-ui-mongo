@@ -140,7 +140,7 @@ export default function ipc() {
       app.getPath('home'),
       `${name}-${new Date().getDate()}.csv`
     );
-    mdb.writeCSV(name, file);
+    await mdb.writeCSV(name, file);
     shell.showItemInFolder(file);
     return file;
   });
@@ -171,24 +171,21 @@ export default function ipc() {
     return result;
   });
 
-  // query-data
-  ipcMain.handle(
-    'query-data',
-    async (
-      event,
-      { name, filter = {}, projection, options, code }
-    ) => {
-      console.log('query-data');
+  // query-code
+  ipcMain.on(
+    'query-code',
+    async (event, { name, filter = {}, projection, options, code }) => {
+      console.log('query-code', code);
       if (name) {
         const q = await mdb.getQuery(name);
         code = q.code;
       }
       const data = await mdb.queryCode(code, filter, projection, options);
       const definition = genSchemaDefinition(data);
-      return {
+      event.reply('query-code', {
         definition,
         data,
-      };
+      });
     }
   );
 }

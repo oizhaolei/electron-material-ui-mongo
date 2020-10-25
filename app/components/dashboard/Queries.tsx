@@ -59,9 +59,6 @@ export default function Queries() {
           ))}
         </TableBody>
       </Table>
-      <div className={classes.seeMore}>
-        <Button>See more</Button>
-      </div>
     </>
   );
 }

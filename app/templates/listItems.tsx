@@ -98,6 +98,14 @@ export const QueryListItems = ({ current }) => {
           </ListItem>
         </Link>
       ))}
+      <Link to="/test" className={classes.link}>
+        <ListItem button>
+          <ListItemIcon>
+            <FindInPageIcon />
+          </ListItemIcon>
+          <ListItemText primary="Test" />
+        </ListItem>
+      </Link>
     </>
   );
 };

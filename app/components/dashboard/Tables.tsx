@@ -59,9 +59,6 @@ export default function Tables() {
           ))}
         </TableBody>
       </Table>
-      <div className={classes.seeMore}>
-        <Button>See more</Button>
-      </div>
     </>
   );
 }
