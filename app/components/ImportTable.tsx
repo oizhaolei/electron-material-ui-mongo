@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ipcRenderer } from 'electron';
 
@@ -61,38 +61,31 @@ export default function ImportTable({ dispatch, dataState }) {
   const [definition, setDefinition] = useState([]);
   const [warning, setWarning] = useState([]);
 
-  useEffect(() => {
-    const csvReadListener = (event, { definition, data }) => {
-      setLoading(false);
-      setDefinition(definition);
-      setData(data);
-
-      if (isEqual(definition, dataState.definition)) {
-        setWarning();
-      } else {
-        setWarning(t('different data structure'));
-      }
-    };
-    ipcRenderer.on('csv-read', csvReadListener);
-
-    return () => {
-      ipcRenderer.removeListener('csv-read', csvReadListener);
-    };
-  }, []);
-
   return (
     <div className={classes.root}>
       <Typography variant="body2" gutterBottom>
-        CSVファイルをインポートして、既存データに追加することができます。
+        {t('ImportTable demo')}
       </Typography>
       {loading && <CircularProgress />}
       <DropzoneArea
         acceptedFiles={['text/csv']}
-        dropzoneText={'Drag and drop an CSV here or click'}
+        dropzoneText={t('Drag and drop an CSV here or click')}
         onChange={(files) => {
           if (files && files.length > 0) {
             setLoading(true);
-            ipcRenderer.send('csv-read', files[0].path);
+            ipcRenderer
+              .invoke('csv-read', files[0].path)
+              .then(({ definition, data }) => {
+                setLoading(false);
+                setDefinition(definition);
+                setData(data);
+
+                if (isEqual(definition, dataState.definition)) {
+                  setWarning();
+                } else {
+                  setWarning(t('different data structure'));
+                }
+              });
           }
         }}
       />

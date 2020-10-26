@@ -19,7 +19,7 @@ export default function NameForm({ dataState, dispatch }) {
     ipcRenderer
       .invoke('schemas')
       .then((schemas) => {
-        const names = schemas.map((s) => pluralize(s.name.toLowerCase()));
+        const names = schemas.map((s) => pluralize.singular(s.name.toLowerCase()));
         setSchemaNames(names);
       });
   }, []);
@@ -27,13 +27,14 @@ export default function NameForm({ dataState, dispatch }) {
   const handleChange = (v) => {
     setName(v);
 
-    const err = schemaNames.includes(pluralize(v.toLowerCase()));
+    const input = pluralize.singular(v.toLowerCase());
+    const err = schemaNames.includes(input);
     setError(err);
     setHelperText(err && 'duplicated name');
     dispatch({
       type: 'SCHEMA_WIZARD_INIT',
       payload: {
-        name: v,
+        name: input,
         error: err,
       },
     });
@@ -44,7 +45,7 @@ export default function NameForm({ dataState, dispatch }) {
         {t('Table Name')}
       </Typography>
       <Typography variant="body2" gutterBottom>
-        テーブル名はユニックが必要、既存のテーブルと重複しないでください。
+        {t('schema NameForm demo')}
       </Typography>
       <Grid container spacing={3}>
         <Grid item xs={12}>

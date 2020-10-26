@@ -97,7 +97,7 @@ export default function PinCode() {
           </Typography>
         </Paper>
         <Typography variant="body2" gutterBottom>
-          正しいPinCodeを入力してログインしてください、誤って入力した文字列を削除は「Back Space」を押してください。
+          {t('PinCode demo')}
         </Typography>
         <Box mt={8}>
           <Copyright />

@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { ipcRenderer } from 'electron';
-import { useTranslation } from 'react-i18next';
 
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
@@ -16,64 +15,87 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+const oneToManyCode = () => {
+  const fk = {
+    one: {
+      table: 'patients',
+      field: '患者番号',
+    },
+    many: {
+      table: 'disease',
+      field: '患者番号',
+    },
+  };
 
-const fk = {
-  one: {
-    table: 'patients',
-    field: '患者番号',
-  },
-  many: {
-    table: 'disease',
-    field: '患者番号',
-  },
-};
-
-const code = `
-(({ models, callback }) => {
+  const code = `
+(({ models, params, callback }) => {
   (async () => {
     console.log('vm start.');
-
-    const rows = await models['${fk.one.table}'].find().lean();
-    let many;
-    const result = await Promise.all(rows.map(async (p) => {
-try {
-       many = await models['${fk.many.table}'].find({ '${fk.many.field}': p['${fk.one.field}'] }).lean();
-console.log('many:', many);
-} catch (err) {
-  console.log('err:', err);
-}
-      return {
-        ...p,
-        many,
-      };
-    }));
+    try {
+      const rows = await models['${fk.one.table}'].find(params).lean();
+      const result = await Promise.all(rows.map(async (one) => {
+        const many = await models['${fk.many.table}'].find({ '${fk.many.field}': one['${fk.one.field}'] }).lean();
+        console.log('many:', many);
+        return {
+          one,
+          many,
+        };
+      }));
+      callback(false, result);
+    } catch (err) {
+      console.log('err:', err);
+      callback(err);
+    }
     console.log('vm end');
-    callback(false, result);
   })();
 })
 `;
+  return code;
+};
+
+const paramsCode = () => {
+  const input = [
+    '患者番号',
+    '採取日',
+  ];
+
+  return `
+(({ models, params, callback }) => {
+  (async () => {
+    console.log('vm start.', params);
+    try {
+      const patient = await models['patients'].findOne({
+        '患者番号': params['患者番号'],
+      }).lean();
+      const diseases = await models['disease'].find({
+        '患者番号': patient['患者番号'],
+        '採取日': {
+          $lte: params['採取日']
+        },
+      }).lean();
+      callback(false, {
+        patients: [patient],
+        diseases,
+      });
+    } catch (err) {
+      console.log('err:', err);
+      callback(err);
+    }
+    console.log('vm end');
+  })();
+})
+`;
+};
+
+// INPUT: 患者番号, 日付, before/after
+//
+// OUTPUT:
+//    patients: one row
+//    disease: multi rows
 
 export default function TestPage() {
   const classes = useStyles();
   const [text, setText] = useState();
-  const { t, i18n } = useTranslation();
-
-  const changeLanguage = () => {
-    const getCurrentLng = i18n.language || window.localStorage.i18nextLng || '';
-
-    i18n.changeLanguage(getCurrentLng === 'ja' ? 'en' : 'ja');
-  };
-
-  useEffect(() => {
-    const queryCodeListener = (event, arg) => {
-      console.log(arg);
-      setText(JSON.stringify(arg));
-    };
-    ipcRenderer.on('query-code', queryCodeListener);
-    return () => {
-      ipcRenderer.removeListener('query-code', findListener);
-    };
-  }, []);
 
   return (
     <GenericTemplate title="Test" id="test">
@@ -82,13 +104,35 @@ export default function TestPage() {
           variant="contained"
           color="secondary"
           onClick={() => {
-            console.log('query-code:', code);
-            ipcRenderer.send('query-code', {
-              code,
-            });
+            ipcRenderer
+              .invoke('query-code', {
+                code: oneToManyCode(),
+              }).then((data) => {
+                console.log(data);
+                setText(JSON.stringify(data));
+              });
           }}
         >
-          Code
+          One to Many Code
+        </Button>
+        <Button
+          variant="contained"
+          color="secondary"
+          onClick={() => {
+            ipcRenderer
+              .invoke('query-code', {
+                code: paramsCode(),
+                params: {
+                  '患者番号': '04581799',
+                  '採取日': '2018/03/10',
+                },
+              }).then((data) => {
+                console.log(data);
+                setText(JSON.stringify(data));
+              });
+          }}
+        >
+          Pataints Disease Date Code
         </Button>
         <Typography variant="body1" gutterBottom>
           {text}

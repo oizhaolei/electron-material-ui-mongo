@@ -62,14 +62,16 @@ export default function ipc() {
   });
 
   // csv-read
-  ipcMain.on('csv-read', async (event, file) => {
+  ipcMain.handle('csv-read', async (event, file) => {
     console.log('csv-read', file);
-    csv().fromFile(file).then((data) => {
-      const definition = genSchemaDefinition(data);
-      console.log('definition:', definition);
-      event.reply('csv-read', {
-        definition,
-        data,
+    return new Promise((resolve, reject) => {
+      csv().fromFile(file).then((data) => {
+        const definition = genSchemaDefinition(data);
+        console.log('definition:', definition);
+        resolve({
+          definition,
+          data,
+        });
       });
     });
   });
@@ -172,20 +174,13 @@ export default function ipc() {
   });
 
   // query-code
-  ipcMain.on(
+  ipcMain.handle(
     'query-code',
-    async (event, { name, filter = {}, projection, options, code }) => {
-      console.log('query-code', code);
-      if (name) {
-        const q = await mdb.getQuery(name);
-        code = q.code;
-      }
-      const data = await mdb.queryCode(code, filter, projection, options);
-      const definition = genSchemaDefinition(data);
-      event.reply('query-code', {
-        definition,
-        data,
-      });
+    async (event, { params = {}, code }) => {
+      console.log('query-code', code, params);
+      const data = await mdb.queryCode(code, params);
+      console.log('data:', data);
+      return data;
     }
   );
 }

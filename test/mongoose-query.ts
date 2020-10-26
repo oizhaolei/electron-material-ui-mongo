@@ -21,7 +21,7 @@ const main = async () => {
 
     const rows = await mdb['${fk.one.table}'].find(filter, projection, options).lean();
     const result = await Promise.all(rows.map(async (p) => {
-      const many = await mdb['${fk.many.table}'].find({ ['${fk.many.field}']: p['${fk.one.field}'] }).lean();
+      const many = await mdb['${fk.many.table}'].find({ '${fk.many.field}': p['${fk.one.field}'] }).lean();
       return {
         ...p,
         many,

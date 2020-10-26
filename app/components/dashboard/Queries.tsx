@@ -4,7 +4,6 @@ import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 
 import { makeStyles } from '@material-ui/core/styles';
-import Button from '@material-ui/core/Button';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -37,8 +36,6 @@ export default function Queries() {
         <TableHead>
           <TableRow>
             <TableCell>{t('Name')}</TableCell>
-            <TableCell>{t('Main Table')}</TableCell>
-            <TableCell>{t('Detail Table')}</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -53,8 +50,6 @@ export default function Queries() {
                   {q.name}
                 </Link>
               </TableCell>
-              <TableCell>{`${q.relations.one.table}.${q.relations.one.field}`}</TableCell>
-              <TableCell>{`${q.relations.many.table}.${q.relations.many.field}`}</TableCell>
             </TableRow>
           ))}
         </TableBody>

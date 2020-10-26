@@ -15,8 +15,7 @@ import MuiAlert, { AlertProps } from '@material-ui/lab/Alert';
 
 import GenericTemplate from '../templates/GenericTemplate';
 import NameForm from '../components/query/NameForm';
-import RelationForm from '../components/query/RelationForm';
-import Review from '../components/query/Review';
+import CodeForm from '../components/query/CodeForm';
 
 import StoreContext from '../store/StoreContext';
 
@@ -78,25 +77,20 @@ function QueryWizard() {
 
   const steps = [
     t('Query Name'),
-    t('Relations'),
-    t('Preview'),
+    t('Code'),
    ];
   const stepLabels = [
-    t('Next'),
     t('Next'),
     t('Create Query'),
   ];
 
   const stepActions = [
     () => {}, // 'Next'
-    () => {}, // 'Next'
     () => {   // 'Create Query'
       ipcRenderer
         .invoke('query-post', {
           name: dataState.name,
           data: {
-            type: dataState.type,
-            relations: dataState.relations,
             code: dataState.code,
           },
         })
@@ -122,30 +116,14 @@ function QueryWizard() {
       return (
         <NameForm
           dataState={dataState}
-          onChange={(payload) => dispatch({
-            type: 'QUERY_DATA_CHANGE',
-            payload,
-          })}
+          dispatch={dispatch}
         />
       );
     case 1:
       return (
-        <RelationForm
+        <CodeForm
           dataState={dataState}
-          onChange={(payload) => dispatch({
-            type: 'QUERY_RELATION_CHANGE',
-            payload,
-          })}
-        />
-      );
-    case 2:
-      return (
-        <Review
-          dataState={dataState}
-          onChange={(payload) => dispatch({
-            type: 'QUERY_DATA_CHANGE',
-            payload,
-          })}
+          dispatch={dispatch}
         />
       );
     default:

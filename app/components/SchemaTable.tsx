@@ -81,7 +81,7 @@ export default function SchemaTable({ dataState, dispatch }) {
   return (
     <>
       <Typography variant="body2" gutterBottom>
-        テーブル構造の追加、削除ができます。
+        {t('SchemaTable demo')}
       </Typography>
       <Button
         variant="contained"

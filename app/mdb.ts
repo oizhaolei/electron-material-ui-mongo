@@ -27,24 +27,23 @@ const schemaDef = {
 
 const queryDef = {
   name: String,
-  type: String,
-  relations: mongoose.Schema.Types.Mixed,
+  params: [String],
   code: String,
 };
 
 const getType = (field, row) => {
-  const cell = row[field];
-  if (cell) {
-    if (typeof cell === 'number') {
-      return 'Number';
-    }
-    if (typeof cell === 'boolean') {
-      return 'Boolean';
-    }
-    if (dayjs(cell).isValid()) {
-      return 'Date';
-    }
-  }
+  // const cell = row[field];
+  // if (cell) {
+  //   if (typeof cell === 'number') {
+  //     return 'Number';
+  //   }
+  //   if (typeof cell === 'boolean') {
+  //     return 'Boolean';
+  //   }
+  //   if (dayjs(cell).isValid()) {
+  //     return 'Date';
+  //   }
+  // }
 
   return 'String';
 };
@@ -293,15 +292,18 @@ export default class Mdb {
     return query;
   }
 
-  async queryCode(code) {
+  async queryCode(code, params) {
     const models = this.models;
     return new Promise((resolve, reject) => {
       const callback = (err, data) => {
-        console.log('err, data', err, data);
-        resolve(data);
+        if (err) {
+          reject(err);
+        } else {
+          resolve(data);
+        }
       };
 
-      vm.runInThisContext(code)({ models, callback });
+      vm.runInThisContext(code)({ models, params, callback });
     });
   }
 }

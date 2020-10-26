@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import clsx from 'clsx';
 import { makeStyles } from '@material-ui/core/styles';
@@ -27,13 +28,14 @@ const useStyles = makeStyles((theme) => ({
 
 function Dashboard() {
   const classes = useStyles();
+  const { t } = useTranslation();
 
   const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
 
   return (
     <GenericTemplate title="Dashboard" id="dashboard">
       <Typography variant="body2" gutterBottom>
-          テーブルとクエリの概要情報を表示されます。
+        {t('Dashboard demo')}
       </Typography>
       <Grid container spacing={3}>
         <Grid item xs={6}>

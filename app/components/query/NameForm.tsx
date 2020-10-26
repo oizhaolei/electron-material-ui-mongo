@@ -7,7 +7,7 @@ import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import TextField from '@material-ui/core/TextField';
 
-export default function NameForm({ dataState, onChange }) {
+export default function NameForm({ dataState, dispatch }) {
   const { t } = useTranslation();
 
   const [name, setName] = useState(dataState.name);
@@ -19,19 +19,23 @@ export default function NameForm({ dataState, onChange }) {
     ipcRenderer
       .invoke('queries')
       .then((qs) => {
-        setQueries(qs.map((s) => pluralize(s.name.toLowerCase())));
+        setQueries(qs.map((s) => pluralize.singular(s.name.toLowerCase())));
       });
   }, []);
 
   const handleChange = (v) => {
     setName(v);
 
-    const err = queries.includes(pluralize(v.toLowerCase()));
+    const input = pluralize.singular(v.toLowerCase());
+    const err = queries.includes(input);
     setError(err);
     setHelperText(err && 'duplicated name');
-    onChange({
-      name: v,
-      error: err,
+    dispatch({
+      type: 'QUERY_DATA_CHANGE',
+      payload: {
+        name: input,
+        error: err,
+      },
     });
   };
   return (
@@ -40,7 +44,7 @@ export default function NameForm({ dataState, onChange }) {
         {t('Query Name')}
       </Typography>
       <Typography variant="body2" gutterBottom>
-        クエリ名はユニックが必要、既存のクエリと重複しないでください。
+        {t('query NameForm demo')}
       </Typography>
       <Grid container spacing={3}>
         <Grid item xs={12}>

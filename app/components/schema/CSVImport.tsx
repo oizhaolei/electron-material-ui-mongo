@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { ipcRenderer } from 'electron';
 import { useTranslation } from 'react-i18next';
 
@@ -82,29 +82,11 @@ export default function CSVImport({ dataState, dispatch }) {
   const [loading, setLoading] = useState(false);
   const classes = useStyles();
 
-  useEffect(() => {
-    const csvReadListener = (event, { definition, data }) => {
-      setLoading(false);
-      dispatch({
-        type: 'SCHEMA_WIZARD_INIT',
-        payload: {
-          definition,
-          data,
-        },
-      });
-    };
-    ipcRenderer.on('csv-read', csvReadListener);
-
-    return () => {
-      ipcRenderer.removeListener('csv-read', csvReadListener);
-    };
-  }, []);
-
   return (
     <>
       <Typography variant="body2" gutterBottom>
-        CSVファイルをアップロードした後、テーブル構造を手動で変更できます。
-        データを確認した後、テーブルを作成できます。
+        {t('schema CSVImport demo')}
+        {t('schema CSVImport demo2')}
       </Typography>
       {loading && <CircularProgress />}
       <List disablePadding>
@@ -117,11 +99,22 @@ export default function CSVImport({ dataState, dispatch }) {
       </List>
       <DropzoneArea
         acceptedFiles={['text/csv']}
-        dropzoneText={'Drag and drop an CSV here or click'}
+        dropzoneText={t('Drag and drop an CSV here or click')}
         onChange={(files) => {
           if (files && files.length > 0) {
             setLoading(true);
-            ipcRenderer.send('csv-read', files[0].path);
+            ipcRenderer
+              .invoke('csv-read', files[0].path)
+              .then(({ definition, data }) => {
+                setLoading(false);
+                dispatch({
+                  type: 'SCHEMA_WIZARD_INIT',
+                  payload: {
+                    definition,
+                    data,
+                  },
+                });
+              });
           }
         }}
       />

@@ -11,6 +11,9 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Snackbar from '@material-ui/core/Snackbar';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemText from '@material-ui/core/ListItemText';
 
 import MaterialTable from 'material-table';
 
@@ -38,19 +41,17 @@ const ConfirmDialog = (({ open, onClose, onOK }) => {
         maxWidth="md"
       >
         <DialogTitle>
-          {dataState.changeList.length > 1 ? `${dataState.changeList.length}件修正` : '新規'}
+          {dataState.changeList.length > 1 ? `${dataState.changeList.length} rows` : t('new')}
         </DialogTitle>
         <DialogContent>
-          {Object.keys(dataState.changes).map((field) => (
-            <div key={field}>
-              <Typography variant="h6" display="inline" gutterBottom>
-                {field}:
-              </Typography>
-              <Typography variant="body2" display="inline" gutterBottom>
-                {dataState.changes[field]}
-              </Typography>
-            </div>
-          ))}
+          {dataState.changeList.length > 1 ? `${dataState.changeList.length} rows` : t('new')}
+          <List>
+            {Object.keys(dataState.changes).map((field) => (
+              <ListItem key={field}>
+                <ListItemText primary={`${field}:$dataState.changes[field]`} />
+              </ListItem>
+            ))}
+          </List>
         </DialogContent>
         <DialogActions>
           <Button onClick={onClose}>
@@ -117,7 +118,7 @@ const DetailDialog = (({ list, open, onClose, onChange }) => {
         maxWidth="lg"
       >
         <DialogTitle>
-          {dataState.changeList.length > 1 ? `${dataState.changeList.length}件修正` : '新規'}
+          {dataState.changeList.length > 1 ? `${dataState.changeList.length} rows` : t('new')}
         </DialogTitle>
         <DialogContent>
           <DetailForm
@@ -181,7 +182,7 @@ export default function DataTable() {
   return (
     <>
       <Typography variant="body2" gutterBottom>
-        テーブルデータの内容を表示されます。
+      {t('DataTable demo')}
       </Typography>
       {dataState.materialDefinition && dataState.materialDefinition.length > 0 && (
         <MaterialTable
