@@ -6,7 +6,8 @@ import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
-import MaterialTable from 'material-table';
+
+import FreeDataTable from '../FreeDataTable';
 
 export default function CodeForm({ dataState, dispatch }) {
   const { t } = useTranslation();
@@ -20,50 +21,57 @@ export default function CodeForm({ dataState, dispatch }) {
 
   return (
     <>
-    <Typography variant="body2" gutterBottom>
-    {t('query CodeForm demo')}
-    </Typography>
-    <Grid container spacing={3}>
-    <Grid item xs={6}>
-    <TextField
-    label="Input"
-    multiline
-    rows={6}
-    value={input}
-    onChange={(event) => {
-      setInput(event.target.value);
-      try {
-        setParams(JSON.parse(input));
-        setError();
-      } catch (e) {
-        console.log('e:', e);
-        setError(e.toString());
-      }
-    }}
-    variant="outlined"
-    error={error}
-    　/>
-      </Grid>
-    <Grid item xs={6}>
-    {
-      params && params.length > 0 &&
-        params.map((param) => (
+      <Typography variant="body2" gutterBottom>
+        {t('query CodeForm demo')}
+      </Typography>
+      <Grid container spacing={3}>
+        <Grid item xs={6}>
           <TextField
-          key={param}
-          label={param}
-          variant="outlined"
-          value={filter[param]}
-          onChange={(event) => {
-            setFilter({
-              ...filter,
-              [param]: event.target.value,
-            });
-          }}
-          　/>
-        ))
-    }
-    </Grid>
-    </Grid>
+            label="Input"
+            multiline
+            rows={6}
+            value={input}
+            onChange={(event) => {
+              setInput(event.target.value);
+              try {
+                setParams([
+                  ...new Set(
+                    input
+                      .split(/[\s-!$%^&*()_+|~=`{}\[\]:";'<>?,.\/]/)
+                      .filter(Boolean)
+                  ),
+                ]);
+                setError('');
+              } catch (e) {
+                console.log('e:', e);
+                setParams([]);
+                setError(e.toString());
+              }
+            }}
+            variant="outlined"
+            error={!!error}
+            helperText={error}
+          />
+        </Grid>
+        <Grid item xs={6}>
+          {params &&
+            params.length > 0 &&
+            params.map((param) => (
+              <TextField
+                key={param}
+                label={param}
+                variant="outlined"
+                value={filter[param]}
+                onChange={(event) => {
+                  setFilter({
+                    ...filter,
+                    [param]: event.target.value,
+                  });
+                }}
+              />
+            ))}
+        </Grid>
+      </Grid>
       <Grid container spacing={3}>
         <Grid item xs={10}>
           <TextField
@@ -75,33 +83,37 @@ export default function CodeForm({ dataState, dispatch }) {
               setCode(event.target.value);
             }}
             variant="outlined"
-            error={errorCode}
-        　/>
+            error={!!errorCode}
+            helperText={errorCode}
+          />
         </Grid>
         <Grid item xs={2}>
-        <Button
+          <Button
             variant="contained"
             color="secondary"
             onClick={() => {
-              ipcRenderer.invoke('query-code', {
-                code,
-                params: filter,
-              }).then((data) => {
-                console.log(data);
-                setData(data);
-                dispatch({
-                  type: 'QUERY_DATA_CHANGE',
-                  payload: {
-                    params,
-                    code,
-                    error: error || errorCode,
-                  },
+              ipcRenderer
+                .invoke('query-code', {
+                  code,
+                  filter,
+                })
+                .then((data) => {
+                  console.log(data);
+                  setData(data);
+                  dispatch({
+                    type: 'QUERY_WIZARD_DEFINITION_CHANGE',
+                    payload: {
+                      params,
+                      code,
+                      error: error || errorCode,
+                    },
+                  });
+                  setErrorCode('');
+                })
+                .catch((e) => {
+                  console.log('e:', e);
+                  setErrorCode(e.toString());
                 });
-                setErrorCode();
-              }).catch((e) => {
-console.log('e:', e);
-                setErrorCode(e.toString());
-              });
             }}
           >
             {t('test')}
@@ -109,28 +121,9 @@ console.log('e:', e);
         </Grid>
       </Grid>
       <Grid container spacing={3}>
-      {
-        data && Object.keys(data).map((entity) => (
-          <MaterialTable
-            key={entity}
-            title={entity}
-            columns={
-              data[entity].length > 0
-                ? Object.keys(data[entity][0]).map((col) => ({
-                    key: col,
-                    field: col,
-                    title: col,
-                  })).filter((col) => !['createdAt', 'updatedAt', '__v', '_id'].includes(col)
-                : []
-              }
-            data={data[entity]}
-            options={{
-              exportButton: true,
-              search: false,
-            }}
-          />
-        ))
-      }
+        {Object.keys(data).map((item) => (
+          <FreeDataTable key={item} title={item} data={data[item]} />
+        ))}
       </Grid>
     </>
   );

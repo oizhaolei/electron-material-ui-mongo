@@ -73,19 +73,13 @@ function SchemaWizard() {
     history.replace(`/table/${dataState.name}`);
   };
 
-  const steps = [
-    t('Table Name'),
-    t('Upload Data'),
-
-  ];
-  const stepLabels = [
-    t('Next'),
-    t('Create Table'),
-  ];
+  const steps = [t('Table Name'), t('Upload Data')];
+  const stepLabels = [t('Next'), t('Create Table')];
 
   const stepActions = [
     () => {}, // 'Next'
-    () => {   // 'Create Table'
+    () => {
+      // 'Create Table'
       console.log('dataState:', dataState);
       ipcRenderer
         .invoke('schema-post', {
@@ -112,21 +106,11 @@ function SchemaWizard() {
   const getStepContent = (step) => {
     switch (step) {
       case 0:
-      return (
-        <NameForm
-          dataState={dataState}
-          dispatch={dispatch}
-        />
-      );
+        return <NameForm dataState={dataState} dispatch={dispatch} />;
       case 1:
-      return (
-        <CSVImport
-          dataState={dataState}
-          dispatch={dispatch}
-        />
-      );
+        return <CSVImport dataState={dataState} dispatch={dispatch} />;
       default:
-      throw new Error('Unknown step');
+        throw new Error('Unknown step');
     }
   };
 
@@ -147,10 +131,10 @@ function SchemaWizard() {
           {activeStep === steps.length ? (
             <>
               <Typography variant="h5" gutterBottom>
-                {t('Congratulations.')}
+                {t('Congratulations')}
               </Typography>
               <Typography variant="subtitle1">
-                {t('create. succeed')}
+                {t('create succeed')}
               </Typography>
             </>
           ) : (
@@ -184,7 +168,7 @@ function SchemaWizard() {
           open={snackOpen}
           autoHideDuration={2000}
           onClose={handleSnackClose}
-          >
+        >
           <Alert onClose={handleSnackClose} severity="success">
             {t('Table created, redirect')}
           </Alert>

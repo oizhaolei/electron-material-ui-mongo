@@ -21,6 +21,7 @@ const MATERIAL_DEFINITION = [
   {
     title: 'Type',
     field: 'type',
+    editable: 'never',
     lookup: {
       Number: 'Number',
       Boolean: 'Boolean',
@@ -36,9 +37,13 @@ const SchemaTable = ({ columns, data, dispatch }) => {
       title="Schema"
       columns={columns}
       data={data}
+      options={{
+        search: false,
+        paging: false,
+      }}
       cellEditable={{
         onCellEditApproved: (newValue, oldValue, rowData, columnDef) => {
-          return new Promise((resolve, reject) => {
+          return new Promise((resolve) => {
             console.log('newValue: ', newValue, rowData, columnDef);
             dispatch({
               type: 'SCHEMA_WIZARD_SCHEMA_TYPE_CHANGE',
@@ -49,20 +54,14 @@ const SchemaTable = ({ columns, data, dispatch }) => {
             });
             resolve();
           });
-        }
+        },
       }}
     />
   );
 };
 
 const CSVDataTable = ({ columns, data }) => {
-  return (
-    <MaterialTable
-      title="Data"
-      columns={columns}
-      data={data}
-    />
-  );
+  return <MaterialTable title="Data" columns={columns} data={data} />;
 };
 
 const useStyles = makeStyles((theme) => ({

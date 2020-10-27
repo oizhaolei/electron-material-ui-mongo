@@ -11,7 +11,7 @@ export default (state = initialState, action) => {
        return {
          ...initialState,
        };
-    case 'QUERY_DATA_CHANGE':
+    case 'QUERY_WIZARD_DEFINITION_CHANGE':
       return {
         ...state,
         ...action.payload,

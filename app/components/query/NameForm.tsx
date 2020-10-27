@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { ipcRenderer } from 'electron';
 import { useTranslation } from 'react-i18next';
-import pluralize  from 'pluralize';
+import pluralize from 'pluralize';
 
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
@@ -31,7 +31,7 @@ export default function NameForm({ dataState, dispatch }) {
     setError(err);
     setHelperText(err && 'duplicated name');
     dispatch({
-      type: 'QUERY_DATA_CHANGE',
+      type: 'QUERY_WIZARD_DEFINITION_CHANGE',
       payload: {
         name: input,
         error: err,

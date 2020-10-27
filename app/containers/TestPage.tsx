@@ -15,66 +15,22 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const oneToManyCode = () => {
-  const fk = {
-    one: {
-      table: 'patients',
-      field: '患者番号',
-    },
-    many: {
-      table: 'disease',
-      field: '患者番号',
-    },
-  };
-
-  const code = `
-(({ models, params, callback }) => {
+const paramsCode = `
+(({ models, filter, callback }) => {
   (async () => {
-    console.log('vm start.');
+    console.log('vm start.', filter);
     try {
-      const rows = await models['${fk.one.table}'].find(params).lean();
-      const result = await Promise.all(rows.map(async (one) => {
-        const many = await models['${fk.many.table}'].find({ '${fk.many.field}': one['${fk.one.field}'] }).lean();
-        console.log('many:', many);
-        return {
-          one,
-          many,
-        };
-      }));
-      callback(false, result);
-    } catch (err) {
-      console.log('err:', err);
-      callback(err);
-    }
-    console.log('vm end');
-  })();
-})
-`;
-  return code;
-};
-
-const paramsCode = () => {
-  const input = [
-    '患者番号',
-    '採取日',
-  ];
-
-  return `
-(({ models, params, callback }) => {
-  (async () => {
-    console.log('vm start.', params);
-    try {
-      const patient = await models['patients'].findOne({
-        '患者番号': params['患者番号'],
+      const patient = await models['patient'].findOne({
+        '患者番号': filter['患者番号'],
       }).lean();
       const diseases = await models['disease'].find({
-        '患者番号': patient['患者番号'],
+        '患者番号': filter['患者番号'],
         '採取日': {
-          $lte: params['採取日']
+          $lte: filter['採取日']
         },
       }).lean();
       callback(false, {
-        patients: [patient],
+        patient: [patient],
         diseases,
       });
     } catch (err) {
@@ -85,7 +41,6 @@ const paramsCode = () => {
   })();
 })
 `;
-};
 
 // INPUT: 患者番号, 日付, before/after
 //
@@ -106,23 +61,8 @@ export default function TestPage() {
           onClick={() => {
             ipcRenderer
               .invoke('query-code', {
-                code: oneToManyCode(),
-              }).then((data) => {
-                console.log(data);
-                setText(JSON.stringify(data));
-              });
-          }}
-        >
-          One to Many Code
-        </Button>
-        <Button
-          variant="contained"
-          color="secondary"
-          onClick={() => {
-            ipcRenderer
-              .invoke('query-code', {
-                code: paramsCode(),
-                params: {
+                code: paramsCode,
+                filter: {
                   '患者番号': '04581799',
                   '採取日': '2018/03/10',
                 },
@@ -132,7 +72,7 @@ export default function TestPage() {
               });
           }}
         >
-          Pataints Disease Date Code
+          Pataints and Disease Code
         </Button>
         <Typography variant="body1" gutterBottom>
           {text}

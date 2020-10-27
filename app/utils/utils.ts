@@ -19,24 +19,29 @@ const ID_COLUMN = {
 // from: mongo schema { definition, suggests }
 // to: material table columns definition
 export const mongo2Material = ({ definition, suggests }) =>
-  Object.keys(definition).map((k) => ({
-    title: k,
-    field: k,
-    type: mongo2MaterialType(definition[k].type),
-    headerStyle: {
-      whiteSpace: 'nowrap',
-    },
-    lookup: (suggests && suggests[k])
-      ? suggests[k].reduce((r, v) => (r[v] = v, r), {})
-      : undefined,
-  })).concat(ID_COLUMN);
+  Object.keys(definition)
+    .map((k) => ({
+      title: k,
+      field: k,
+      type: mongo2MaterialType(definition[k].type),
+      headerStyle: {
+        whiteSpace: 'nowrap',
+      },
+      lookup:
+        suggests && suggests[k]
+          ? suggests[k].reduce((r, v) => ((r[v] = v), r), {})
+          : undefined,
+    }))
+    .concat(ID_COLUMN);
 
 export const mongo2AgGrid = ({ definition }) =>
-  Object.keys(definition).map((k) => ({
-    headerName: k,
-    field: k,
-    type: definition[k].type,
-  })).concat({
-    field: '_id',
-    hide: true,
-  });
+  Object.keys(definition)
+    .map((k) => ({
+      headerName: k,
+      field: k,
+      type: definition[k].type,
+    }))
+    .concat({
+      field: '_id',
+      hide: true,
+    });

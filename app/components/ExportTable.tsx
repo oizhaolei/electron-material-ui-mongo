@@ -23,7 +23,7 @@ export default function ExportTable({ dataState }) {
   return (
     <div className={classes.root}>
       <Typography variant="body2" gutterBottom>
-      {t('ExportTable demo')}
+        {t('ExportTable demo')}
       </Typography>
       <Button
         variant="contained"

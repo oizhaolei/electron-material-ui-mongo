@@ -1,12 +1,19 @@
 import mongoose from 'mongoose';
+import log from 'electron-log';
+
 import vm from 'vm';
+import pluralize from 'pluralize';
 
 import fs from 'fs';
 import dayjs from 'dayjs';
 import json2csv from 'json2csv';
 
 mongoose.set('debug', (coll, method, query, doc, options) => {
-  console.log(`${coll}.${method}.(${JSON.stringify(query)})`, JSON.stringify(doc), options || '');
+  log.info(
+    `${coll}.${method}.(${JSON.stringify(query)})`,
+    JSON.stringify(doc),
+    options || ''
+  );
 });
 
 const defOptions = {
@@ -48,37 +55,39 @@ const getType = (field, row) => {
   return 'String';
 };
 
-const getSuggests = (field, docs) => field.map((f) => {
-  const colAllData = docs.map((r) => r[f]).filter(Boolean);
-  const colUniqData = [...new Set(colAllData)];
-  if (colUniqData.length < 50 && (docs.length / colUniqData.length) > 10) {
-    return {
-      field: f,
-      suggest: colUniqData,
-    };
-  }
-}).reduce((r, v) => {
-  if (v && v.suggest && v.suggest.length > 0) {
-    r[v.field] = v.suggest;
-  }
-  return r;
-}, {});
+const getSuggests = (field, docs) =>
+  field
+    .map((f) => {
+      const colUniqData = [...new Set(docs.map((r) => r[f]).filter(Boolean))];
+      if (colUniqData.length < 50 && docs.length / colUniqData.length > 10) {
+        return {
+          field: f,
+          suggest: colUniqData,
+        };
+      }
+    })
+    .reduce((r, v) => {
+      if (v && v.suggest && v.suggest.length > 0) {
+        r[v.field] = v.suggest;
+      }
+      return r;
+    }, {});
 
 export const genSchemaDefinition = (docs) => {
   if (!docs || docs.length === 0) {
     return [];
   }
-  const fields = [
-    ...new Set(docs.map((doc) => Object.keys(doc)).flat()),
-  ].map((f) => ({
-    field: [f],
-    type: getType(f, docs[0]),
-  })).reduce((r, v) => {
-    r[v.field] = {
-      type: v.type,
-    };
-    return r;
-  }, {});
+  const fields = [...new Set(docs.map((doc) => Object.keys(doc)).flat())]
+    .map((f) => ({
+      field: [f],
+      type: getType(f, docs[0]),
+    }))
+    .reduce((r, v) => {
+      r[v.field] = {
+        type: v.type,
+      };
+      return r;
+    }, {});
   return fields;
 };
 
@@ -102,16 +111,20 @@ export default class Mdb {
   }
 
   async changeSchema(name, definition, etc = {}) {
-    const schemaDoc = await this.SchemaModel.findOneAndUpdate({
-      name,
-    }, {
-      name,
-      definition,
-      ...etc,
-    }, {
-      upsert: true,
-      new: true,
-    }).lean();
+    const schemaDoc = await this.SchemaModel.findOneAndUpdate(
+      {
+        name,
+      },
+      {
+        name,
+        definition,
+        ...etc,
+      },
+      {
+        upsert: true,
+        new: true,
+      }
+    ).lean();
 
     if (this.models[name]) {
       mongoose.deleteModel(name);
@@ -122,6 +135,7 @@ export default class Mdb {
   }
 
   async dropSchema(name) {
+    await this._dropCollection(name);
     const result = await this.SchemaModel.deleteMany({
       name,
     });
@@ -129,13 +143,13 @@ export default class Mdb {
       mongoose.deleteModel(name);
       delete this.models[name];
     }
-    await this._dropCollection(name);
     return result;
   }
 
   async _dropCollection(name) {
     return new Promise((resolve, reject) => {
-      mongoose.connection.dropCollection(name, (err, result) => {
+      mongoose.connection.db.dropCollection(pluralize(name), (err, result) => {
+        console.log('err, result:', err, result);
         if (err) {
           reject(err);
         } else {
@@ -181,15 +195,17 @@ export default class Mdb {
 
   async getDashboardSchemas() {
     const schemas = await this.SchemaModel.find().lean();
-    const dashboardSchemas = await Promise.all(schemas.map(async (schema) => {
-      const Model = await this.getSchemaModel(schema.name);
-      const rowCount = await Model.countDocuments();
-      return {
-        ...schema,
-        rowCount,
-        colCount: Object.keys(schema.definition).length,
-      };
-    }));
+    const dashboardSchemas = await Promise.all(
+      schemas.map(async (schema) => {
+        const Model = await this.getSchemaModel(schema.name);
+        const rowCount = await Model.countDocuments();
+        return {
+          ...schema,
+          rowCount,
+          colCount: Object.keys(schema.definition).length,
+        };
+      })
+    );
     return dashboardSchemas;
   }
 
@@ -205,8 +221,8 @@ export default class Mdb {
     return schema;
   }
 
-   _createModel(name, definition) {
-     const sampleSchema = new mongoose.Schema(definition, defOptions, {
+  _createModel(name, definition) {
+    const sampleSchema = new mongoose.Schema(definition, defOptions, {
       strict: false,
     });
     const model = mongoose.model(name, sampleSchema);
@@ -231,7 +247,10 @@ export default class Mdb {
     const schemaDatas = await this.SchemaModel.find().lean();
 
     const models = schemaDatas.reduce((r, schemaData) => {
-      r[schemaData.name] = this._createModel(schemaData.name, schemaData.definition);
+      r[schemaData.name] = this._createModel(
+        schemaData.name,
+        schemaData.definition
+      );
       return r;
     }, {});
     this.models = models;
@@ -240,34 +259,43 @@ export default class Mdb {
   }
 
   async reIndexSuggests(models) {
-    const all =  await Promise.all(Object.keys(models).map(async (name) => {
-      const Model = models[name];
-      const schema = await this.SchemaModel.findOne({
-        name,
-      }).lean();
-      const fields = Object.keys(schema.definition);
-      const docs = await Model.find();
-      const suggests = getSuggests(fields, docs);
+    const all = await Promise.all(
+      Object.keys(models).map(async (name) => {
+        const Model = models[name];
+        const schema = await this.SchemaModel.findOne({
+          name,
+        }).lean();
+        const fields = Object.keys(schema.definition);
+        const docs = await Model.find();
+        const suggests = getSuggests(fields, docs);
 
-      await this.SchemaModel.findOneAndUpdate({
-        name,
-      }, {
-        suggests,
-      });
-    }));
+        await this.SchemaModel.findOneAndUpdate(
+          {
+            name,
+          },
+          {
+            suggests,
+          }
+        );
+      })
+    );
     return all;
   }
 
   async createQuery(name, data = {}) {
-    const queryDoc = await this.QueryModel.findOneAndUpdate({
-      name,
-    }, {
-      name,
-      ...data,
-    }, {
-      upsert: true,
-      new: true,
-    }).lean();
+    const queryDoc = await this.QueryModel.findOneAndUpdate(
+      {
+        name,
+      },
+      {
+        name,
+        ...data,
+      },
+      {
+        upsert: true,
+        new: true,
+      }
+    ).lean();
 
     return queryDoc;
   }
@@ -292,8 +320,8 @@ export default class Mdb {
     return query;
   }
 
-  async queryCode(code, params) {
-    const models = this.models;
+  async queryCode(code, filter) {
+    const { models } = this;
     return new Promise((resolve, reject) => {
       const callback = (err, data) => {
         if (err) {
@@ -303,7 +331,7 @@ export default class Mdb {
         }
       };
 
-      vm.runInThisContext(code)({ models, params, callback });
+      vm.runInThisContext(code)({ models, filter, callback });
     });
   }
 }

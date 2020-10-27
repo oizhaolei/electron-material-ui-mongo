@@ -87,12 +87,7 @@ export default function PinCode() {
               }
             }}
           />
-          <Typography
-            color="error"
-            variant="h5"
-            display="block"
-            gutterBottom
-          >
+          <Typography color="error" variant="h5" display="block" gutterBottom>
             {auth.error}
           </Typography>
         </Paper>

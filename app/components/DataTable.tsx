@@ -26,7 +26,7 @@ const Alert = (props: AlertProps) => {
   return <MuiAlert elevation={6} variant="filled" {...props} />;
 };
 
-const ConfirmDialog = (({ open, onClose, onOK }) => {
+const ConfirmDialog = ({ open, onClose, onOK }) => {
   const { t } = useTranslation();
   const [{ schema: dataState }] = useContext(StoreContext);
 
@@ -35,41 +35,43 @@ const ConfirmDialog = (({ open, onClose, onOK }) => {
       <Dialog
         disableBackdropClick
         disableEscapeKeyDown
+        aria-labelledby="simple-dialog-title"
         open={open}
         onClose={onClose}
         fullWidth
         maxWidth="md"
       >
-        <DialogTitle>
-          {dataState.changeList.length > 1 ? `${dataState.changeList.length} rows` : t('new')}
-        </DialogTitle>
+        <DialogTitle>確認</DialogTitle>
         <DialogContent>
-          {dataState.changeList.length > 1 ? `${dataState.changeList.length} rows` : t('new')}
+          確認
           <List>
             {Object.keys(dataState.changes).map((field) => (
               <ListItem key={field}>
-                <ListItemText primary={`${field}:$dataState.changes[field]`} />
+                <ListItemText
+                  primary={`${field}:${dataState.changes[field]}`}
+                />
               </ListItem>
             ))}
           </List>
         </DialogContent>
         <DialogActions>
-          <Button onClick={onClose}>
-            {t('Cancel')}
-          </Button>
-          <Button onClick={() => {
-            onOK();
-            onClose();
-          }} color="primary">
+          <Button onClick={onClose}>{t('Cancel')}</Button>
+          <Button
+            onClick={() => {
+              onOK();
+              onClose();
+            }}
+            color="primary"
+          >
             {t('Ok')}
           </Button>
         </DialogActions>
       </Dialog>
     </>
   );
-});
+};
 
-const DetailDialog = (({ list, open, onClose, onChange }) => {
+const DetailDialog = ({ list, open, onClose, onChange }) => {
   const { t } = useTranslation();
   const [{ schema: dataState }] = useContext(StoreContext);
   const [confirmOpen, setConfirmOpen] = useState(false);
@@ -112,23 +114,20 @@ const DetailDialog = (({ list, open, onClose, onChange }) => {
       <Dialog
         disableBackdropClick
         disableEscapeKeyDown
+        aria-labelledby="simple-dialog-title"
         open={open}
         onClose={onClose}
         fullWidth
         maxWidth="lg"
       >
         <DialogTitle>
-          {dataState.changeList.length > 1 ? `${dataState.changeList.length} rows` : t('new')}
+          Title: {list.length > 1 ? `${list.length} rows` : t('new')}
         </DialogTitle>
         <DialogContent>
-          <DetailForm
-            list={list}
-          />
+          <DetailForm list={list} />
         </DialogContent>
         <DialogActions>
-          <Button onClick={onClose}>
-            {t('Cancel')}
-          </Button>
+          <Button onClick={onClose}>{t('Cancel')}</Button>
           <Button onClick={handleSave} color="primary">
             {t('Ok')}
           </Button>
@@ -141,19 +140,19 @@ const DetailDialog = (({ list, open, onClose, onChange }) => {
       />
     </>
   );
-});
+};
 
 export default function DataTable() {
   const { t } = useTranslation();
   const [{ schema: dataState }, dispatch] = useContext(StoreContext);
-    const [pageSize, setPageSize] = useState(
-      store.get(`schema.${dataState.name}.pageSize`, 20)
-    );
+  const [pageSize, setPageSize] = useState(
+    store.get(`schema.${dataState.name}.pageSize`, 20)
+  );
 
-    const tableRef = useRef();
-    const [detailOpen, setDetailOpen] = useState(false);
-    const [selected, setSelected] = useState([]);
-    const [isLoading, setIsLoading] = useState(false);
+  const tableRef = useRef();
+  const [detailOpen, setDetailOpen] = useState(false);
+  const [selected, setSelected] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleClickDetailOpen = () => {
     setDetailOpen(true);
@@ -162,7 +161,7 @@ export default function DataTable() {
   const handleDetailClose = () => {
     dispatch({
       type: 'SCHEMA_DATA_CLEAR',
-    })
+    });
     setDetailOpen(false);
   };
   const handleChangeRowsPerPage = (size) => {
@@ -182,7 +181,7 @@ export default function DataTable() {
   return (
     <>
       <Typography variant="body2" gutterBottom>
-      {t('DataTable demo')}
+        {t('DataTable demo')}
       </Typography>
       {dataState.materialDefinition && dataState.materialDefinition.length > 0 && (
         <MaterialTable
@@ -230,7 +229,8 @@ export default function DataTable() {
                   resolve({
                     ...results,
                   });
-                });
+                })
+                .catch(reject);
             })
           }
           onChangeRowsPerPage={handleChangeRowsPerPage}
@@ -248,7 +248,7 @@ export default function DataTable() {
               tooltip: t('Edit Selected Rows'),
               icon: 'edit',
               onClick: (event, rows) => {
-                console.log('You want to edit ' + rows.length + ' rows');
+                console.log(`You want to edit ${rows.length} rows`);
                 setSelected(rows);
                 handleClickDetailOpen();
               },
@@ -257,7 +257,7 @@ export default function DataTable() {
               tooltip: t('Remove Selected Rows'),
               icon: 'delete',
               onClick: (event, rows) => {
-                console.log('You want to delete ' + rows.length + ' rows');
+                console.log(`You want to delete ${rows.length} rows`);
                 handleSnackbarClick();
                 setSelected(rows);
                 ipcRenderer

@@ -46,14 +46,10 @@ export const TableListItems = ({ current }) => {
         </ListItemSecondaryAction>
       </ListSubheader>
       {schemas.map((t) => (
-        <Link
-          key={t.name}
-          to={`/table/${t.name}`}
-          className={classes.link}
-        >
+        <Link key={t.name} to={`/table/${t.name}`} className={classes.link}>
           <ListItem button selected={current === t.name}>
             <ListItemIcon>
-              <StorageIcon/>
+              <StorageIcon />
             </ListItemIcon>
             <ListItemText primary={t.name} />
           </ListItem>
@@ -85,11 +81,7 @@ export const QueryListItems = ({ current }) => {
         </ListItemSecondaryAction>
       </ListSubheader>
       {queries.map((q) => (
-        <Link
-          key={q.name}
-          to={`/query/${q.name}`}
-          className={classes.link}
-        >
+        <Link key={q.name} to={`/query/${q.name}`} className={classes.link}>
           <ListItem button selected={current === q.name}>
             <ListItemIcon>
               <FindInPageIcon />

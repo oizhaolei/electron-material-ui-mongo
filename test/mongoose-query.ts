@@ -18,26 +18,33 @@ const main = async () => {
 (({ mdb, filter, projection, options, callback }) => {
   (async () => {
     console.log('vm start.');
-
-    const rows = await mdb['${fk.one.table}'].find(filter, projection, options).lean();
-    const result = await Promise.all(rows.map(async (p) => {
-      const many = await mdb['${fk.many.table}'].find({ '${fk.many.field}': p['${fk.one.field}'] }).lean();
-      return {
-        ...p,
-        many,
-      };
-    }));
-    console.log('vm end');
-    callback(false, result);
+    try {
+      const rows = await mdb['${fk.one.table}'].find(filter, projection, options).lean();
+      const result = await Promise.all(rows.map(async (p) => {
+        const many = await mdb['${fk.many.table}'].find({ '${fk.many.field}': p['${fk.one.field}'] }).lean();
+        return {
+          ...p,
+          many,
+        };
+      }));
+      console.log('vm end');
+      callback(false, result);
+    } catch (err) {
+      console.log('err:', err);
+      callback(err);
   })();
 })
 `;
 
   return new Promise((resolve, reject) => {
     const mdb = new Mdb();
-    const callback = (data) => {
-      console.log('data', data);
-      resolve(data);
+    const callback = (err, data) => {
+      console.log('err, data', err, data);
+      if (err) {
+        reject(err);
+      } else {
+        resolve(data);
+      }
     };
 
     vm.runInThisContext(code)({ mdb, callback });

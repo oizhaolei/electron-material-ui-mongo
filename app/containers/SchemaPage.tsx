@@ -34,11 +34,7 @@ function TabPanel(props: TabPanelProps) {
       aria-labelledby={`simple-tab-${index}`}
       {...other}
     >
-      {value === index && (
-        <Box p={3}>
-          {children}
-        </Box>
-      )}
+      {value === index && <Box p={3}>{children}</Box>}
     </span>
   );
 }
@@ -106,21 +102,13 @@ export default function SchemaPage() {
           <DataTable />
         </TabPanel>
         <TabPanel value={tab} index={1}>
-          <SchemaTable
-            dataState={dataState}
-            dispatch={dispatch}
-          />
+          <SchemaTable dataState={dataState} dispatch={dispatch} />
         </TabPanel>
         <TabPanel value={tab} index={2}>
-          <ExportTable
-            dataState={dataState}
-          />
+          <ExportTable dataState={dataState} />
         </TabPanel>
         <TabPanel value={tab} index={3}>
-          <ImportTable
-            dispatch={dispatch}
-            dataState={dataState}
-          />
+          <ImportTable dispatch={dispatch} dataState={dataState} />
         </TabPanel>
       </Paper>
     </GenericTemplate>

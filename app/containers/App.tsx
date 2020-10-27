@@ -8,9 +8,5 @@ type Props = {
 
 export default function App(props: Props) {
   const { children } = props;
-  return (
-    <Store rootReducer={rootReducer}>
-      {children}
-    </Store>
-  );
+  return <Store rootReducer={rootReducer}>{children}</Store>;
 }

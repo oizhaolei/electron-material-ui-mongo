@@ -14,7 +14,6 @@ const Alert = (props: AlertProps) => {
   return <MuiAlert elevation={6} variant="filled" {...props} />;
 };
 
-
 const columns = [
   {
     title: 'Field',
@@ -76,34 +75,24 @@ export default function SchemaTable({ dataState, dispatch }) {
         console.log('schema-drop:', results);
         history.replace('/');
       });
-};
+  };
 
   return (
     <>
       <Typography variant="body2" gutterBottom>
         {t('SchemaTable demo')}
       </Typography>
-      <Button
-        variant="contained"
-        startIcon={<DeleteForeverIcon />}
-        color="secondary"
-        onClick={handleDropSchema}
-      >
-        {t('Drop Table')}
-      </Button>
-
       <MaterialTable
         title={dataState.name}
         options={{
           search: false,
-          pageSize: 20,
-          pageSizeOptions: [20, 50, 100],
+          paging: false,
         }}
         columns={columns}
         data={data}
         editable={{
           onRowAdd: (newData) =>
-            new Promise((resolve, reject) => {
+            new Promise((resolve) => {
               console.log('newData:', newData);
               const definition = {
                 ...dataState.definition,
@@ -116,7 +105,7 @@ export default function SchemaTable({ dataState, dispatch }) {
               resolve();
             }),
           onRowDelete: (oldData) =>
-            new Promise((resolve, reject) => {
+            new Promise((resolve) => {
               const definition = {
                 ...dataState.definition,
               };
@@ -137,6 +126,14 @@ export default function SchemaTable({ dataState, dispatch }) {
           {t('Saved')}
         </Alert>
       </Snackbar>
+      <Button
+        variant="contained"
+        startIcon={<DeleteForeverIcon />}
+        color="secondary"
+        onClick={handleDropSchema}
+      >
+        {t('Drop Table')}
+      </Button>
     </>
   );
 }

@@ -1,20 +1,33 @@
-# 機能一覧
+* インストール手順
 
-* ログイン
+** MongoDB をインストール
+ - ダウンロード
+ - インストール
+ - サービスを常に起動を設定
+
+** PersonalDBをダウンロードしてインストール
+
+
+
+* 機能一覧
+
+** ログイン
 
 4桁数字のPINCODEを入力することが必要。
-固定ではありません、当日の「MMDD」
+固定ではありません、当日の「MMDD」。例えば今日は2020年10月27日なら、PinCodeは「1027」になります。
 
-* ダッシュボード
+** ダッシュボード
 
-テーブルの一覧
-クエリの一覧
+ - テーブルの一覧
+ - クエリの一覧
 
-* テーブル
-** 一覧
+** テーブル
 ** 新規
-** 修正
+ - 名前
+ - CSVの読込み
+** 照会
 ** 削除
+
 ** データ
 *** 検索
 *** 追加
@@ -24,18 +37,71 @@
 *** ＣＳＶのエクスポート
 *** ＣＳＶインポート
 
-* クエリ
-** 一覧
-** 新規・修正
+** クエリ
+** 新規
+ - 名前
+ - 引数とスクリプト
+
+*** 引数欄
+引数のサンプル：
+#+BEGIN_SRC text
+患者番号,採取日
+#+END_SRC
+
+入力された引数は、コンマなど符号区切り文字列とし、配列に変換する。
+配列は最後に、画面上検索の入力項目になります。
+
+*** スクリプト欄
+
+スクリプトのサンプル：
+#+BEGIN_SRC javascript
+(({ models, filter, callback }) => {
+  (async () => {
+    console.log('vm start.', filter);
+    try {
+      const patient = await models['patient'].findOne({
+        '患者番号': filter['患者番号'],
+      }).lean();
+      const diseases = await models['disease'].find({
+        '患者番号': filter['患者番号'],
+        '採取日': {
+          $lte: filter['採取日']
+        },
+      }).lean();
+      callback(false, {
+        patient: [patient],
+        diseases,
+      });
+    } catch (err) {
+      console.log('err:', err);
+      callback(err);
+    }
+    console.log('vm end');
+  })();
+})
+#+END_SRC
+
+ - models
+ データベースに持っているすべてのテーブル
+ - filter
+ 入力された引数の値
+ - callback
+ 処理結果のコールバック、フォーマットは「callback(err, data)」
+
+** 照会
+照会画面には、上半部の引数入力と下半部の結果があります。
+引数とスクリプトの実行結果、画面上テーブルの形で表示されます。
+
+** エクスポート
 ** 削除
 
-* 他
-** 国際化
-** ダークモード
-** 色パレット
-** 自動更新
+** 他
+*** i18n
+*** ダークモード
+*** 色パレット
+*** 自動更新
 
-*  Functions
+* Functions
 ** DONE lazy load
 ** DONE create table
 
@@ -82,7 +148,7 @@
 
 * BUGS
 ** DONE find & pagination
-** CANCELED Tables   => useContext
+** CANCELED Tables  => useContext
 ** DONE Treeview
 
 ** 機能一覧整理
@@ -101,9 +167,9 @@
 ** TODO loading
 
 * そもそもほしいがった機能
- - データ属性の拡張                             :OK
- - 項目（更新・検索時）ヒント出す               :OK
- - いろいろ検索、数値、日付タイプ検知、検索条件   :NG
+ - データ属性の拡張  :OK
+ - 項目（更新・検索時）ヒント出す  :OK
+ - いろいろ検索、数値、日付タイプ検知、検索条件  :NG
 
 `特定のクエリ、
 

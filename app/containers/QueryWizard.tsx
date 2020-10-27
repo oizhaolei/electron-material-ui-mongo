@@ -19,7 +19,6 @@ import CodeForm from '../components/query/CodeForm';
 
 import StoreContext from '../store/StoreContext';
 
-
 const Alert = (props: AlertProps) => {
   return <MuiAlert elevation={6} variant="filled" {...props} />;
 };
@@ -75,23 +74,19 @@ function QueryWizard() {
     history.replace(`/query/${dataState.name}`);
   };
 
-  const steps = [
-    t('Query Name'),
-    t('Code'),
-   ];
-  const stepLabels = [
-    t('Next'),
-    t('Create Query'),
-  ];
+  const steps = [t('Query Name'), t('Code')];
+  const stepLabels = [t('Next'), t('Create Query')];
 
   const stepActions = [
     () => {}, // 'Next'
-    () => {   // 'Create Query'
+    () => {
+      // 'Create Query'
       ipcRenderer
         .invoke('query-post', {
           name: dataState.name,
           data: {
             code: dataState.code,
+            params: dataState.params,
           },
         })
         .then((result) => {
@@ -112,22 +107,12 @@ function QueryWizard() {
 
   const getStepContent = (step) => {
     switch (step) {
-    case 0:
-      return (
-        <NameForm
-          dataState={dataState}
-          dispatch={dispatch}
-        />
-      );
-    case 1:
-      return (
-        <CodeForm
-          dataState={dataState}
-          dispatch={dispatch}
-        />
-      );
-    default:
-      throw new Error('Unknown step');
+      case 0:
+        return <NameForm dataState={dataState} dispatch={dispatch} />;
+      case 1:
+        return <CodeForm dataState={dataState} dispatch={dispatch} />;
+      default:
+        throw new Error('Unknown step');
     }
   };
 
@@ -135,7 +120,7 @@ function QueryWizard() {
     <GenericTemplate title="Create Query" id="create-wizard">
       <Paper className={classes.paper}>
         <Typography component="h1" variant="h4" align="center">
-        {t('Create Query')}
+          {t('Create Query')}
         </Typography>
         <Stepper activeStep={activeStep} className={classes.stepper}>
           {steps.map((label) => (
@@ -148,10 +133,10 @@ function QueryWizard() {
           {activeStep === steps.length ? (
             <>
               <Typography variant="h5" gutterBottom>
-                {t('Congratulations.')}
+                {t('Congratulations')}
               </Typography>
               <Typography variant="subtitle1">
-                {t('create. succeed')}
+                {t('create succeed')}
               </Typography>
             </>
           ) : (
@@ -160,9 +145,10 @@ function QueryWizard() {
               <div className={classes.buttons}>
                 {activeStep !== 0 && (
                   <Button
-                   disabled={dataState.error}
-                   onClick={handleBack}
-                   className={classes.button}>
+                    disabled={dataState.error}
+                    onClick={handleBack}
+                    className={classes.button}
+                  >
                     {t('Back')}
                   </Button>
                 )}
