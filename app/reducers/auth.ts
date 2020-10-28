@@ -1,7 +1,7 @@
 import dayjs from 'dayjs';
 
 export const initialState = {
-  isAuthenticated: true,
+  isAuthenticated: false,
   error: '',
 };
 export default (state = initialState, { type, payload }) => {

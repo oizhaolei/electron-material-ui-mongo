@@ -1,4 +1,5 @@
 import React, { useState, useContext } from 'react';
+import log from 'electron-log';
 import { useTranslation } from 'react-i18next';
 
 import Grid from '@material-ui/core/Grid';
@@ -54,7 +55,7 @@ const FreeSolo = ({ label, value, onChange, options }) => {
       id="free-solo-with-text-demo"
       options={options}
       getOptionLabel={(option) => {
-        console.log('FreeSolo option:', option);
+        log.info('FreeSolo option:', option);
         // Value selected with enter, right from the input
         if (typeof option === 'string') {
           return option;

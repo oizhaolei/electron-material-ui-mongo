@@ -7,7 +7,6 @@ import ColorTool from '../components/color/ColorTool';
 
 export default function ColorPage() {
   const onChange = (paletteColors) => {
-    console.log('paletteColors', paletteColors);
     ipcRenderer.send('paletteColors', paletteColors);
   };
 

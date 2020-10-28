@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import log from 'electron-log';
 import { ipcRenderer } from 'electron';
 import { useTranslation } from 'react-i18next';
 
@@ -14,10 +15,25 @@ export default function CodeForm({ dataState, dispatch }) {
   const [error, setError] = useState(false);
   const [errorCode, setErrorCode] = useState(false);
   const [input, setInput] = React.useState('');
-  const [params, setParams] = React.useState([]);
   const [filter, setFilter] = React.useState({});
   const [code, setCode] = React.useState('');
   const [data, setData] = React.useState({});
+
+  const getParams = (str) => {
+    try {
+      setError('');
+      return [
+        ...new Set(
+          str
+            .split(/[\s-!$%^&*()_+|~=`{}\[\]:";'<>?,.\/]/)
+            .filter(Boolean)
+        ),
+      ];
+    } catch (e) {
+      setError(e.toString());
+      return [];
+    }
+  };
 
   return (
     <>
@@ -33,20 +49,6 @@ export default function CodeForm({ dataState, dispatch }) {
             value={input}
             onChange={(event) => {
               setInput(event.target.value);
-              try {
-                setParams([
-                  ...new Set(
-                    input
-                      .split(/[\s-!$%^&*()_+|~=`{}\[\]:";'<>?,.\/]/)
-                      .filter(Boolean)
-                  ),
-                ]);
-                setError('');
-              } catch (e) {
-                console.log('e:', e);
-                setParams([]);
-                setError(e.toString());
-              }
             }}
             variant="outlined"
             error={!!error}
@@ -54,9 +56,7 @@ export default function CodeForm({ dataState, dispatch }) {
           />
         </Grid>
         <Grid item xs={6}>
-          {params &&
-            params.length > 0 &&
-            params.map((param) => (
+          {getParams(input).map((param) => (
               <TextField
                 key={param}
                 label={param}
@@ -98,12 +98,12 @@ export default function CodeForm({ dataState, dispatch }) {
                   filter,
                 })
                 .then((data) => {
-                  console.log(data);
+                  log.info(data);
                   setData(data);
                   dispatch({
                     type: 'QUERY_WIZARD_DEFINITION_CHANGE',
                     payload: {
-                      params,
+                      params: getParams(input),
                       code,
                       error: error || errorCode,
                     },
@@ -111,7 +111,7 @@ export default function CodeForm({ dataState, dispatch }) {
                   setErrorCode('');
                 })
                 .catch((e) => {
-                  console.log('e:', e);
+                  log.info('e:', e);
                   setErrorCode(e.toString());
                 });
             }}

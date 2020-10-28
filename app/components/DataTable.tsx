@@ -1,4 +1,5 @@
 import React, { useState, useRef, useContext } from 'react';
+import log from 'electron-log';
 import { ipcRenderer } from 'electron';
 import { useTranslation } from 'react-i18next';
 import Store from 'electron-store';
@@ -93,7 +94,10 @@ const DetailDialog = ({ list, open, onClose, onChange }) => {
           doc: dataState.changes,
         })
         .then((results) => {
-          console.log('update results', results);
+          log.info('update results', results);
+        })
+        .catch((e) => {
+          alert(e.toString());
         });
     } else {
       ipcRenderer
@@ -102,7 +106,10 @@ const DetailDialog = ({ list, open, onClose, onChange }) => {
           docs: [dataState.changes],
         })
         .then((results) => {
-          console.log('insert results', results);
+          log.info('insert results', results);
+        })
+        .catch((e) => {
+          alert(e.toString());
         });
     }
     onClose();
@@ -248,7 +255,7 @@ export default function DataTable() {
               tooltip: t('Edit Selected Rows'),
               icon: 'edit',
               onClick: (event, rows) => {
-                console.log(`You want to edit ${rows.length} rows`);
+                log.info(`You want to edit ${rows.length} rows`);
                 setSelected(rows);
                 handleClickDetailOpen();
               },
@@ -257,7 +264,7 @@ export default function DataTable() {
               tooltip: t('Remove Selected Rows'),
               icon: 'delete',
               onClick: (event, rows) => {
-                console.log(`You want to delete ${rows.length} rows`);
+                log.info(`You want to delete ${rows.length} rows`);
                 handleSnackbarClick();
                 setSelected(rows);
                 ipcRenderer
@@ -271,7 +278,10 @@ export default function DataTable() {
                   })
                   .then((results) => {
                     tableRef.current && tableRef.current.onQueryChange();
-                    console.log(results);
+                    log.info(results);
+                  })
+                  .catch((e) => {
+                    alert(e.toString());
                   });
               },
             },

@@ -85,7 +85,7 @@ export default function SchemaPage() {
 
   return (
     <GenericTemplate id={name}>
-      <Paper square key={name}>
+      <Paper square>
         <Tabs
           value={tab}
           onChange={handleTabChange}

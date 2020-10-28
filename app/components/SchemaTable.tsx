@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import log from 'electron-log';
 import { ipcRenderer } from 'electron';
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
@@ -33,6 +34,7 @@ const columns = [
 export default function SchemaTable({ dataState, dispatch }) {
   const { t } = useTranslation();
   const history = useHistory();
+  const [error, setError] = useState();
 
   const data = Object.keys(dataState.definition).map((k) => ({
     field: k,
@@ -62,18 +64,26 @@ export default function SchemaTable({ dataState, dispatch }) {
         });
 
         setSnackbarOpen(true);
+        setError('');
+      })
+      .catch((e) => {
+        setError(e.toString());
       });
   };
 
   const handleDropSchema = () => {
-    console.log('dataState:', dataState);
+    log.info('dataState:', dataState);
     ipcRenderer
       .invoke('schema-drop', {
         name: dataState.name,
       })
       .then((results) => {
-        console.log('schema-drop:', results);
+        log.info('schema-drop:', results);
         history.replace('/');
+        setError('');
+      })
+      .catch((e) => {
+        setError(e.toString());
       });
   };
 
@@ -93,7 +103,7 @@ export default function SchemaTable({ dataState, dispatch }) {
         editable={{
           onRowAdd: (newData) =>
             new Promise((resolve) => {
-              console.log('newData:', newData);
+              log.info('newData:', newData);
               const definition = {
                 ...dataState.definition,
                 [newData.field]: {
@@ -127,13 +137,15 @@ export default function SchemaTable({ dataState, dispatch }) {
         </Alert>
       </Snackbar>
       <Button
-        variant="contained"
         startIcon={<DeleteForeverIcon />}
         color="secondary"
         onClick={handleDropSchema}
       >
         {t('Drop Table')}
       </Button>
+      <Typography color="error" variant="body1" gutterBottom>
+        {error}
+      </Typography>
     </>
   );
 }

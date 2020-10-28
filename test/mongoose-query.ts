@@ -29,9 +29,9 @@ const main = async () => {
       }));
       console.log('vm end');
       callback(false, result);
-    } catch (err) {
-      console.log('err:', err);
-      callback(err);
+    } catch (e) {
+      console.log('e:', e);
+      callback(e);
   })();
 })
 `;

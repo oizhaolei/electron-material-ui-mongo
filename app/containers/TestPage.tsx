@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import log from 'electron-log';
 import { ipcRenderer } from 'electron';
 
 import { makeStyles } from '@material-ui/core/styles';
@@ -16,9 +17,9 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const paramsCode = `
-(({ models, filter, callback }) => {
+(({ models, filter, log, callback }) => {
   (async () => {
-    console.log('vm start.', filter);
+    log.info('vm start.', filter);
     try {
       const patient = await models['patient'].findOne({
         '患者番号': filter['患者番号'],
@@ -33,11 +34,11 @@ const paramsCode = `
         patient: [patient],
         diseases,
       });
-    } catch (err) {
-      console.log('err:', err);
-      callback(err);
+    } catch (e) {
+      log.info('e:', e);
+      callback(e);
     }
-    console.log('vm end');
+    log.info('vm end');
   })();
 })
 `;
@@ -51,6 +52,7 @@ const paramsCode = `
 export default function TestPage() {
   const classes = useStyles();
   const [text, setText] = useState();
+  const [error, setError] = useState();
 
   return (
     <GenericTemplate title="Test" id="test">
@@ -67,15 +69,23 @@ export default function TestPage() {
                   '採取日': '2018/03/10',
                 },
               }).then((data) => {
-                console.log(data);
+                log.info(data);
                 setText(JSON.stringify(data));
+                setError('');
+              })
+              .catch((e) => {
+                setText('');
+                setError(e.toString());
               });
           }}
         >
           Pataints and Disease Code
         </Button>
         <Typography variant="body1" gutterBottom>
-          {text}
+        {text}
+        </Typography>
+        <Typography color="error" variant="body1" gutterBottom>
+          {error}
         </Typography>
       </div>
     </GenericTemplate>

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
+import log from 'electron-log';
 import { ipcRenderer } from 'electron';
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
@@ -53,6 +54,7 @@ function SchemaWizard() {
   const { t } = useTranslation();
   const history = useHistory();
 
+  const [error, setError] = useState();
   const [activeStep, setActiveStep] = useState(0);
   const [snackOpen, setSnackOpen] = useState(false);
   const [{ schemaWizard: dataState }, dispatch] = useContext(StoreContext);
@@ -80,7 +82,7 @@ function SchemaWizard() {
     () => {}, // 'Next'
     () => {
       // 'Create Table'
-      console.log('dataState:', dataState);
+      log.info('dataState:', dataState);
       ipcRenderer
         .invoke('schema-post', {
           name: dataState.name,
@@ -88,8 +90,12 @@ function SchemaWizard() {
           docs: dataState.data,
         })
         .then((newSchema) => {
-          console.log('schema-post:', newSchema);
+          log.info('schema-post:', newSchema);
           setSnackOpen(true);
+          setError('');
+        })
+        .catch((e) => {
+          setError(e.toString());
         });
     },
   ];
@@ -174,6 +180,9 @@ function SchemaWizard() {
           </Alert>
         </Snackbar>
       </Paper>
+      <Typography color="error" variant="body1" gutterBottom>
+        {error}
+      </Typography>
     </GenericTemplate>
   );
 }

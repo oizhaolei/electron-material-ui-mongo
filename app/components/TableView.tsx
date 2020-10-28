@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import log from 'electron-log';
 import { ipcRenderer } from 'electron';
 
 import { makeStyles, Theme, createStyles } from '@material-ui/core/styles';
@@ -132,7 +133,7 @@ export default function TableView({ label, onChange }) {
           defaultExpandIcon={<ArrowRightIcon />}
           defaultEndIcon={<div style={{ width: 24 }} />}
           onNodeSelect={(event, value) => {
-            console.log(value);
+            log.info(value);
             const [schema, field] = value.split('.');
             onChange(schema, field);
           }}

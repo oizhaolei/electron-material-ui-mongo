@@ -135,7 +135,17 @@ export default class Mdb {
   }
 
   async dropSchema(name) {
-    await this._dropCollection(name);
+    const dropCollection = async (name) => new Promise((resolve, reject) => {
+      mongoose.connection.db.dropCollection(pluralize(name), (err, result) => {
+        log.info('err, result:', err, result);
+        if (err) {
+          reject(err);
+        } else {
+          resolve(result);
+        }
+      });
+    });
+    await dropCollection(name);
     const result = await this.SchemaModel.deleteMany({
       name,
     });
@@ -146,18 +156,6 @@ export default class Mdb {
     return result;
   }
 
-  async _dropCollection(name) {
-    return new Promise((resolve, reject) => {
-      mongoose.connection.db.dropCollection(pluralize(name), (err, result) => {
-        console.log('err, result:', err, result);
-        if (err) {
-          reject(err);
-        } else {
-          resolve(result);
-        }
-      });
-    });
-  }
 
   async snapshot() {
     // TODO
@@ -330,8 +328,8 @@ export default class Mdb {
           resolve(data);
         }
       };
-
-      vm.runInThisContext(code)({ models, filter, callback });
+      log.info('run vm:', code, filter);
+      vm.runInThisContext(code)({ models, filter, log, callback });
     });
   }
 }

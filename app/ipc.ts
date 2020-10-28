@@ -52,14 +52,14 @@ export default function ipc() {
 
   // mdb.schema
   ipcMain.handle('schema', async (event, { name }) => {
-    log.debug('schema');
+    log.debug('schema', name);
     const schema = await mdb.getSchema(name);
     return schema;
   });
 
   // mdb.schema delete
   ipcMain.handle('schema-drop', async (event, { name }) => {
-    log.debug('schema-drop');
+    log.debug('schema-drop', name);
     const result = await mdb.dropSchema(name);
     log.debug('result:', result);
     return result;
@@ -106,14 +106,14 @@ export default function ipc() {
 
   // mdb.insert
   ipcMain.handle('insert', async (event, { name, doc }) => {
-    log.debug('insert');
+    log.debug('insert', name);
     const Model = await mdb.getSchemaModel(name);
     const newDoc = new Model(doc);
     await newDoc.save();
     return newDoc;
   });
   ipcMain.handle('insert-many', async (event, { name, docs }) => {
-    log.debug('insert');
+    log.debug('insert', name);
     const Model = await mdb.getSchemaModel(name);
     const newDocs = await Model.insertMany(docs);
     return newDocs;
@@ -130,7 +130,7 @@ export default function ipc() {
 
   // mdb.remove
   ipcMain.handle('remove', async (event, { name, filter, options }) => {
-    log.debug('remove');
+    log.debug('remove', name, filter, options);
     const Model = await mdb.getSchemaModel(name);
     const numRemoved = await Model.deleteMany(filter, options);
     return numRemoved;
@@ -138,7 +138,7 @@ export default function ipc() {
 
   // mdb.export
   ipcMain.handle('export-csv', async (event, { name }) => {
-    log.debug('export-csv');
+    log.debug('export-csv', name);
     const file = path.resolve(
       app.getPath('home'),
       `${name}-${new Date().getDate()}.csv`
@@ -169,7 +169,7 @@ export default function ipc() {
 
   // mdb.query delete
   ipcMain.handle('query-delete', async (event, { name }) => {
-    log.debug('query-delete');
+    log.debug('query-delete', name);
     const result = await mdb.dropQuery(name);
     return result;
   });

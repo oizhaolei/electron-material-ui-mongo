@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
+import log from 'electron-log';
 import { ipcRenderer } from 'electron';
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
@@ -54,6 +55,7 @@ function QueryWizard() {
   const { t } = useTranslation();
   const history = useHistory();
 
+  const [error, setError] = useState();
   const [activeStep, setActiveStep] = useState(0);
   const [snackOpen, setSnackOpen] = useState(false);
   const [{ queryWizard: dataState }, dispatch] = useContext(StoreContext);
@@ -90,8 +92,12 @@ function QueryWizard() {
           },
         })
         .then((result) => {
-          console.log('query-post:', result);
+          log.info('query-post:', result);
           setSnackOpen(true);
+          setError('');
+        })
+        .catch((e) => {
+          setError(e.toString());
         });
     },
   ];
@@ -176,6 +182,9 @@ function QueryWizard() {
           </Alert>
         </Snackbar>
       </Paper>
+      <Typography color="error" variant="body1" gutterBottom>
+        {error}
+      </Typography>
     </GenericTemplate>
   );
 }

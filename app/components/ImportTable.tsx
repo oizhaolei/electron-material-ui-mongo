@@ -69,6 +69,7 @@ const CSVDataTable = ({ columns, data }) => {
 export default function ImportTable({ dispatch, dataState }) {
   const classes = useStyles();
   const { t } = useTranslation();
+  const [error, setError] = useState();
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState([]);
   const [definition, setDefinition] = useState([]);
@@ -91,6 +92,10 @@ export default function ImportTable({ dispatch, dataState }) {
                 setLoading(false);
                 setDefinition(definition);
                 setData(data);
+                setError('');
+              })
+              .catch((e) => {
+                setError(e.toString());
               });
           }
         }}
@@ -127,6 +132,9 @@ export default function ImportTable({ dispatch, dataState }) {
           {t('Save')}
         </Button>
       )}
+      <Typography color="error" variant="body1" gutterBottom>
+        {error}
+      </Typography>
     </div>
   );
 }

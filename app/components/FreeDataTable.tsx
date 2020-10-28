@@ -11,6 +11,9 @@ export default function FreeDataTable({ title, data = [] }) {
             key: col,
             field: col,
             title: col,
+            headerStyle: {
+              whiteSpace: 'nowrap',
+            },
           }))
       : [];
 
@@ -22,6 +25,7 @@ export default function FreeDataTable({ title, data = [] }) {
       options={{
         exportButton: true,
         search: false,
+        pageSize: data.length > 10 ? 10 : data.length,
       }}
     />
   );

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import log from 'electron-log';
 import { ipcRenderer } from 'electron';
 import { useTranslation } from 'react-i18next';
 
@@ -18,7 +19,8 @@ const useStyles = makeStyles((theme: Theme) => ({
 export default function ExportTable({ dataState }) {
   const classes = useStyles();
   const { t } = useTranslation();
-  const [msg, setMsg] = useState('');
+  const [error, setError] = useState();
+  const [text, setText] = useState('');
 
   return (
     <div className={classes.root}>
@@ -35,15 +37,23 @@ export default function ExportTable({ dataState }) {
               name: dataState.name,
             })
             .then((result) => {
-              console.log(result);
-              setMsg(result);
+              log.info(result);
+              setText(result);
+              setError('');
+            })
+            .catch((e) => {
+              setText('');
+              setError(e.toString());
             });
         }}
       >
         {t('Export to CSV')}
       </Button>
       <Typography variant="body2" gutterBottom>
-        {msg}
+        {text}
+      </Typography>
+      <Typography color="error" variant="body1" gutterBottom>
+        {error}
       </Typography>
     </div>
   );

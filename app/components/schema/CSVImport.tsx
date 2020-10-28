@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import log from 'electron-log';
 import { ipcRenderer } from 'electron';
 import { useTranslation } from 'react-i18next';
 
@@ -44,7 +45,7 @@ const SchemaTable = ({ columns, data, dispatch }) => {
       cellEditable={{
         onCellEditApproved: (newValue, oldValue, rowData, columnDef) => {
           return new Promise((resolve) => {
-            console.log('newValue: ', newValue, rowData, columnDef);
+            log.info('newValue: ', newValue, rowData, columnDef);
             dispatch({
               type: 'SCHEMA_WIZARD_SCHEMA_TYPE_CHANGE',
               payload: {
@@ -79,6 +80,7 @@ const useStyles = makeStyles((theme) => ({
 export default function CSVImport({ dataState, dispatch }) {
   const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(false);
   const classes = useStyles();
 
   return (
@@ -113,6 +115,10 @@ export default function CSVImport({ dataState, dispatch }) {
                     data,
                   },
                 });
+                setError('');
+              })
+              .catch((e) => {
+                setError(e.toString());
               });
           }
         }}
@@ -134,6 +140,9 @@ export default function CSVImport({ dataState, dispatch }) {
           data={dataState.data}
         />
       )}
+      <Typography color="error" variant="body1" gutterBottom>
+        {error}
+      </Typography>
     </>
   );
 }
