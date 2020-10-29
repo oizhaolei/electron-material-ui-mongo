@@ -11,7 +11,8 @@ export default function NameForm({ dataState, dispatch }) {
   const { t } = useTranslation();
 
   const [name, setName] = useState(dataState.name);
-  const [queries, setQueries] = useState([]);
+  const [memo, setMemo] = useState(dataState.name);
+  const [queryNames, setQuerynames] = useState([]);
   const [error, setError] = useState(false);
   const [helperText, setHelperText] = useState();
 
@@ -19,25 +20,36 @@ export default function NameForm({ dataState, dispatch }) {
     ipcRenderer
       .invoke('queries')
       .then((qs) => {
-        setQueries(qs.map((s) => pluralize.singular(s.name.toLowerCase())));
+        setQuerynames(qs.map((s) => pluralize.singular(s.name.toLowerCase())));
       });
   }, []);
 
-  const handleChange = (v) => {
+  const handleNameChange = (v) => {
     setName(v);
 
-    const input = pluralize.singular(v.toLowerCase());
-    const err = queries.includes(input);
+    const singular = pluralize.singular(v.toLowerCase());
+    const err = queryNames.includes(singular);
     setError(err);
     setHelperText(err && 'duplicated name');
     dispatch({
       type: 'QUERY_WIZARD_DEFINITION_CHANGE',
       payload: {
-        name: input,
+        name: singular,
         error: err,
       },
     });
   };
+
+  const handleMemoChange = (v) => {
+    setMemo(v);
+    dispatch({
+      type: 'QUERY_WIZARD_DEFINITION_CHANGE',
+      payload: {
+        memo: v,
+      },
+    });
+  };
+
   return (
     <>
       <Typography variant="h6" gutterBottom>
@@ -56,9 +68,20 @@ export default function NameForm({ dataState, dispatch }) {
             fullWidth
             autoComplete="input unique query please"
             value={name}
-            onChange={(event) => handleChange(event.target.value)}
+            onChange={(event) => handleNameChange(event.target.value)}
             error={error}
             helperText={helperText}
+          />
+        </Grid>
+        <Grid item xs={12}>
+          <TextField
+            id="memo"
+            name="memo"
+            label={t('Memo')}
+            fullWidth
+            autoComplete="memo"
+            value={memo}
+            onChange={(event) => handleMemoChange(event.target.value)}
           />
         </Grid>
       </Grid>

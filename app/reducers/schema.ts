@@ -14,9 +14,9 @@ export default (state = initialState, { type, payload }) => {
   // let newDefinition;
   switch (type) {
     case 'SCHEMA_CLEAN':
-       return {
-         ...initialState,
-       };
+      return {
+        ...initialState,
+      };
     case 'SCHEMA_INIT':
       newState = {
         ...state,

@@ -1,6 +1,14 @@
+import Store from 'electron-store';
+
+const store = new Store();
 export default {
   mongoose: {
-    connect: 'mongodb://localhost:27017/perm2',
+    uri: () => {
+      return store.get('uri') || 'mongodb://localhost:27017/perm2';
+    },
+    setUri: (uri) => {
+      return store.set('uri', uri);
+    },
     options: {
       useFindAndModify: false,
       useCreateIndex: true,

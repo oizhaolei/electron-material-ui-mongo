@@ -12,7 +12,7 @@ import 'core-js/stable';
 import 'regenerator-runtime/runtime';
 import path from 'path';
 import mongoose from 'mongoose';
-import { app, BrowserWindow } from 'electron';
+import { app, dialog, BrowserWindow } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import windowStateKeeper from 'electron-window-state';
@@ -41,8 +41,11 @@ export default class AppUpdater {
 let mainWindow: BrowserWindow | null = null;
 
 // IPC
-mongoose.connect(config.mongoose.connect, config.mongoose.options).then(() => {
+mongoose.connect(config.mongoose.uri(), config.mongoose.options).then(() => {
   ipc();
+}, err => {
+  dialog.showErrorBox('Error', 'No MongoDB is not found.');
+  throw new Error('No MongoDB is not found.');
 });
 
 if (process.env.NODE_ENV === 'production') {

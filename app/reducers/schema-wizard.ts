@@ -3,6 +3,7 @@ import { mongo2Material } from '../utils/utils';
 export const initialState = {
   error: false,
   name: '',
+  memo: '',
   definition: {},
   suggests: {},
   materialDefinition: [],

@@ -72,5 +72,6 @@
   "schema NameForm demo": "テーブル名はユニックが必要、既存のテーブルと重複しないでください。",
   "PinCode demo": "正しいPinCodeを入力してログインしてください、誤って入力した文字列を削除は「Back Space」を押してください。",
   "query CodeForm demo": "入力項目と処理ロジックをを指定してください。",
+  "Memo": "メモ",
   "hello": "こんにちは"
 }

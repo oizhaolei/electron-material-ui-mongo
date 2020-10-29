@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import log from 'electron-log';
 import Store from 'electron-store';
 import { ipcRenderer } from 'electron';
@@ -15,6 +15,7 @@ import TextField from '@material-ui/core/TextField';
 
 import GenericTemplate from '../templates/GenericTemplate';
 import FreeDataTable from '../components/FreeDataTable';
+import StoreContext from '../store/StoreContext';
 
 const store = new Store();
 const useStyles = makeStyles((theme) => ({
@@ -25,7 +26,6 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function QueryPage() {
-  const classes = useStyles();
   const { t } = useTranslation();
   const history = useHistory();
   const { name } = useParams();
@@ -33,6 +33,7 @@ export default function QueryPage() {
   const [error, setError] = useState();
   const [filter, setFilter] = useState(store.get(`query.${name}.filter`, {}));
   const [data, setData] = useState({});
+  const [, dispatch] = useContext(StoreContext);
 
   useEffect(() => {
     ipcRenderer
@@ -47,6 +48,9 @@ export default function QueryPage() {
   return (
     <GenericTemplate id={name}>
       <Paper square>
+        <Typography variant="body1" gutterBottom>
+          {query.memo}
+        </Typography>
         <Grid container spacing={3}>
           <Grid item xs={9}>
             {query.params &&

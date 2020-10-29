@@ -2,11 +2,15 @@
 
 ** MongoDB をインストール
  - ダウンロード
+ https://www.mongodb.com/try/download/community
+
  - インストール
  - MongoDBサービスを常に起動を設定
 
 ** PersonalDBをダウンロードしてインストール
-
+ - Windows: exe
+ - MacOs: dmg
+ - Linux: deb
 
 
 * 機能一覧
@@ -20,12 +24,14 @@
 
  - テーブルの一覧
  - クエリの一覧
+ - グラフ
+ - 統計：サイズなど
 
 ** テーブル
 *** 新規
- - 名前
+ - 名前・メモ
  - CSVの読込み
-*** 照会
+*** データ照会
 *** 削除
 
 *** データ
@@ -34,12 +40,12 @@
 **** 更新
 **** 複数データ同時更新
 **** 削除
+**** ＣＳＶインポート、データ追加
 **** ＣＳＶのエクスポート
-**** ＣＳＶインポート
 
 ** クエリ
 *** 新規
- - 名前
+ - 名前・メモ
  - 引数とスクリプト
 
 **** 引数欄
@@ -48,14 +54,15 @@
 患者番号,採取日
 #+END_SRC
 
-入力された引数は、コンマなど符号区切り文字列とし、配列に変換する。
-配列は最後に、画面上検索の入力項目になります。
+入力された引数は、コンマなど符号区切り文字列、
+配列に変換されたら、画面上検索の入力項目になります。
 
 **** スクリプト欄
 
 スクリプトのサンプル：
 #+BEGIN_SRC javascript
 // 画面上の検索項目の値 {患者番号, 採取日} を使って、検索処理を行う
+// 指定される患者番号の詳細情報と、採取日以前の検査履歴を返す。
 (({ models, filter, log, callback }) => {
   (async () => {
     log.info('vm start.', filter);
@@ -82,19 +89,49 @@
 })
 #+END_SRC
 
+*** もう一つの例：
+#+BEGIN_SRC text
+手術日
+#+END_SRC
+#+BEGIN_SRC javascript
+(({ models, filter, log, callback }) => {
+  (async () => {
+    log.info('vm start.', filter);
+    try {
+      const diseases = await models[syujyutu].find({
+        '手術日': filter[''手術日''],
+      }).lean();
+      callback(false, {
+        diseases,
+      });
+    } catch (e) {
+      log.info('e:', e);
+      callback(e);
+    }
+    log.info('vm end');
+  })();
+})
+#+END_SRC
+
  - models
  データベースに持っているすべてのテーブル
  - filter
- 入力された引数の値
+ 入力された引数のキーと値
+ - log
+ ログオブジェクト
  - callback
  処理結果のコールバック、フォーマットは「callback(err, data)」
 
+
 *** 照会
-照会画面には、上半部の引数入力と下半部の結果があります。
+クエリの照会画面には、上半部は引数入力、下半部は検索結果があります。
 引数とスクリプトの実行結果、画面上テーブルの形で表示されます。
 
 *** エクスポート
+CSVとPDFフォーマットをサポートしています。
+PDFは文字化け現象があります。
 *** 削除
+
 
 * 他
 ** i18n
@@ -117,7 +154,7 @@
 *** DONE snapshot at startup
  save to: ~/personaldb-xx.zip
 
-** TODO analysis when schema changes
+** CANCELLED analysis when schema changes
 ** DONE i18n
 
 ** Query
@@ -127,17 +164,17 @@
 *** DONE single row/multi row
 *** DONE add/remove row
 *** CANCELLED edit cell
-*** TODO onColumnDragged / onOrderChange
+*** NEXT onColumnDragged / onOrderChange
 
 
-** Schema:
+** Schema field:
 *** DONE add
-*** TODO rename
+*** CANCELLED rename
 *** DONE remove
-*** TODO change type
-*** TODO default
+*** CANCELLED change type
+*** CANCELLED default
 
-* memo
+* FEATURES
 ** DONE sqlite => nedb => mongo
 ** DONE electron framework
 ** DONE ag-grid => material-table
@@ -146,6 +183,10 @@
 ** DONE dark theme
 ** DONE dark theme - PINCODE
 ** TODO deploy to Win/Macos/Linux
+** TODO change mongo url
+** TODO sample data
+** TODO hooks
+** TODO e2e
 
 * BUGS
 ** DONE find & pagination
@@ -162,10 +203,11 @@
 ** hotload
 ** DONE auth route for: pincode
 ** DONE SOLO component
-** TODO schema change
+** CANCELLED schema change
 ** DONE data crud
 ** DONE rollbar
 ** TODO loading
+** TODO left menu reload problem: useContext
 
 * そもそもほしいがった機能
  - データ属性の拡張  :OK

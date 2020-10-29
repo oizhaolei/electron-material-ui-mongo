@@ -19,9 +19,13 @@ export default function ipc() {
   });
 
   // uri
-  ipcMain.on('uri', (event) => {
-    log.debug('uri');
-    event.reply('uri', config.mongoose.connect);
+  ipcMain.handle('uri', (event, uri) => {
+    log.debug('uri', uri);
+    if (uri) {
+      config.mongoose.setUri(uri);
+    }
+
+    return config.mongoose.uri();
   });
 
   // schemaNames: add / update

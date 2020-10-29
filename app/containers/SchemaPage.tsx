@@ -9,6 +9,7 @@ import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import Box from '@material-ui/core/Box';
 
+import Typography from '@material-ui/core/Typography';
 import GenericTemplate from '../templates/GenericTemplate';
 import DataTable from '../components/DataTable';
 import SchemaTable from '../components/SchemaTable';
@@ -86,6 +87,9 @@ export default function SchemaPage() {
   return (
     <GenericTemplate id={name}>
       <Paper square>
+        <Typography variant="body1" gutterBottom>
+          {dataState.memo}
+        </Typography>
         <Tabs
           value={tab}
           onChange={handleTabChange}
