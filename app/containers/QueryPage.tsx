@@ -3,19 +3,17 @@ import log from 'electron-log';
 import Store from 'electron-store';
 import { ipcRenderer } from 'electron';
 import { useTranslation } from 'react-i18next';
-import { useParams, useHistory } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 
 import { makeStyles } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
-import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
 import TextField from '@material-ui/core/TextField';
 
 import GenericTemplate from '../templates/GenericTemplate';
 import FreeDataTable from '../components/FreeDataTable';
-import StoreContext from '../store/StoreContext';
 
 const store = new Store();
 const useStyles = makeStyles((theme) => ({
@@ -27,13 +25,11 @@ const useStyles = makeStyles((theme) => ({
 
 export default function QueryPage() {
   const { t } = useTranslation();
-  const history = useHistory();
   const { name } = useParams();
   const [query, setQuery] = useState({});
   const [error, setError] = useState();
-  const [filter, setFilter] = useState(store.get(`query.${name}.filter`, {}));
+  const [filter, setFilter] = useState({});
   const [data, setData] = useState({});
-  const [, dispatch] = useContext(StoreContext);
 
   useEffect(() => {
     ipcRenderer
@@ -43,6 +39,9 @@ export default function QueryPage() {
       .then((q) => {
         setQuery(q);
       });
+    setFilter(store.get(`query.${name}.filter`, {}));
+    setData([]);
+    setError('');
   }, [name]);
 
   return (
@@ -58,9 +57,10 @@ export default function QueryPage() {
               query.params.map((param) => (
                 <TextField
                   key={param}
+                  required
                   label={param}
                   variant="outlined"
-                  value={filter[param]}
+                  value={filter[param] || ''}
                   onChange={(event) => {
                     setFilter({
                       ...filter,
@@ -92,27 +92,6 @@ export default function QueryPage() {
               }}
             >
               {t('search')}
-            </Button>
-            <Button
-              variant="outlined"
-              startIcon={<DeleteForeverIcon />}
-              color="secondary"
-              onClick={() => {
-                ipcRenderer
-                  .invoke('query-delete', {
-                    name,
-                  })
-                  .then((results) => {
-                    log.info('query-delete:', results);
-                    history.replace('/');
-                    setError('');
-                  })
-                  .catch((e) => {
-                    setError(e.toString());
-                  });
-              }}
-            >
-              {t('Drop Query')}
             </Button>
           </Grid>
         </Grid>

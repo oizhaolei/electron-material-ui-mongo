@@ -2,14 +2,11 @@ import React, { useState } from 'react';
 import log from 'electron-log';
 import { ipcRenderer } from 'electron';
 import { useTranslation } from 'react-i18next';
-import { useHistory } from 'react-router-dom';
 
 import Typography from '@material-ui/core/Typography';
-import Button from '@material-ui/core/Button';
 import MuiAlert, { AlertProps } from '@material-ui/lab/Alert';
 import Snackbar from '@material-ui/core/Snackbar';
 import MaterialTable from 'material-table';
-import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
 
 const Alert = (props: AlertProps) => {
   return <MuiAlert elevation={6} variant="filled" {...props} />;
@@ -33,7 +30,6 @@ const columns = [
 ];
 export default function SchemaTable({ dataState, dispatch }) {
   const { t } = useTranslation();
-  const history = useHistory();
   const [error, setError] = useState();
 
   const data = Object.keys(dataState.definition).map((k) => ({
@@ -64,22 +60,6 @@ export default function SchemaTable({ dataState, dispatch }) {
         });
 
         setSnackbarOpen(true);
-        setError('');
-      })
-      .catch((e) => {
-        setError(e.toString());
-      });
-  };
-
-  const handleDropSchema = () => {
-    log.info('dataState:', dataState);
-    ipcRenderer
-      .invoke('schema-drop', {
-        name: dataState.name,
-      })
-      .then((results) => {
-        log.info('schema-drop:', results);
-        history.replace('/');
         setError('');
       })
       .catch((e) => {
@@ -136,13 +116,6 @@ export default function SchemaTable({ dataState, dispatch }) {
           {t('Saved')}
         </Alert>
       </Snackbar>
-      <Button
-        startIcon={<DeleteForeverIcon />}
-        color="secondary"
-        onClick={handleDropSchema}
-      >
-        {t('Drop Table')}
-      </Button>
       <Typography color="error" variant="body1" gutterBottom>
         {error}
       </Typography>

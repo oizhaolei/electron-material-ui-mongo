@@ -73,6 +73,8 @@ export default function SchemaPage() {
           payload: schema,
         });
       });
+
+    setTab(0);
     return () => {
       dispatch({
         type: 'SCHEMA_CLEAN',

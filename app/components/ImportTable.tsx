@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import log from 'electron-log';
 import { useTranslation } from 'react-i18next';
 import { ipcRenderer } from 'electron';
 
@@ -15,9 +16,14 @@ import ListSubheader from '@material-ui/core/ListSubheader';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import Paper from '@material-ui/core/Paper';
+import MuiAlert, { AlertProps } from '@material-ui/lab/Alert';
+import Snackbar from '@material-ui/core/Snackbar';
 
 import { mongo2Material } from '../utils/utils';
 
+const Alert = (props: AlertProps) => {
+  return <MuiAlert elevation={6} variant="filled" {...props} />;
+};
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
     '& > *': {
@@ -73,6 +79,15 @@ export default function ImportTable({ dispatch, dataState }) {
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState([]);
   const [definition, setDefinition] = useState([]);
+  // snackbar
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const handleSnackbarClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setSnackbarOpen(false);
+  };
 
   return (
     <div className={classes.root}>
@@ -101,7 +116,7 @@ export default function ImportTable({ dispatch, dataState }) {
         }}
       />
 
-      {definition && definition.length > 0 && (
+      {definition && Object.keys(definition).length > 0 && (
         <>
           <Typography variant="caption" display="block" gutterBottom>
             列の比較
@@ -109,13 +124,13 @@ export default function ImportTable({ dispatch, dataState }) {
           <CompareList
             left={Object.keys(dataState.definition)}
             right={Object.keys(definition)}
-            leftTitle="テーブル"
+            leftTitle="既存テーブル"
             rightTitle="CSVファイル"
           />
         </>
       )}
-      {data && data.length > 0 && (
-        <CSVDataTable columns={mongo2Material(definition)} data={data} />
+      {definition && Object.keys(definition).length > 0 && data && data.length > 0 && (
+        <CSVDataTable columns={mongo2Material({ definition })} data={data} />
       )}
 
       {data.length > 0 && (
@@ -124,17 +139,34 @@ export default function ImportTable({ dispatch, dataState }) {
           color="secondary"
           startIcon={<SaveIcon />}
           onClick={() =>
-            ipcRenderer.invoke('insert-many', {
-              name: dataState.name,
-              docs: data,
-            })}
+            ipcRenderer
+              .invoke('insert-many', {
+                name: dataState.name,
+                docs: data,
+              })
+              .then((results) => {
+                log.info('insert results', results);
+                setSnackbarOpen(true);
+              })
+              .catch((e) => {
+                alert(e.toString());
+              })}
         >
-          {t('Save')}
+          {t('Import')}
         </Button>
       )}
       <Typography color="error" variant="body1" gutterBottom>
         {error}
       </Typography>
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={6000}
+        onClose={handleSnackbarClose}
+      >
+        <Alert onClose={handleSnackbarClose} severity="success">
+          {t('Imported')}
+        </Alert>
+      </Snackbar>
     </div>
   );
 }

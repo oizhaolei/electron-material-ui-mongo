@@ -61,7 +61,7 @@ export default function CodeForm({ dataState, dispatch }) {
                 key={param}
                 label={param}
                 variant="outlined"
-                value={filter[param]}
+                value={filter[param] || ''}
                 onChange={(event) => {
                   setFilter({
                     ...filter,

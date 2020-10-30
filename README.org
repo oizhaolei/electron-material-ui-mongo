@@ -77,7 +77,7 @@
         },
       }).lean();
       callback(false, {
-        patient: [patient],
+        patient: patient ? [patient] : [],
         diseases,
       });
     } catch (e) {
