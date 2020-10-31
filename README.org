@@ -182,8 +182,8 @@ PDFは文字化け現象があります。
 ** DONE dnd to import
 ** DONE dark theme
 ** DONE dark theme - PINCODE
-** TODO deploy to Win/Macos/Linux
-** TODO change mongo url
+** DONE deploy to Win/Macos/Linux
+** DONE change mongo url
 ** TODO sample data
 ** TODO hooks
 ** TODO e2e

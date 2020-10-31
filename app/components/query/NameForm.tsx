@@ -17,11 +17,9 @@ export default function NameForm({ dataState, dispatch }) {
   const [helperText, setHelperText] = useState();
 
   useEffect(() => {
-    ipcRenderer
-      .invoke('queries')
-      .then((qs) => {
-        setQuerynames(qs.map((s) => pluralize.singular(s.name.toLowerCase())));
-      });
+    ipcRenderer.invoke('queries').then((qs) => {
+      setQuerynames(qs.map((s) => pluralize.singular(s.name.toLowerCase())));
+    });
   }, []);
 
   const handleNameChange = (v) => {

@@ -62,7 +62,16 @@ const SchemaTable = ({ columns, data, dispatch }) => {
 };
 
 const CSVDataTable = ({ columns, data }) => {
-  return <MaterialTable title="Data" columns={columns} data={data} />;
+  return (
+    <MaterialTable
+      options={{
+        search: false,
+      }}
+      title="Data"
+      columns={columns}
+      data={data}
+    />
+  );
 };
 
 const useStyles = makeStyles((theme) => ({

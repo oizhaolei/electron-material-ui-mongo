@@ -9,9 +9,9 @@ export const initialState = {
 export default (state = initialState, action) => {
   switch (action.type) {
     case 'QUERY_WIZARD_CLEAN':
-       return {
-         ...initialState,
-       };
+      return {
+        ...initialState,
+      };
     case 'QUERY_WIZARD_DEFINITION_CHANGE':
       return {
         ...state,

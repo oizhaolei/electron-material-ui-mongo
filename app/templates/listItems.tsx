@@ -3,6 +3,7 @@ import { ipcRenderer } from 'electron';
 import log from 'electron-log';
 import { useTranslation } from 'react-i18next';
 import { useHistory, Link } from 'react-router-dom';
+import pluralize from 'pluralize';
 
 import { makeStyles, createStyles } from '@material-ui/core/styles';
 import ListItem from '@material-ui/core/ListItem';
@@ -38,7 +39,7 @@ export const TableListItems = ({ current }) => {
   const dropSchema = (name) => {
     ipcRenderer
       .invoke('schema-drop', {
-        name,
+        name: pluralize(name),
       })
       .then((results) => {
         log.info('schema-drop:', results);
@@ -68,15 +69,17 @@ export const TableListItems = ({ current }) => {
               <StorageIcon />
             </ListItemIcon>
             <ListItemText primary={s.name} />
-            {
-              current === s.name && (
-                <ListItemSecondaryAction>
-                  <IconButton aria-label={t('Drop Table')} size="small" onClick={() => dropSchema(s.name)}>
-                    <RemoveIcon fontSize="inherit" />
-                  </IconButton>
-                </ListItemSecondaryAction>
-              )
-            }
+            {current === s.name && (
+              <ListItemSecondaryAction>
+                <IconButton
+                  aria-label={t('Drop Table')}
+                  size="small"
+                  onClick={() => dropSchema(s.name)}
+                >
+                  <RemoveIcon fontSize="inherit" />
+                </IconButton>
+              </ListItemSecondaryAction>
+            )}
           </ListItem>
         </Link>
       ))}
@@ -96,11 +99,11 @@ export const QueryListItems = ({ current }) => {
 
   const dropQuery = (name) => {
     ipcRenderer
-      .invoke('query-delete', {
-        name,
+      .invoke('query-drop', {
+        name: pluralize(name),
       })
       .then((results) => {
-        log.info('query-delete:', results);
+        log.info('query-drop:', results);
         history.replace('/');
       })
       .catch((e) => {
@@ -127,15 +130,17 @@ export const QueryListItems = ({ current }) => {
               <FindInPageIcon />
             </ListItemIcon>
             <ListItemText primary={q.name} />
-            {
-              current === q.name && (
-                <ListItemSecondaryAction>
-                  <IconButton aria-label={t('Drop Query')} size="small" onClick={() => dropQuery(q.name)}>
-                    <RemoveIcon fontSize="inherit" />
-                  </IconButton>
-                </ListItemSecondaryAction>
-              )
-            }
+            {current === q.name && (
+              <ListItemSecondaryAction>
+                <IconButton
+                  aria-label={t('Drop Query')}
+                  size="small"
+                  onClick={() => dropQuery(q.name)}
+                >
+                  <RemoveIcon fontSize="inherit" />
+                </IconButton>
+              </ListItemSecondaryAction>
+            )}
           </ListItem>
         </Link>
       ))}

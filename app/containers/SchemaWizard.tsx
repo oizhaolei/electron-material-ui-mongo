@@ -3,6 +3,7 @@ import log from 'electron-log';
 import { ipcRenderer } from 'electron';
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
+import pluralize from 'pluralize';
 
 import { makeStyles } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
@@ -68,7 +69,7 @@ function SchemaWizard() {
         type: 'SCHEMA_WIZARD_CLEAN',
       });
     };
-  }, []);
+  }, [dispatch]);
 
   const handleSnackClose = (event, reason) => {
     setSnackOpen(false);
@@ -85,7 +86,7 @@ function SchemaWizard() {
       log.info('dataState:', dataState);
       ipcRenderer
         .invoke('schema-post', {
-          name: dataState.name,
+          name: pluralize(dataState.name),
           definition: dataState.definition,
           docs: dataState.data,
         })
@@ -139,9 +140,7 @@ function SchemaWizard() {
               <Typography variant="h5" gutterBottom>
                 {t('Congratulations')}
               </Typography>
-              <Typography variant="subtitle1">
-                {t('create succeed')}
-              </Typography>
+              <Typography variant="subtitle1">{t('create succeed')}</Typography>
             </>
           ) : (
             <>

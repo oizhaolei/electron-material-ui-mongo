@@ -52,7 +52,7 @@ export default function Tables() {
                 >
                   {t.name}
                 </Link>
-                </TableCell>
+              </TableCell>
               <TableCell align="right">{t.rowCount}</TableCell>
               <TableCell align="right">{t.colCount}</TableCell>
             </TableRow>

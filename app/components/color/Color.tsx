@@ -99,7 +99,7 @@ function getColorGroup(options) {
     .replace(color.charAt(0), color.charAt(0).toLowerCase());
   let colorsList = [];
   colorsList = mainPalette.map((mainValue) =>
-    getColorBlock(classes, theme, cssColor, mainValue),
+    getColorBlock(classes, theme, cssColor, mainValue)
   );
 
   if (showAltPalette) {
@@ -129,7 +129,7 @@ function Color(props) {
           theme,
           color: mainColor,
           showAltPalette: true,
-        }),
+        })
       )}
       {neutralColors.map((neutralColor) =>
         getColorGroup({
@@ -137,7 +137,7 @@ function Color(props) {
           theme,
           color: neutralColor,
           showAltPalette: false,
-        }),
+        })
       )}
     </div>
   );

@@ -29,7 +29,6 @@ const rollbar = new Rollbar({
   captureUnhandledRejections: true,
 });
 
-
 export default class AppUpdater {
   constructor() {
     log.transports.file.level = 'info';
@@ -41,12 +40,15 @@ export default class AppUpdater {
 let mainWindow: BrowserWindow | null = null;
 
 // IPC
-mongoose.connect(config.mongoose.uri(), config.mongoose.options).then(() => {
-  ipc();
-}, err => {
-  dialog.showErrorBox('Error', 'No MongoDB is not found.');
-  throw new Error('No MongoDB is not found.');
-});
+mongoose.connect(config.mongoose.uri(), config.mongoose.options).then(
+  () => {
+    ipc();
+  },
+  (err) => {
+    dialog.showErrorBox('Error', 'No MongoDB is not found.');
+    throw new Error('No MongoDB is not found.');
+  }
+);
 
 if (process.env.NODE_ENV === 'production') {
   const sourceMapSupport = require('source-map-support');

@@ -69,7 +69,17 @@ const CompareList = ({ left, right, leftTitle, rightTitle }) => (
 );
 
 const CSVDataTable = ({ columns, data }) => {
-  return <MaterialTable title="Data" columns={columns} data={data} />;
+  return (
+    <MaterialTable
+      options={{
+        search: false,
+        paging: false,
+      }}
+      title="Data"
+      columns={columns}
+      data={data}
+    />
+  );
 };
 
 export default function ImportTable({ dispatch, dataState }) {
@@ -129,9 +139,12 @@ export default function ImportTable({ dispatch, dataState }) {
           />
         </>
       )}
-      {definition && Object.keys(definition).length > 0 && data && data.length > 0 && (
-        <CSVDataTable columns={mongo2Material({ definition })} data={data} />
-      )}
+      {definition &&
+        Object.keys(definition).length > 0 &&
+        data &&
+        data.length > 0 && (
+          <CSVDataTable columns={mongo2Material({ definition })} data={data} />
+        )}
 
       {data.length > 0 && (
         <Button
@@ -150,7 +163,8 @@ export default function ImportTable({ dispatch, dataState }) {
               })
               .catch((e) => {
                 alert(e.toString());
-              })}
+              })
+          }
         >
           {t('Import')}
         </Button>

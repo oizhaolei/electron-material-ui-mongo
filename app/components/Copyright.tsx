@@ -11,7 +11,7 @@ export default function Copyright() {
     <Typography variant="body2" color="textSecondary" align="center">
       {'Copyright © '}
       <Button onClick={() => shell.openExternal('https://www.as-cube.com/')}>
-      {t('company name')}
+        {t('company name')}
       </Button>
       {new Date().getFullYear()}
     </Typography>

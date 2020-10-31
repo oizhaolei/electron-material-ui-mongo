@@ -172,8 +172,8 @@ export default function ipc() {
   });
 
   // mdb.query delete
-  ipcMain.handle('query-delete', async (event, { name }) => {
-    log.debug('query-delete', name);
+  ipcMain.handle('query-drop', async (event, { name }) => {
+    log.debug('query-drop', name);
     const result = await mdb.dropQuery(name);
     return result;
   });

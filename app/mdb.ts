@@ -2,7 +2,6 @@ import mongoose from 'mongoose';
 import log from 'electron-log';
 
 import vm from 'vm';
-import pluralize from 'pluralize';
 
 import fs from 'fs';
 import dayjs from 'dayjs';
@@ -137,16 +136,17 @@ export default class Mdb {
   }
 
   async dropSchema(name) {
-    const dropCollection = async (name) => new Promise((resolve, reject) => {
-      mongoose.connection.db.dropCollection(pluralize(name), (err, result) => {
-        log.info('err, result:', err, result);
-        if (err) {
-          reject(err);
-        } else {
-          resolve(result);
-        }
+    const dropCollection = async (name) =>
+      new Promise((resolve, reject) => {
+        mongoose.connection.db.dropCollection(name, (err, result) => {
+          log.info('err, result:', err, result);
+          if (err) {
+            reject(err);
+          } else {
+            resolve(result);
+          }
+        });
       });
-    });
     await dropCollection(name);
     const result = await this.SchemaModel.deleteMany({
       name,
@@ -158,8 +158,8 @@ export default class Mdb {
     return result;
   }
 
-
   async snapshot() {
+    console.log('snapshot:', this.models.length);
     if (this.models.length > 0) {
       return;
     }
@@ -180,11 +180,13 @@ export default class Mdb {
       const etc = {
         memo: 'sample data',
       };
-      const docs = [{
-        name: 'charlie',
-        age: '18',
-        sex: 'male',
-      }];
+      const docs = [
+        {
+          name: 'charlie',
+          age: '18',
+          sex: 'male',
+        },
+      ];
 
       await this.createSchema(name, definition, etc);
       const Model = await this.getSchemaModel(name);
@@ -213,14 +215,14 @@ export default class Mdb {
           log.info('vm end');
         })();
       })
-      `;;
+      `;
       await this.createQuery(name, {
         memo,
         params,
         code,
       });
     }
-}
+  }
 
   async writeCSV(name, file) {
     const Model = await this.getSchemaModel(name);

@@ -279,7 +279,7 @@ function ColorTool({ classes, onChange }) {
       </Grid>
       <Grid item xs={12}>
         <Button variant="contained" onClick={handleChangeDocsColors}>
-        {t('Set Colors')}
+          {t('Set Colors')}
         </Button>
       </Grid>
     </Grid>

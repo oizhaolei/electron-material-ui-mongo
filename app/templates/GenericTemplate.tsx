@@ -33,11 +33,6 @@ import Brightness7Icon from '@material-ui/icons/Brightness7';
 import Brightness4Icon from '@material-ui/icons/Brightness4';
 import TranslateIcon from '@material-ui/icons/Translate';
 import PaletteIcon from '@material-ui/icons/Palette';
-import AddIcon from '@material-ui/icons/Add';
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
-import StorageIcon from '@material-ui/icons/Storage';
-import FindInPageIcon from '@material-ui/icons/FindInPage';
 
 import Copyright from '../components/Copyright';
 import { QueryListItems, TableListItems } from './listItems';
@@ -45,37 +40,6 @@ import StoreContext from '../store/StoreContext';
 
 const store = new Store();
 const drawerWidth = 240;
-
-const StyledMenu = withStyles({
-  paper: {
-    border: '1px solid #d3d4d5',
-  },
-})((props) => (
-  <Menu
-    elevation={0}
-    getContentAnchorEl={null}
-    anchorOrigin={{
-      vertical: 'bottom',
-      horizontal: 'center',
-    }}
-    transformOrigin={{
-      vertical: 'top',
-      horizontal: 'center',
-    }}
-    {...props}
-  />
-));
-
-const StyledMenuItem = withStyles((theme) => ({
-  root: {
-    '&:focus': {
-      backgroundColor: theme.palette.primary.main,
-      '& .MuiListItemIcon-root, & .MuiListItemText-primary': {
-        color: theme.palette.common.white,
-      },
-    },
-  },
-}))(MenuItem);
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -205,27 +169,6 @@ const GenericTemplate = ({ children, title, id }) => {
     store.set('drawer.open', false);
   };
 
-  const [anchorEl, setAnchorEl] = useState(null);
-  const handleAddClick = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleAddClose = () => {
-    setAnchorEl(null);
-  };
-  const addActions = [
-    {
-      icon: <StorageIcon fontSize="small" />,
-      name: t('Add Table'),
-      link: '/schema-wizard',
-    },
-    {
-      icon: <FindInPageIcon fontSize="small" />,
-      name: t('Add Query'),
-      link: '/query-wizard',
-    },
-  ];
-
   useEffect(() => {
     if (!auth.isAuthenticated) {
       history.replace('/pincode');
@@ -282,11 +225,6 @@ const GenericTemplate = ({ children, title, id }) => {
             >
               {t('personal db')}
             </Typography>
-            <Tooltip title="Add">
-              <IconButton color="inherit" onClick={handleAddClick}>
-                <AddIcon />
-              </IconButton>
-            </Tooltip>
             <Tooltip title="Toggle en/ja language">
               <IconButton color="inherit" onClick={changeLanguage}>
                 <TranslateIcon />
@@ -321,22 +259,6 @@ const GenericTemplate = ({ children, title, id }) => {
               </IconButton>
             </Tooltip>
           </Toolbar>
-          <StyledMenu
-            id="customized-menu"
-            anchorEl={anchorEl}
-            keepMounted
-            open={Boolean(anchorEl)}
-            onClose={handleAddClose}
-          >
-            {addActions.map((a) => (
-              <Link key={a.link} to={a.link} className={classes.link}>
-                <MenuItem>
-                  <ListItemIcon>{a.icon}</ListItemIcon>
-                  <ListItemText primary={a.name} />
-                </MenuItem>
-              </Link>
-            ))}
-          </StyledMenu>
         </AppBar>
         <Drawer
           variant="permanent"
