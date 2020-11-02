@@ -208,6 +208,8 @@ PDFは文字化け現象があります。
 ** DONE rollbar
 ** TODO loading
 ** TODO left menu reload problem: useContext
+** TODO confirm before drop
+** TODO change name
 
 * そもそもほしいがった機能
  - データ属性の拡張  :OK

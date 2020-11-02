@@ -55,7 +55,7 @@ const code = `
 //    patients: one row
 //    disease: multi rows
 
-export default function TestPage() {
+export default function SettingPage() {
   const classes = useStyles();
   const [text, setText] = useState();
   const [error, setError] = useState();
@@ -83,7 +83,7 @@ export default function TestPage() {
     setOpen(false);
   };
   return (
-    <GenericTemplate title="Test" id="test">
+    <GenericTemplate title="Setting" id="setting">
       <div className={classes.root}>
         <Button variant="outlined" color="primary" onClick={handleClickOpen}>
           Mongo Uri
@@ -113,9 +113,6 @@ export default function TestPage() {
         >
           Run Sample Query Code
         </Button>
-        <Typography variant="body1" gutterBottom>
-          {code}
-        </Typography>
         <Typography variant="body2" gutterBottom>
           {text}
         </Typography>

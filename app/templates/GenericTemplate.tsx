@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import Store from 'electron-store';
 import { ipcRenderer } from 'electron';
 import { Link, useHistory } from 'react-router-dom';
+import dayjs from 'dayjs';
 
 import { useTranslation } from 'react-i18next';
 import clsx from 'clsx';
@@ -29,8 +30,7 @@ import HomeIcon from '@material-ui/icons/Home';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
-import Brightness7Icon from '@material-ui/icons/Brightness7';
-import Brightness4Icon from '@material-ui/icons/Brightness4';
+import SettingsIcon from '@material-ui/icons/Settings';
 import TranslateIcon from '@material-ui/icons/Translate';
 import PaletteIcon from '@material-ui/icons/Palette';
 
@@ -133,12 +133,6 @@ const GenericTemplate = ({ children, title, id }) => {
   };
 
   // theme
-  const [darkMode, setDarkMode] = useState(store.get('darkMode', 'light'));
-  const toggleDarkMode = () => {
-    const newDarkMode = darkMode === 'light' ? 'dark' : 'light';
-    store.set('darkMode', newDarkMode);
-    setDarkMode(newDarkMode);
-  };
   const [primary, setPrimary] = useState(
     store.get('palette.primary', {
       main: '#3f50b5',
@@ -154,7 +148,10 @@ const GenericTemplate = ({ children, title, id }) => {
     palette: {
       primary,
       secondary,
-      type: darkMode,
+      type:
+        dayjs().format('HH') > '06' && dayjs().format('HH') < '18'
+          ? 'light'
+          : 'dark',
     },
   });
 
@@ -230,14 +227,12 @@ const GenericTemplate = ({ children, title, id }) => {
                 <TranslateIcon />
               </IconButton>
             </Tooltip>
-            <Tooltip title="Toggle dard/light theme">
-              <IconButton color="inherit" onClick={toggleDarkMode}>
-                {darkMode === 'dark' ? (
-                  <Brightness7Icon />
-                ) : (
-                  <Brightness4Icon />
-                )}
-              </IconButton>
+            <Tooltip title="Setting">
+              <Link to="/setting" className={classes.link}>
+                <IconButton color="inherit">
+                  <SettingsIcon />
+                </IconButton>
+              </Link>
             </Tooltip>
             <Tooltip title="Change Colors">
               <Link to="/color" className={classes.link}>

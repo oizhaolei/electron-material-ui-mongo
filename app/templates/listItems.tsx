@@ -14,8 +14,11 @@ import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import StorageIcon from '@material-ui/icons/Storage';
 import FindInPageIcon from '@material-ui/icons/FindInPage';
 import IconButton from '@material-ui/core/IconButton';
+import Button from '@material-ui/core/Button';
 import AddIcon from '@material-ui/icons/Add';
 import RemoveIcon from '@material-ui/icons/Remove';
+import CloseIcon from '@material-ui/icons/Close';
+import Snackbar from '@material-ui/core/Snackbar';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -31,23 +34,32 @@ export const TableListItems = ({ current }) => {
   const { t } = useTranslation();
   const [schemas, setSchemas] = useState([]);
   const history = useHistory();
+  const [open, setOpen] = React.useState();
+
+  const handleClose = (event, reason) => {
+    if (reason === 'confirmed') {
+      ipcRenderer
+        .invoke('schema-drop', {
+          name: pluralize(open),
+        })
+        .then((results) => {
+          log.info('schema-drop:', results);
+          history.replace('/');
+        })
+        .catch((e) => {
+          log.error(e);
+        });
+    }
+
+    setOpen(false);
+  };
 
   useEffect(() => {
     ipcRenderer.invoke('schemas').then(setSchemas);
   }, []);
 
   const dropSchema = (name) => {
-    ipcRenderer
-      .invoke('schema-drop', {
-        name: pluralize(name),
-      })
-      .then((results) => {
-        log.info('schema-drop:', results);
-        history.replace('/');
-      })
-      .catch((e) => {
-        log.error(e);
-      });
+    setOpen(name);
   };
 
   return (
@@ -83,6 +95,35 @@ export const TableListItems = ({ current }) => {
           </ListItem>
         </Link>
       ))}
+      <Snackbar
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'left',
+        }}
+        open={!!open}
+        autoHideDuration={6000}
+        onClose={handleClose}
+        message="このテーブルを削除します、よろしいですか？"
+        action={
+          <React.Fragment>
+            <Button
+              color="secondary"
+              size="small"
+              onClick={(e) => handleClose(e, 'confirmed')}
+            >
+              {t('Ok')}
+            </Button>
+            <IconButton
+              size="small"
+              aria-label="close"
+              color="inherit"
+              onClick={handleClose}
+            >
+              <CloseIcon fontSize="small" />
+            </IconButton>
+          </React.Fragment>
+        }
+      />
     </>
   );
 };
@@ -92,23 +133,36 @@ export const QueryListItems = ({ current }) => {
   const { t } = useTranslation();
   const [queries, setQueries] = useState([]);
   const history = useHistory();
+  const [open, setOpen] = React.useState();
+
+  const handleClick = () => {
+    setOpen(true);
+  };
+
+  const handleClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      ipcRenderer
+        .invoke('query-drop', {
+          name: pluralize(open),
+        })
+        .then((results) => {
+          log.info('query-drop:', results);
+          history.replace('/');
+        })
+        .catch((e) => {
+          log.error(e);
+        });
+    }
+
+    setOpen(false);
+  };
 
   useEffect(() => {
     ipcRenderer.invoke('queries').then(setQueries);
   }, []);
 
   const dropQuery = (name) => {
-    ipcRenderer
-      .invoke('query-drop', {
-        name: pluralize(name),
-      })
-      .then((results) => {
-        log.info('query-drop:', results);
-        history.replace('/');
-      })
-      .catch((e) => {
-        log.error(e);
-      });
+    setOpen(name);
   };
 
   return (
@@ -144,14 +198,35 @@ export const QueryListItems = ({ current }) => {
           </ListItem>
         </Link>
       ))}
-      <Link to="/test" className={classes.link}>
-        <ListItem button>
-          <ListItemIcon>
-            <FindInPageIcon />
-          </ListItemIcon>
-          <ListItemText primary="Test" />
-        </ListItem>
-      </Link>
+      <Snackbar
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'left',
+        }}
+        open={!!open}
+        autoHideDuration={6000}
+        onClose={handleClose}
+        message="このクリエを削除します、よろしいですか？"
+        action={
+          <React.Fragment>
+            <Button
+              color="secondary"
+              size="small"
+              onClick={(e) => handleClose(e, 'confirmed')}
+            >
+              {t('Ok')}
+            </Button>
+            <IconButton
+              size="small"
+              aria-label="close"
+              color="inherit"
+              onClick={handleClose}
+            >
+              <CloseIcon fontSize="small" />
+            </IconButton>
+          </React.Fragment>
+        }
+      />
     </>
   );
 };
