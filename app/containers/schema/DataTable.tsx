@@ -18,8 +18,8 @@ import ListItemText from '@material-ui/core/ListItemText';
 
 import MaterialTable from 'material-table';
 
-import DetailForm from './DetailForm';
-import StoreContext from '../store/StoreContext';
+import DetailForm from '../../components/DetailForm';
+import StoreContext from '../../store/StoreContext';
 
 const store = new Store();
 
@@ -232,6 +232,7 @@ export default function DataTable() {
                   options,
                 })
                 .then((results) => {
+                  console.log('results:', results);
                   setIsLoading(false);
                   resolve({
                     ...results,

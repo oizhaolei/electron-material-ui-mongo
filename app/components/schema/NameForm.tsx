@@ -18,21 +18,21 @@ export default function NameForm({ dataState, dispatch }) {
 
   useEffect(() => {
     ipcRenderer.invoke('schemas').then((ss) => {
-      setSchemaNames(ss.map((s) => pluralize.singular(s.name.toLowerCase())));
+      setSchemaNames(ss.map((s) => pluralize(s.name.toLowerCase())));
     });
   }, []);
 
   const handleNameChange = (v) => {
     setName(v);
 
-    const singular = pluralize.singular(v.toLowerCase());
-    const err = schemaNames.includes(singular);
+    const plural = pluralize(v.toLowerCase());
+    const err = schemaNames.includes(plural);
     setError(err);
     setHelperText(err && 'duplicated name');
     dispatch({
       type: 'SCHEMA_WIZARD_INIT',
       payload: {
-        name: singular,
+        name: plural,
         error: err,
       },
     });

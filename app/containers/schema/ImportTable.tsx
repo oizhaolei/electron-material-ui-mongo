@@ -18,8 +18,10 @@ import ListItemText from '@material-ui/core/ListItemText';
 import Paper from '@material-ui/core/Paper';
 import MuiAlert, { AlertProps } from '@material-ui/lab/Alert';
 import Snackbar from '@material-ui/core/Snackbar';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Checkbox from '@material-ui/core/Checkbox';
 
-import { mongo2Material } from '../utils/utils';
+import { mongo2Material } from '../../utils/utils';
 
 const Alert = (props: AlertProps) => {
   return <MuiAlert elevation={6} variant="filled" {...props} />;
@@ -73,7 +75,6 @@ const CSVDataTable = ({ columns, data }) => {
     <MaterialTable
       options={{
         search: false,
-        paging: false,
       }}
       title="Data"
       columns={columns}
@@ -87,6 +88,7 @@ export default function ImportTable({ dispatch, dataState }) {
   const { t } = useTranslation();
   const [error, setError] = useState();
   const [loading, setLoading] = useState(false);
+  const [cleanData, setCleanData] = useState(false);
   const [data, setData] = useState([]);
   const [definition, setDefinition] = useState([]);
   // snackbar
@@ -105,6 +107,17 @@ export default function ImportTable({ dispatch, dataState }) {
         {t('ImportTable demo')}
       </Typography>
       {loading && <CircularProgress />}
+      <FormControlLabel
+        control={
+          <Checkbox
+            checked={cleanData}
+            onChange={() => setCleanData(!cleanData)}
+            name="checkedB"
+            color="primary"
+          />
+        }
+        label="インポート前に、既存データを全てを消す"
+      />
       <DropzoneArea
         acceptedFiles={['text/csv']}
         dropzoneText={t('Drag and drop an CSV here or click')}
@@ -156,9 +169,9 @@ export default function ImportTable({ dispatch, dataState }) {
               .invoke('insert-many', {
                 name: dataState.name,
                 docs: data,
+                cleanData,
               })
               .then((results) => {
-                log.info('insert results', results);
                 setSnackbarOpen(true);
               })
               .catch((e) => {

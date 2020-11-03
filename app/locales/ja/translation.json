@@ -2,7 +2,7 @@
   "Add Query": "クエリの追加",
   "Add Table": "テーブルを追加",
   "Back": "前へ",
-  "Browse": "ブラウズ",
+  "data": "データ",
   "Cancel": "キャンセル",
   "Color": "色",
   "Create Query": "クエリの作成",
@@ -72,7 +72,8 @@
   "SchemaTable demo": "テーブル構造の追加、削除ができます。",
   "schema NameForm demo": "テーブル名はユニックが必要、既存のテーブルと重複しないでください。",
   "PinCode demo": "正しいPinCodeを入力してログインしてください、誤って入力した文字列を削除は「Back Space」を押してください。",
-  "query CodeForm demo": "入力項目と処理ロジックをを指定してください。",
+  "query CodeForm demo": "入力項目と処理ロジックを指定してください。",
+  "query SettingForm demo": "入力項目と処理ロジックを変更して保存できます。",
   "Memo": "メモ",
   "hello": "こんにちは"
 }

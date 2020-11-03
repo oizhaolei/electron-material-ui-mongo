@@ -73,7 +73,7 @@ function SchemaWizard() {
 
   const handleSnackClose = (event, reason) => {
     setSnackOpen(false);
-    history.replace(`/table/${dataState.name}`);
+    history.replace(`/table/${pluralize(dataState.name)}`);
   };
 
   const steps = [t('Table Name'), t('Upload Data')];

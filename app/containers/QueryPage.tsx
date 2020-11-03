@@ -1,22 +1,51 @@
 import React, { useState, useEffect, useContext } from 'react';
-import log from 'electron-log';
-import Store from 'electron-store';
 import { ipcRenderer } from 'electron';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles, Theme } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
+import Tabs from '@material-ui/core/Tabs';
+import Tab from '@material-ui/core/Tab';
+import Box from '@material-ui/core/Box';
+
 import Typography from '@material-ui/core/Typography';
-import Grid from '@material-ui/core/Grid';
-import Button from '@material-ui/core/Button';
-import TextField from '@material-ui/core/TextField';
-
 import GenericTemplate from '../templates/GenericTemplate';
-import FreeDataTable from '../components/FreeDataTable';
+import QueryTable from './query/QueryTable';
+import SettingForm from './query/SettingForm';
 
-const store = new Store();
-const useStyles = makeStyles((theme) => ({
+import StoreContext from '../store/StoreContext';
+
+interface TabPanelProps {
+  children?: React.ReactNode;
+  index: any;
+  value: any;
+}
+
+function TabPanel(props: TabPanelProps) {
+  const { children, value, index, ...other } = props;
+
+  return (
+    <span
+      role="tabpanel"
+      hidden={value !== index}
+      id={`simple-tabpanel-${index}`}
+      aria-labelledby={`simple-tab-${index}`}
+      {...other}
+    >
+      {value === index && <Box p={3}>{children}</Box>}
+    </span>
+  );
+}
+
+function a11yProps(index: any) {
+  return {
+    id: `simple-tab-${index}`,
+    'aria-controls': `simple-tabpanel-${index}`,
+  };
+}
+
+const useStyles = makeStyles((theme: Theme) => ({
   root: {
     flexGrow: 1,
     backgroundColor: theme.palette.background.paper,
@@ -24,88 +53,60 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function QueryPage() {
+  const classes = useStyles();
   const { t } = useTranslation();
   const { name } = useParams();
-  const [query, setQuery] = useState({});
-  const [error, setError] = useState();
-  const [filter, setFilter] = useState({});
-  const [data, setData] = useState({});
+  const [tab, setTab] = useState(0);
+
+  const [{ query: dataState }, dispatch] = useContext(StoreContext);
 
   useEffect(() => {
     ipcRenderer
       .invoke('query', {
         name,
       })
-      .then((q) => {
-        setQuery(q);
+      .then((query) => {
+        dispatch({
+          type: 'QUERY_CHANGE',
+          payload: query,
+        });
       });
-    setFilter(store.get(`query.${name}.filter`, {}));
-    setData([]);
-    setError('');
-  }, [name]);
+
+    setTab(0);
+    return () => {
+      dispatch({
+        type: 'QUERY_INIT',
+      });
+    };
+  }, [name, dispatch]);
+
+  const handleTabChange = (event, newTab) => {
+    setTab(newTab);
+  };
 
   return (
     <GenericTemplate id={name}>
       <Paper square>
         <Typography variant="body1" gutterBottom>
-          {query.memo}
+          {dataState.memo}
         </Typography>
-        <Grid container spacing={3}>
-          <Grid item xs={9}>
-            {query.params &&
-              query.params.length > 0 &&
-              query.params.map((param) => (
-                <TextField
-                  key={param}
-                  required
-                  label={param}
-                  variant="outlined"
-                  value={filter[param] || ''}
-                  onChange={(event) => {
-                    setFilter({
-                      ...filter,
-                      [param]: event.target.value,
-                    });
-                  }}
-                />
-              ))}
-          </Grid>
-          <Grid item xs={3}>
-            <Button
-              variant="contained"
-              color="secondary"
-              onClick={() => {
-                ipcRenderer
-                  .invoke('query-code', {
-                    code: query.code,
-                    filter,
-                  })
-                  .then((data) => {
-                    log.info(data);
-                    setData(data);
-
-                    store.set(`query.${name}.filter`, filter);
-                  })
-                  .catch((e) => {
-                    setError(e.toString());
-                  });
-              }}
-            >
-              {t('search')}
-            </Button>
-          </Grid>
-        </Grid>
+        <Tabs
+          value={tab}
+          onChange={handleTabChange}
+          aria-label={t('tabs')}
+          indicatorColor="primary"
+          textColor="primary"
+        >
+          <Tab label={t('data')} {...a11yProps(0)} />
+          <Tab label={t('Structure')} {...a11yProps(1)} />
+        </Tabs>
+        <TabPanel value={tab} index={0}>
+          <QueryTable />
+        </TabPanel>
+        <TabPanel value={tab} index={1}>
+          <SettingForm />
+        </TabPanel>
       </Paper>
-      <Paper square>
-        <Grid container spacing={3}>
-          {Object.keys(data).map((item) => (
-            <FreeDataTable key={item} title={item} data={data[item]} />
-          ))}
-        </Grid>
-      </Paper>
-      <Typography color="error" variant="body1" gutterBottom>
-        {error}
-      </Typography>
     </GenericTemplate>
   );
 }

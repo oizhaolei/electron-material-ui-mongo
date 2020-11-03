@@ -116,12 +116,18 @@ export default function ipc() {
     await newDoc.save();
     return newDoc;
   });
-  ipcMain.handle('insert-many', async (event, { name, docs }) => {
-    log.debug('insert', name);
-    const Model = await mdb.getSchemaModel(name);
-    const newDocs = await Model.insertMany(docs);
-    return newDocs;
-  });
+  ipcMain.handle(
+    'insert-many',
+    async (event, { name, docs, cleanData = false }) => {
+      log.debug('insert', name);
+      const Model = await mdb.getSchemaModel(name);
+      if (cleanData) {
+        await Model.deleteMany({});
+      }
+      const newDocs = await Model.insertMany(docs);
+      return newDocs;
+    }
+  );
 
   // mdb.update
   ipcMain.handle('update', async (event, { name, filter, doc, options }) => {

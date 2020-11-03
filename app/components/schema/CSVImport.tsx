@@ -32,7 +32,7 @@ const MATERIAL_DEFINITION = [
   },
 ];
 
-const SchemaTable = ({ columns, data, dispatch }) => {
+const DefinitionTable = ({ columns, data, dispatch }) => {
   return (
     <MaterialTable
       title="Schema"
@@ -133,7 +133,7 @@ export default function CSVImport({ dataState, dispatch }) {
         }}
       />
       {dataState.definition && Object.keys(dataState.definition).length > 0 && (
-        <SchemaTable
+        <DefinitionTable
           columns={MATERIAL_DEFINITION}
           data={Object.keys(dataState.definition).map((k) => ({
             field: k,

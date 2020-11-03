@@ -11,10 +11,10 @@ import Box from '@material-ui/core/Box';
 
 import Typography from '@material-ui/core/Typography';
 import GenericTemplate from '../templates/GenericTemplate';
-import DataTable from '../components/DataTable';
-import SchemaTable from '../components/SchemaTable';
-import ExportTable from '../components/ExportTable';
-import ImportTable from '../components/ImportTable';
+import DataTable from './schema/DataTable';
+import SchemaTable from './schema/SchemaTable';
+import ExportTable from './schema/ExportTable';
+import ImportTable from './schema/ImportTable';
 
 import StoreContext from '../store/StoreContext';
 
@@ -69,7 +69,7 @@ export default function SchemaPage() {
       })
       .then((schema) => {
         dispatch({
-          type: 'SCHEMA_INIT',
+          type: 'SCHEMA_CHANGE',
           payload: schema,
         });
       });
@@ -77,7 +77,7 @@ export default function SchemaPage() {
     setTab(0);
     return () => {
       dispatch({
-        type: 'SCHEMA_CLEAN',
+        type: 'SCHEMA_INIT',
       });
     };
   }, [name, dispatch]);
@@ -99,7 +99,7 @@ export default function SchemaPage() {
           indicatorColor="primary"
           textColor="primary"
         >
-          <Tab label={t('Browse')} {...a11yProps(0)} />
+          <Tab label={t('data')} {...a11yProps(0)} />
           <Tab label={t('Structure')} {...a11yProps(1)} />
           <Tab label={t('Export')} {...a11yProps(2)} />
           <Tab label={t('Import')} {...a11yProps(3)} />

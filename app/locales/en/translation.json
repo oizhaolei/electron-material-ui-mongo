@@ -2,7 +2,7 @@
   "Add Query": "Add Query",
   "Add Table": "Add Table",
   "Back": "Back",
-  "Browse": "Browse",
+  "data": "Data",
   "Cancel": "Cancel",
   "Color": "Color",
   "Create Query": "Create Query",
@@ -73,6 +73,7 @@
   "schema NameForm demo": "The table name must be unic and should not be duplicated with an existing table.",
   "PinCode demo": "Please enter the correct Pin Code to log in, or press \"Back Space\" to delete the incorrectly entered string.",
   "query CodeForm demo": "Specify the input items and processing logic.",
+  "query SettingForm demo": "Specify the input items and processing logic.",
   "Memo": "Memo",
   "hello": "hello"
 }

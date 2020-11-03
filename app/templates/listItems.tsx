@@ -34,7 +34,7 @@ export const TableListItems = ({ current }) => {
   const { t } = useTranslation();
   const [schemas, setSchemas] = useState([]);
   const history = useHistory();
-  const [open, setOpen] = React.useState();
+  const [open, setOpen] = useState();
 
   const handleClose = (event, reason) => {
     if (reason === 'confirmed') {
@@ -96,10 +96,6 @@ export const TableListItems = ({ current }) => {
         </Link>
       ))}
       <Snackbar
-        anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'left',
-        }}
         open={!!open}
         autoHideDuration={6000}
         onClose={handleClose}
@@ -133,7 +129,7 @@ export const QueryListItems = ({ current }) => {
   const { t } = useTranslation();
   const [queries, setQueries] = useState([]);
   const history = useHistory();
-  const [open, setOpen] = React.useState();
+  const [open, setOpen] = useState();
 
   const handleClick = () => {
     setOpen(true);
@@ -199,10 +195,6 @@ export const QueryListItems = ({ current }) => {
         </Link>
       ))}
       <Snackbar
-        anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'left',
-        }}
         open={!!open}
         autoHideDuration={6000}
         onClose={handleClose}

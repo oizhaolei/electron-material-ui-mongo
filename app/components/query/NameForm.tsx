@@ -18,21 +18,21 @@ export default function NameForm({ dataState, dispatch }) {
 
   useEffect(() => {
     ipcRenderer.invoke('queries').then((qs) => {
-      setQuerynames(qs.map((s) => pluralize.singular(s.name.toLowerCase())));
+      setQuerynames(qs.map((s) => pluralize(s.name.toLowerCase())));
     });
   }, []);
 
   const handleNameChange = (v) => {
     setName(v);
 
-    const singular = pluralize.singular(v.toLowerCase());
-    const err = queryNames.includes(singular);
+    const plural = pluralize(v.toLowerCase());
+    const err = queryNames.includes(plural);
     setError(err);
     setHelperText(err && 'duplicated name');
     dispatch({
       type: 'QUERY_WIZARD_DEFINITION_CHANGE',
       payload: {
-        name: singular,
+        name: plural,
         error: err,
       },
     });

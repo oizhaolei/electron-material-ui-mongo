@@ -56,7 +56,7 @@ export default function SchemaTable({ dataState, dispatch }) {
       })
       .then((newSchema) => {
         dispatch({
-          type: 'SCHEMA_INIT',
+          type: 'SCHEMA_CHANGE',
           payload: newSchema,
         });
 

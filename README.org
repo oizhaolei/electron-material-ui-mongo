@@ -98,7 +98,7 @@
   (async () => {
     log.info('vm start.', filter);
     try {
-      const diseases = await models[syujyutu].find({
+      const diseases = await models['syujyutu'].find({
         '手術日': filter[''手術日''],
       }).lean();
       callback(false, {
@@ -112,6 +112,118 @@
   })();
 })
 #+END_SRC
+
+*** 患者さんの手術日前の一回検査を並びたい
+#+BEGIN_SRC text
+患者番号
+#+END_SRC
+
+#+begin_src javascript
+
+(({ models, filter, log, callback }) => {
+  (async () => {
+    log.info('vm start.', filter);
+    try {
+      const criteria = filter['患者番号'] ? {
+        'ID': filter['患者番号'],
+      } : {};
+      const surgeries = await models['surgeries'].find(criteria).lean();
+      const surgery =  await Promise.all(surgeries.map(async (s) => {
+        console.log('s:', s);
+        const [ lastCheck ] = await models['checks'].find({
+          '患者番号': s['ID'],
+          '採取日': {
+            $lte: s['手術日'],
+          },
+        }).sort({
+          '採取日': -1,
+        }).limit(1).lean();
+        let checks = {};
+        if (lastCheck) {
+          checks = await models['checks'].find({
+            '患者番号': s['ID'],
+            '採取日': lastCheck['採取日'],
+          }).lean();
+          checks = checks.reduce((r, v) => {
+            r[v['項目名称']] = v['検査結果値'];
+            console.log('v:', v);
+            return r;
+          }, {});
+        }
+
+        console.log('checks:', checks);
+        return {
+          ...s,
+          ...checks,
+        };
+      }));
+      callback(false, {
+        surgery,
+      });
+    } catch (e) {
+      log.info('e:', e);
+      callback(e);
+    }
+    log.info('vm end');
+  })();
+})
+#+end_src
+
+*** 患者さんの手術日後の一回検査を並びたい
+#+BEGIN_SRC text
+患者番号
+#+END_SRC
+
+#+begin_src javascript
+
+(({ models, filter, log, callback }) => {
+  (async () => {
+    log.info('vm start.', filter);
+    try {
+      const criteria = filter['患者番号'] ? {
+        'ID': filter['患者番号'],
+      } : {};
+      const surgeries = await models['surgeries'].find(criteria).lean();
+      const surgery =  await Promise.all(surgeries.map(async (s) => {
+        console.log('s:', s);
+        const [ lastCheck ] = await models['checks'].find({
+          '患者番号': s['ID'],
+          '採取日': {
+            $gte: s['手術日'],
+          },
+        }).sort({
+          '採取日': 1,
+        }).limit(1).lean();
+        let checks = {};
+        if (lastCheck) {
+          checks = await models['checks'].find({
+            '患者番号': s['ID'],
+            '採取日': lastCheck['採取日'],
+          }).lean();
+          checks = checks.reduce((r, v) => {
+            r[v['項目名称']] = v['検査結果値'];
+            console.log('v:', v);
+            return r;
+          }, {});
+        }
+
+        console.log('checks:', checks);
+        return {
+          ...s,
+          ...checks,
+        };
+      }));
+      callback(false, {
+        surgery,
+      });
+    } catch (e) {
+      log.info('e:', e);
+      callback(e);
+    }
+    log.info('vm end');
+  })();
+})
+#+end_src
 
  - models
  データベースに持っているすべてのテーブル
@@ -208,8 +320,12 @@ PDFは文字化け現象があります。
 ** DONE rollbar
 ** TODO loading
 ** TODO left menu reload problem: useContext
-** TODO confirm before drop
-** TODO change name
+** DONE confirm before drop
+   CLOSED: [2020-11-02 Mon 23:45]
+   :LOGBOOK:
+   - State "DONE"       from "NEXT"       [2020-11-02 Mon 23:45]
+   :END:
+** TODO change name / code /...
 
 * そもそもほしいがった機能
  - データ属性の拡張  :OK

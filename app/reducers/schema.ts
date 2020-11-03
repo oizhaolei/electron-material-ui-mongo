@@ -13,11 +13,11 @@ export default (state = initialState, { type, payload }) => {
   let newState;
   // let newDefinition;
   switch (type) {
-    case 'SCHEMA_CLEAN':
+    case 'SCHEMA_INIT':
       return {
         ...initialState,
       };
-    case 'SCHEMA_INIT':
+    case 'SCHEMA_CHANGE':
       newState = {
         ...state,
         ...payload,

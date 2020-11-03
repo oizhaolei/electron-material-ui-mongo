@@ -13,11 +13,11 @@ export default function CodeForm({ dataState, dispatch }) {
   const { t } = useTranslation();
   const [error, setError] = useState(false);
   const [errorCode, setErrorCode] = useState(false);
-  const [input, setInput] = React.useState('');
-  const [params, setParams] = React.useState([]);
-  const [filter, setFilter] = React.useState({});
-  const [code, setCode] = React.useState('');
-  const [data, setData] = React.useState({});
+  const [input, setInput] = useState('');
+  const [params, setParams] = useState([]);
+  const [filter, setFilter] = useState({});
+  const [code, setCode] = useState('');
+  const [data, setData] = useState({});
 
   return (
     <>
@@ -29,6 +29,7 @@ export default function CodeForm({ dataState, dispatch }) {
           <TextField
             label="Input"
             multiline
+            fullWidth
             rows={6}
             value={input}
             onChange={(event) => {
@@ -77,7 +78,8 @@ export default function CodeForm({ dataState, dispatch }) {
           <TextField
             label="Code"
             multiline
-            rows={10}
+            fullWidth
+            rows={20}
             value={code}
             onChange={(event) => {
               setCode(event.target.value);
