@@ -136,7 +136,7 @@ export const QueryListItems = ({ current }) => {
   };
 
   const handleClose = (event, reason) => {
-    if (reason === 'clickaway') {
+    if (reason === 'confirmed') {
       ipcRenderer
         .invoke('query-drop', {
           name: pluralize(open),

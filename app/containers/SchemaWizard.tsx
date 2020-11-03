@@ -88,6 +88,9 @@ function SchemaWizard() {
         .invoke('schema-post', {
           name: pluralize(dataState.name),
           definition: dataState.definition,
+          etc: {
+            memo: dataState.memo,
+          },
           docs: dataState.data,
         })
         .then((newSchema) => {

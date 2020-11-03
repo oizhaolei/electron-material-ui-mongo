@@ -7,6 +7,13 @@
  - インストール
  - MongoDBサービスを常に起動を設定
 
+*** データのインポート、下記のファイルをクリックして実行する
+    #+begin_src
+./restore-db.sh
+# OR
+./restore-db.bat
+    #+end_src
+
 ** PersonalDBをダウンロードしてインストール
  - Windows: exe
  - MacOs: dmg

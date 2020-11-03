@@ -116,7 +116,7 @@ export default function ImportTable({ dispatch, dataState }) {
             color="primary"
           />
         }
-        label="インポート前に、既存データを全てを消す"
+        label="既存データを全部消して後、データをインポートする"
       />
       <DropzoneArea
         acceptedFiles={['text/csv']}

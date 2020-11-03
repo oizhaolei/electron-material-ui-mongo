@@ -88,6 +88,7 @@ function QueryWizard() {
         .invoke('query-post', {
           name: pluralize(dataState.name),
           data: {
+            memo: dataState.memo,
             code: dataState.code,
             params: dataState.params,
           },

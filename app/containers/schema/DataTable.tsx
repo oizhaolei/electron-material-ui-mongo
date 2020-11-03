@@ -188,7 +188,7 @@ export default function DataTable() {
   return (
     <>
       <Typography variant="body2" gutterBottom>
-        {t('DataTable demo')}
+        {dataState.memo}
       </Typography>
       {dataState.materialDefinition && dataState.materialDefinition.length > 0 && (
         <MaterialTable
