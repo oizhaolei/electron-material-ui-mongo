@@ -1,5 +1,6 @@
 export const initialState = {
   error: false,
+  tested: false,
   name: '',
   memo: '',
   params: [],

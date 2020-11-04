@@ -33,7 +33,7 @@ function Dashboard() {
   const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
 
   return (
-    <GenericTemplate title="Dashboard" id="dashboard">
+    <GenericTemplate title={t('dashboard')} id="dashboard">
       <Typography variant="body2" gutterBottom>
         {t('Dashboard demo')}
       </Typography>

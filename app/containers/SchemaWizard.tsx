@@ -125,7 +125,7 @@ function SchemaWizard() {
   };
 
   return (
-    <GenericTemplate title="Create Table" id="create-wizard">
+    <GenericTemplate title={t('Create Table')} id="create-wizard">
       <Paper className={classes.paper}>
         <Typography component="h1" variant="h4" align="center">
           {t('Create Table')}

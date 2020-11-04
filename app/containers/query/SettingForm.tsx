@@ -26,7 +26,7 @@ export default function SettingForm() {
       <Grid container spacing={3}>
         <Grid item xs={12}>
           <TextField
-            label="Input"
+            label={t('Input')}
             multiline
             fullWidth
             rows={6}
@@ -43,7 +43,7 @@ export default function SettingForm() {
       <Grid container spacing={3}>
         <Grid item xs={12}>
           <TextField
-            label="Code"
+            label={t('Code')}
             multiline
             fullWidth
             rows={20}

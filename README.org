@@ -7,12 +7,12 @@
  - インストール
  - MongoDBサービスを常に起動を設定
 
-*** データのインポート、下記のファイルをクリックして実行する
-    #+begin_src
+*** dumpデータのインポート、下記のファイルをクリックして実行する（隣には「dump」というフォルダが必要）
+#+begin_src sh
 ./restore-db.sh
 # OR
 ./restore-db.bat
-    #+end_src
+#+end_src
 
 ** PersonalDBをダウンロードしてインストール
  - Windows: exe
@@ -303,8 +303,16 @@ PDFは文字化け現象があります。
 ** DONE dark theme - PINCODE
 ** DONE deploy to Win/Macos/Linux
 ** DONE change mongo url
-** TODO sample data
-** TODO hooks
+** DONE sample data
+   CLOSED: [2020-11-03 Tue 22:21]
+   :LOGBOOK:
+   - State "DONE"       from "NEXT"       [2020-11-03 Tue 22:21]
+   :END:
+** DONE hooks
+   CLOSED: [2020-11-03 Tue 22:21]
+   :LOGBOOK:
+   - State "DONE"       from "NEXT"       [2020-11-03 Tue 22:21]
+   :END:
 ** TODO e2e
 
 * BUGS
@@ -332,7 +340,7 @@ PDFは文字化け現象があります。
    :LOGBOOK:
    - State "DONE"       from "NEXT"       [2020-11-02 Mon 23:45]
    :END:
-** TODO change name / code /...
+** DONE change name / code /...
 
 * そもそもほしいがった機能
  - データ属性の拡張  :OK

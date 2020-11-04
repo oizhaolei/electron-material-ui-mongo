@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import log from 'electron-log';
 import { ipcRenderer } from 'electron';
+import { useTranslation } from 'react-i18next';
 
 import { makeStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import Dialog from '@material-ui/core/Dialog';
@@ -22,43 +21,10 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const code = `
-(({ models, filter, log, callback }) => {
-  (async () => {
-    log.info('vm start.', filter);
-    try {
-      const patient = await models['patient'].findOne({
-        '患者番号': filter['患者番号'],
-      }).lean();
-      const diseases = await models['disease'].find({
-        '患者番号': filter['患者番号'],
-        '採取日': {
-          $lte: filter['採取日']
-        },
-      }).lean();
-      callback(false, {
-        patient: patient ? [patient] : [],
-        diseases,
-      });
-    } catch (e) {
-      log.info('e:', e);
-      callback(e);
-    }
-    log.info('vm end');
-  })();
-})
-`;
-
-// INPUT: 患者番号, 日付, before/after
-//
-// OUTPUT:
-//    patients: one row
-//    disease: multi rows
-
 export default function SettingPage() {
   const classes = useStyles();
-  const [text, setText] = useState();
-  const [error, setError] = useState();
+  const { t } = useTranslation();
+
   const [open, setOpen] = useState(false);
   const [uri, setUri] = useState('');
 
@@ -83,42 +49,11 @@ export default function SettingPage() {
     setOpen(false);
   };
   return (
-    <GenericTemplate title="Setting" id="setting">
+    <GenericTemplate title={t('Setting')} id="setting">
       <div className={classes.root}>
         <Button variant="outlined" color="primary" onClick={handleClickOpen}>
-          Mongo Uri
+          {t('Mongo Uri')}
         </Button>
-        <Button
-          variant="contained"
-          color="secondary"
-          onClick={() => {
-            ipcRenderer
-              .invoke('query-code', {
-                code,
-                filter: {
-                  患者番号: '04581799',
-                  採取日: '2018/03/10',
-                },
-              })
-              .then((data) => {
-                log.info(data);
-                setText(JSON.stringify(data));
-                setError('');
-              })
-              .catch((e) => {
-                setText('');
-                setError(e.toString());
-              });
-          }}
-        >
-          Run Sample Query Code
-        </Button>
-        <Typography variant="body2" gutterBottom>
-          {text}
-        </Typography>
-        <Typography color="error" variant="body1" gutterBottom>
-          {error}
-        </Typography>
       </div>
       <Dialog
         open={open}
@@ -128,13 +63,13 @@ export default function SettingPage() {
         <DialogTitle id="form-dialog-title">MongoDb URI</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            新URIに切り替えなら、アプリを再起動が必要です.
+            {text('change db need restart')}
           </DialogContentText>
           <TextField
             autoFocus
             margin="dense"
             id="uri"
-            label="Mongo Uri"
+            label={t('Mongo Uri')}
             type="text"
             value={uri}
             onChange={(event) => setUri(event.target.value)}
@@ -143,10 +78,10 @@ export default function SettingPage() {
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose} color="primary">
-            Cancel
+            {t('Cancel')}
           </Button>
           <Button onClick={handleSave} color="primary">
-            Save
+            {t('Save')}
           </Button>
         </DialogActions>
       </Dialog>

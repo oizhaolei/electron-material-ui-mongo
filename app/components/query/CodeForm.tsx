@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { ipcRenderer } from 'electron';
 import { useTranslation } from 'react-i18next';
 
@@ -11,13 +11,19 @@ import FreeDataTable from '../FreeDataTable';
 
 export default function CodeForm({ dataState, dispatch }) {
   const { t } = useTranslation();
-  const [error, setError] = useState(false);
   const [errorCode, setErrorCode] = useState(false);
   const [input, setInput] = useState('');
-  const [params, setParams] = useState([]);
   const [filter, setFilter] = useState({});
   const [code, setCode] = useState('');
   const [data, setData] = useState({});
+
+  const params = useMemo(() => {
+    return [
+      ...new Set(
+        input.split(/[\s-!$%^&*()_+|~=`{}\[\]:";'<>?,.\/]/).filter(Boolean)
+      ),
+    ];
+  }, [input]);
 
   return (
     <>
@@ -27,31 +33,15 @@ export default function CodeForm({ dataState, dispatch }) {
       <Grid container spacing={3}>
         <Grid item xs={6}>
           <TextField
-            label="Input"
+            label={t('Input')}
             multiline
             fullWidth
             rows={6}
             value={input}
             onChange={(event) => {
               setInput(event.target.value);
-              try {
-                setParams([
-                  ...new Set(
-                    input
-                      .split(/[\s-!$%^&*()_+|~=`{}\[\]:";'<>?,.\/]/)
-                      .filter(Boolean)
-                  ),
-                ]);
-                setError('');
-              } catch (e) {
-                console.log('e:', e);
-                setParams([]);
-                setError(e.toString());
-              }
             }}
             variant="outlined"
-            error={!!error}
-            helperText={error}
           />
         </Grid>
         <Grid item xs={6}>
@@ -76,7 +66,7 @@ export default function CodeForm({ dataState, dispatch }) {
       <Grid container spacing={3}>
         <Grid item xs={10}>
           <TextField
-            label="Code"
+            label={t('Code')}
             multiline
             fullWidth
             rows={20}
@@ -107,6 +97,7 @@ export default function CodeForm({ dataState, dispatch }) {
                       params,
                       code,
                       error: false,
+                      tested: true,
                     },
                   });
                   setErrorCode('');

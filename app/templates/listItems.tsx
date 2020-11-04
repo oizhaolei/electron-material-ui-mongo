@@ -99,7 +99,7 @@ export const TableListItems = ({ current }) => {
         open={!!open}
         autoHideDuration={6000}
         onClose={handleClose}
-        message="このテーブルを削除します、よろしいですか？"
+        message={t('confirm delete schema')}
         action={
           <React.Fragment>
             <Button
@@ -111,7 +111,7 @@ export const TableListItems = ({ current }) => {
             </Button>
             <IconButton
               size="small"
-              aria-label="close"
+              aria-label={t('close')}
               color="inherit"
               onClick={handleClose}
             >
@@ -198,7 +198,7 @@ export const QueryListItems = ({ current }) => {
         open={!!open}
         autoHideDuration={6000}
         onClose={handleClose}
-        message="このクリエを削除します、よろしいですか？"
+        message={t('confirm delete query')}
         action={
           <React.Fragment>
             <Button
@@ -210,7 +210,7 @@ export const QueryListItems = ({ current }) => {
             </Button>
             <IconButton
               size="small"
-              aria-label="close"
+              aria-label={t('close')}
               color="inherit"
               onClick={handleClose}
             >

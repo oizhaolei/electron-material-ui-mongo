@@ -125,7 +125,7 @@ function QueryWizard() {
   };
 
   return (
-    <GenericTemplate title="Create Query" id="create-wizard">
+    <GenericTemplate title={t('Create Query')} id="create-wizard">
       <Paper className={classes.paper}>
         <Typography component="h1" variant="h4" align="center">
           {t('Create Query')}
@@ -159,7 +159,10 @@ function QueryWizard() {
                   </Button>
                 )}
                 <Button
-                  disabled={dataState.error}
+                  disabled={
+                    dataState.error ||
+                    (activeStep === stepLabels.length - 1 && !dataState.tested)
+                  }
                   variant="contained"
                   color="primary"
                   onClick={handleNext}

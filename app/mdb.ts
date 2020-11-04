@@ -159,69 +159,7 @@ export default class Mdb {
   }
 
   async snapshot() {
-    console.log('snapshot:', this.models.length);
-    if (this.models.length > 0) {
-      return;
-    }
-    // sample data
-    {
-      const name = 'sampleData';
-      const definition = {
-        name: {
-          type: 'String',
-        },
-        age: {
-          type: 'String',
-        },
-        sex: {
-          type: 'String',
-        },
-      };
-      const etc = {
-        memo: 'sample data',
-      };
-      const docs = [
-        {
-          name: 'charlie',
-          age: '18',
-          sex: 'male',
-        },
-      ];
-
-      await this.createSchema(name, definition, etc);
-      const Model = await this.getSchemaModel(name);
-      await Model.insertMany(docs);
-    }
-    // sample query
-    {
-      const name = 'sampleQuery';
-      const memo = 'sample query';
-      const params = ['name'];
-      const code = `
-      (({ models, filter, log, callback }) => {
-        (async () => {
-          log.info('vm start.', filter);
-          try {
-            const sampleData = await models['sampleData'].findOne({
-              'name': filter['name'],
-            }).lean();
-            callback(false, {
-              sampleData: [sampleData],
-            });
-          } catch (e) {
-            log.info('e:', e);
-            callback(e);
-          }
-          log.info('vm end');
-        })();
-      })
-      `;
-      await this.createQuery(name, {
-        memo,
-        params,
-        code,
-      });
-    }
+    //
   }
 
   async writeCSV(name, file) {

@@ -33,9 +33,11 @@ const MATERIAL_DEFINITION = [
 ];
 
 const DefinitionTable = ({ columns, data, dispatch }) => {
+  const { t } = useTranslation();
+
   return (
     <MaterialTable
-      title="Schema"
+      title={t('Schema')}
       columns={columns}
       data={data}
       options={{
@@ -62,12 +64,14 @@ const DefinitionTable = ({ columns, data, dispatch }) => {
 };
 
 const CSVDataTable = ({ columns, data }) => {
+  const { t } = useTranslation();
+
   return (
     <MaterialTable
       options={{
         search: false,
       }}
-      title="Data"
+      title={t('Data')}
       columns={columns}
       data={data}
     />

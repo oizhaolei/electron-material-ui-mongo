@@ -222,26 +222,26 @@ const GenericTemplate = ({ children, title, id }) => {
             >
               {t('personal db')}
             </Typography>
-            <Tooltip title="Toggle en/ja language">
+            <Tooltip title={t('Toggle en/ja language')}>
               <IconButton color="inherit" onClick={changeLanguage}>
                 <TranslateIcon />
               </IconButton>
             </Tooltip>
-            <Tooltip title="Setting">
+            <Tooltip title={t('Setting')}>
               <Link to="/setting" className={classes.link}>
                 <IconButton color="inherit">
                   <SettingsIcon />
                 </IconButton>
               </Link>
             </Tooltip>
-            <Tooltip title="Change Colors">
+            <Tooltip title={t('Change Colors')}>
               <Link to="/color" className={classes.link}>
                 <IconButton color="inherit">
                   <PaletteIcon />
                 </IconButton>
               </Link>
             </Tooltip>
-            <Tooltip title="Lock Screen">
+            <Tooltip title={t('Lock Screen')}>
               <IconButton
                 color="inherit"
                 onClick={() =>

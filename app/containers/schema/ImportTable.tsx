@@ -76,7 +76,7 @@ const CSVDataTable = ({ columns, data }) => {
       options={{
         search: false,
       }}
-      title="Data"
+      title={t('Data')}
       columns={columns}
       data={data}
     />
@@ -116,7 +116,7 @@ export default function ImportTable({ dispatch, dataState }) {
             color="primary"
           />
         }
-        label="既存データを全部消して後、データをインポートする"
+        label={t('clear all before import')}
       />
       <DropzoneArea
         acceptedFiles={['text/csv']}
@@ -147,8 +147,8 @@ export default function ImportTable({ dispatch, dataState }) {
           <CompareList
             left={Object.keys(dataState.definition)}
             right={Object.keys(definition)}
-            leftTitle="既存テーブル"
-            rightTitle="CSVファイル"
+            leftTitle={t('Existed Table')}
+            rightTitle={t('SV File')}
           />
         </>
       )}
