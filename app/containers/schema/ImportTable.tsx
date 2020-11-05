@@ -75,6 +75,7 @@ const CSVDataTable = ({ columns, data }) => {
   return (
     <MaterialTable
       options={{
+        exportButton: true,
         search: false,
       }}
       title={t('Data')}

@@ -31,7 +31,7 @@ export default function QueryPage() {
   return (
     <>
       <Paper square>
-        <Typography variant="body1" gutterBottom>
+        <Typography variant="body2" gutterBottom>
           {dataState.memo}
         </Typography>
         <Grid container spacing={3}>

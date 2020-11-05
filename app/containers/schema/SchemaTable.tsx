@@ -76,6 +76,7 @@ export default function SchemaTable({ dataState, dispatch }) {
       <MaterialTable
         title={dataState.name}
         options={{
+          exportButton: true,
           search: false,
           paging: false,
         }}

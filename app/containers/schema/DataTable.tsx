@@ -196,6 +196,7 @@ export default function DataTable() {
           isLoading={isLoading}
           title={dataState.name}
           options={{
+            exportButton: true,
             search: false,
             pageSize,
             selection: true,

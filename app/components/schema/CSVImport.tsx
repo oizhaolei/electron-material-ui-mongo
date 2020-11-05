@@ -41,6 +41,7 @@ const DefinitionTable = ({ columns, data, dispatch }) => {
       columns={columns}
       data={data}
       options={{
+        exportButton: true,
         search: false,
         paging: false,
       }}
@@ -69,6 +70,7 @@ const CSVDataTable = ({ columns, data }) => {
   return (
     <MaterialTable
       options={{
+        exportButton: true,
         search: false,
       }}
       title={t('Data')}
