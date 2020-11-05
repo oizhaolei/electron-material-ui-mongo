@@ -113,6 +113,7 @@ export default function CSVImport({ dataState, dispatch }) {
       </List>
       <DropzoneArea
         acceptedFiles={['text/csv']}
+        maxFileSize={50000000}
         dropzoneText={t('Drag and drop an CSV here or click')}
         onChange={(files) => {
           if (files && files.length > 0) {

@@ -51,7 +51,10 @@ export default function SettingPage() {
   return (
     <GenericTemplate title={t('Setting')} id="setting">
       <div className={classes.root}>
-        <Button variant="outlined" color="primary" onClick={handleClickOpen}>
+        <Button
+          variant="contained"
+          color="secondary"
+          onClick={handleClickOpen}>
           {t('Mongo Uri')}
         </Button>
       </div>

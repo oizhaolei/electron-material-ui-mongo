@@ -87,9 +87,6 @@ export default function QueryPage() {
   return (
     <GenericTemplate id={name}>
       <Paper square>
-        <Typography variant="body1" gutterBottom>
-          {dataState.memo}
-        </Typography>
         <Tabs
           value={tab}
           onChange={handleTabChange}

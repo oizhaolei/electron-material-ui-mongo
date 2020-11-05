@@ -71,6 +71,7 @@ const CompareList = ({ left, right, leftTitle, rightTitle }) => (
 );
 
 const CSVDataTable = ({ columns, data }) => {
+  const { t } = useTranslation();
   return (
     <MaterialTable
       options={{
@@ -120,6 +121,7 @@ export default function ImportTable({ dispatch, dataState }) {
       />
       <DropzoneArea
         acceptedFiles={['text/csv']}
+        maxFileSize={50000000}
         dropzoneText={t('Drag and drop an CSV here or click')}
         onChange={(files) => {
           if (files && files.length > 0) {
@@ -173,6 +175,11 @@ export default function ImportTable({ dispatch, dataState }) {
               })
               .then((results) => {
                 setSnackbarOpen(true);
+                setError();
+                setLoading(false);
+                setCleanData(false);
+                setData([]);
+                setDefinition([]);
               })
               .catch((e) => {
                 alert(e.toString());

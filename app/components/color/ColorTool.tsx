@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import Store from 'electron-store';
 import { useTranslation } from 'react-i18next';
 
 import PropTypes from 'prop-types';
@@ -15,6 +16,7 @@ import Slider from '@material-ui/core/Slider';
 import { capitalize } from '@material-ui/core/utils';
 import ColorDemo from './ColorDemo';
 
+const store = new Store();
 const defaults = {
   primary: {
     main: '#2196f3',
@@ -91,10 +93,10 @@ function ColorTool({ classes, onChange }) {
   const { t } = useTranslation();
   const theme = useTheme();
   const [state, setState] = useState({
-    primary: defaults.primary.main,
-    secondary: defaults.secondary.main,
-    primaryInput: defaults.primary.main,
-    secondaryInput: defaults.secondary.main,
+    primary: store.get('palette.primary.main', defaults.primary.main),
+    secondary: store.get('palette.secondary.main', defaults.secondary.main),
+    primaryInput: store.get('palette.primary.main', defaults.primary.main),
+    secondaryInput: store.get('palette.secondary.main', defaults.secondary.main),
     primaryHue: 'blue',
     secondaryHue: 'pink',
     primaryShade: 4,
@@ -278,7 +280,10 @@ function ColorTool({ classes, onChange }) {
         <ColorDemo data={state} />
       </Grid>
       <Grid item xs={12}>
-        <Button variant="contained" onClick={handleChangeDocsColors}>
+        <Button
+          variant="contained"
+          color="secondary"
+          onClick={handleChangeDocsColors}>
           {t('Set Colors')}
         </Button>
       </Grid>

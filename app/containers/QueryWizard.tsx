@@ -164,7 +164,7 @@ function QueryWizard() {
                     (activeStep === stepLabels.length - 1 && !dataState.tested)
                   }
                   variant="contained"
-                  color="primary"
+                  color="secondary"
                   onClick={handleNext}
                   className={classes.button}
                 >
