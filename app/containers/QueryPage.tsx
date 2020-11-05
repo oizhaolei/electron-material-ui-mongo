@@ -98,7 +98,7 @@ export default function QueryPage() {
           textColor="primary"
         >
           <Tab label={t('data')} {...a11yProps(0)} />
-          <Tab label={t('setting')} {...a11yProps(1)} />
+          <Tab label={t('Setting')} {...a11yProps(1)} />
         </Tabs>
         <TabPanel value={tab} index={0}>
           <QueryTable />

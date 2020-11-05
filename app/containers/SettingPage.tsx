@@ -63,7 +63,7 @@ export default function SettingPage() {
         <DialogTitle id="form-dialog-title">MongoDb URI</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            {text('change db need restart')}
+            {t('change db need restart')}
           </DialogContentText>
           <TextField
             autoFocus

@@ -1,0 +1,92 @@
+* Functions
+** DONE lazy load
+** DONE create table
+
+** DONE import csv to table
+
+** DONE flex search: filtering
+** DONE export to csv
+** DONE pincode page
+** DONE auto version upgrade
+** TODO Code Signing
+** DONE db backup
+*** DONE snapshot at startup
+ save to: ~/personaldb-xx.zip
+
+** CANCELLED analysis when schema changes
+** DONE i18n
+
+** Query
+
+** Data:
+*** DONE detail modal dialog
+*** DONE single row/multi row
+*** DONE add/remove row
+*** CANCELLED edit cell
+*** NEXT onColumnDragged / onOrderChange
+
+
+** Schema field:
+*** DONE add
+*** CANCELLED rename
+*** DONE remove
+*** CANCELLED change type
+*** CANCELLED default
+
+* FEATURES
+** DONE sqlite => nedb => mongo
+** DONE electron framework
+** DONE ag-grid => material-table
+** DONE meterial ui
+** DONE dnd to import
+** DONE dark theme
+** DONE dark theme - PINCODE
+** DONE deploy to Win/Macos/Linux
+** DONE change mongo url
+** DONE sample data
+   CLOSED: [2020-11-03 Tue 22:21]
+   :LOGBOOK:
+   - State "DONE"       from "NEXT"       [2020-11-03 Tue 22:21]
+   :END:
+** DONE hooks
+   CLOSED: [2020-11-03 Tue 22:21]
+   :LOGBOOK:
+   - State "DONE"       from "NEXT"       [2020-11-03 Tue 22:21]
+   :END:
+** TODO e2e
+
+* BUGS
+** DONE find & pagination
+** CANCELED Tables  => useContext
+** DONE Treeview
+
+** 機能一覧整理
+** DONE i18n
+** Store to save all
+** DONE Schema change
+** DONE Update bulkly
+** Query bugs
+** DONE dashboard
+** hotload
+** DONE auth route for: pincode
+** DONE SOLO component
+** CANCELLED schema change
+** DONE data crud
+** DONE rollbar
+** TODO loading
+** TODO left menu reload problem: useContext
+** DONE confirm before drop
+   CLOSED: [2020-11-02 Mon 23:45]
+   :LOGBOOK:
+   - State "DONE"       from "NEXT"       [2020-11-02 Mon 23:45]
+   :END:
+** DONE change name / code /...
+
+* そもそもほしいがった機能
+ - データ属性の拡張  :OK
+ - 項目（更新・検索時）ヒント出す  :OK
+ - いろいろ検索、数値、日付タイプ検知、検索条件  :NG
+
+`特定のクエリ、
+
+それぞれの患者、日付前・後のデータ

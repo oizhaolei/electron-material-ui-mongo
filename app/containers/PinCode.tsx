@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
-import Store from 'electron-store';
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
+import dayjs from 'dayjs';
 
 import {
   ThemeProvider,
@@ -20,8 +20,6 @@ import ReactCodeInput from 'react-code-input';
 import StoreContext from '../store/StoreContext';
 
 import Copyright from '../components/Copyright';
-
-const store = new Store();
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -46,9 +44,6 @@ export default function PinCode() {
   const [value, setValue] = useState('');
   const [{ auth }, dispatch] = useContext(StoreContext);
 
-  // theme
-  const [darkMode] = useState(store.get('darkMode', 'light'));
-
   useEffect(() => {
     if (auth.isAuthenticated) {
       history.replace('/');
@@ -57,7 +52,10 @@ export default function PinCode() {
 
   const theme = createMuiTheme({
     palette: {
-      type: darkMode,
+      type:
+        dayjs().format('HH') > '06' && dayjs().format('HH') < '18'
+          ? 'light'
+          : 'dark',
     },
   });
   return (
