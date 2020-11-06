@@ -1,1 +1,1 @@
-mongorestore --drop -d coms dump/perm2
+mongorestore --drop -d perm2 dump/perm2

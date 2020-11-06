@@ -6,6 +6,7 @@ import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 import FreeDataTable from '../FreeDataTable';
 
@@ -16,6 +17,7 @@ export default function CodeForm({ dataState, dispatch }) {
   const [filter, setFilter] = useState({});
   const [code, setCode] = useState('');
   const [data, setData] = useState({});
+  const [isLoading, setIsLoading] = useState(false);
 
   const params = useMemo(() => {
     return [
@@ -28,12 +30,12 @@ export default function CodeForm({ dataState, dispatch }) {
   return (
     <>
       <Typography variant="body2" gutterBottom>
-        {t('query CodeForm demo')}
+        {t('query codeform demo')}
       </Typography>
       <Grid container spacing={3}>
         <Grid item xs={6}>
           <TextField
-            label={t('Input')}
+            label={t('input')}
             multiline
             fullWidth
             rows={6}
@@ -66,7 +68,7 @@ export default function CodeForm({ dataState, dispatch }) {
       <Grid container spacing={3}>
         <Grid item xs={10}>
           <TextField
-            label={t('Code')}
+            label={t('code')}
             multiline
             fullWidth
             rows={20}
@@ -84,6 +86,7 @@ export default function CodeForm({ dataState, dispatch }) {
             variant="contained"
             color="secondary"
             onClick={() => {
+              setIsLoading(true);
               ipcRenderer
                 .invoke('query-code', {
                   code,
@@ -101,15 +104,18 @@ export default function CodeForm({ dataState, dispatch }) {
                     },
                   });
                   setErrorCode('');
+                  setIsLoading(false);
                 })
                 .catch((e) => {
                   console.log('e:', e);
                   setErrorCode(e.toString());
+                  setIsLoading(false);
                 });
             }}
           >
             {t('test')}
           </Button>
+          {isLoading && <CircularProgress />}
         </Grid>
       </Grid>
       <Grid container spacing={3}>

@@ -4,6 +4,7 @@ import Store from 'electron-store';
 import { ipcRenderer } from 'electron';
 import { useTranslation } from 'react-i18next';
 
+import CircularProgress from '@material-ui/core/CircularProgress';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
@@ -18,6 +19,7 @@ const store = new Store();
 export default function QueryPage() {
   const { t } = useTranslation();
   const [{ query: dataState }, dispatch] = useContext(StoreContext);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     dispatch({
@@ -64,6 +66,7 @@ export default function QueryPage() {
               variant="contained"
               color="secondary"
               onClick={() => {
+                setIsLoading(true);
                 ipcRenderer
                   .invoke('query-code', {
                     code: dataState.code,
@@ -75,6 +78,7 @@ export default function QueryPage() {
                       type: 'QUERY_CHANGE',
                       payload: {
                         data,
+                        error: false,
                       },
                     });
 
@@ -82,6 +86,8 @@ export default function QueryPage() {
                       `query.${dataState.name}.filter`,
                       dataState.filter
                     );
+
+                    setIsLoading(false);
                   })
                   .catch((e) => {
                     dispatch({
@@ -90,11 +96,13 @@ export default function QueryPage() {
                         error: e.toString(),
                       },
                     });
+                    setIsLoading(false);
                   });
               }}
             >
               {t('search')}
             </Button>
+            {isLoading && <CircularProgress />}
           </Grid>
         </Grid>
       </Paper>

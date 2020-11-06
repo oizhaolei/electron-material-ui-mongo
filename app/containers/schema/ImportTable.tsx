@@ -76,9 +76,10 @@ const CSVDataTable = ({ columns, data }) => {
     <MaterialTable
       options={{
         exportButton: true,
+        exportAllData: true,
         search: false,
       }}
-      title={t('Data')}
+      title={t('data')}
       columns={columns}
       data={data}
     />
@@ -89,7 +90,7 @@ export default function ImportTable({ dispatch, dataState }) {
   const classes = useStyles();
   const { t } = useTranslation();
   const [error, setError] = useState();
-  const [loading, setLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [cleanData, setCleanData] = useState(false);
   const [data, setData] = useState([]);
   const [definition, setDefinition] = useState([]);
@@ -106,9 +107,9 @@ export default function ImportTable({ dispatch, dataState }) {
   return (
     <div className={classes.root}>
       <Typography variant="body2" gutterBottom>
-        {t('ImportTable demo')}
+        {t('importtable demo')}
       </Typography>
-      {loading && <CircularProgress />}
+      {isLoading && <CircularProgress />}
       <FormControlLabel
         control={
           <Checkbox
@@ -121,16 +122,25 @@ export default function ImportTable({ dispatch, dataState }) {
         label={t('clear all before import')}
       />
       <DropzoneArea
-        acceptedFiles={['text/csv']}
+        acceptedFiles={[
+          '.csv',
+          'text/csv',
+          'application/vnd.ms-excel',
+          'application/csv',
+          'text/x-csv',
+          'application/x-csv',
+          'text/comma-separated-values',
+          'text/x-comma-separated-values',
+        ]}
         maxFileSize={50000000}
-        dropzoneText={t('Drag and drop an CSV here or click')}
+        dropzoneText={t('drag and drop an csv here or click')}
         onChange={(files) => {
           if (files && files.length > 0) {
-            setLoading(true);
+            setIsLoading(true);
             ipcRenderer
               .invoke('csv-read', files[0].path)
               .then(({ definition, data }) => {
-                setLoading(false);
+                setIsLoading(false);
                 setDefinition(definition);
                 setData(data);
                 setError('');
@@ -150,8 +160,8 @@ export default function ImportTable({ dispatch, dataState }) {
           <CompareList
             left={Object.keys(dataState.definition)}
             right={Object.keys(definition)}
-            leftTitle={t('Existed Table')}
-            rightTitle={t('SV File')}
+            leftTitle={t('existed table')}
+            rightTitle={t('sv file')}
           />
         </>
       )}
@@ -177,17 +187,17 @@ export default function ImportTable({ dispatch, dataState }) {
               .then((results) => {
                 setSnackbarOpen(true);
                 setError();
-                setLoading(false);
+                setIsLoading(false);
                 setCleanData(false);
                 setData([]);
                 setDefinition([]);
               })
               .catch((e) => {
-                alert(e.toString());
+                setError(e.toString());
               })
           }
         >
-          {t('Import')}
+          {t('import')}
         </Button>
       )}
       <Typography color="error" variant="body1" gutterBottom>
@@ -199,7 +209,7 @@ export default function ImportTable({ dispatch, dataState }) {
         onClose={handleSnackbarClose}
       >
         <Alert onClose={handleSnackbarClose} severity="success">
-          {t('Imported')}
+          {t('imported')}
         </Alert>
       </Snackbar>
     </div>

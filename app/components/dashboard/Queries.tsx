@@ -31,11 +31,11 @@ export default function Queries() {
 
   return (
     <>
-      <Title>{t('Queries')}</Title>
+      <Title>{t('queries')}</Title>
       <Table size="small">
         <TableHead>
           <TableRow>
-            <TableCell>{t('Name')}</TableCell>
+            <TableCell>{t('name')}</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>

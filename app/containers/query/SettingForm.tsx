@@ -21,12 +21,12 @@ export default function SettingForm() {
   return (
     <>
       <Typography variant="body2" gutterBottom>
-        {t('query SettingForm demo')}
+        {t('query settingform demo')}
       </Typography>
       <Grid container spacing={3}>
         <Grid item xs={12}>
           <TextField
-            label={t('Input')}
+            label={t('input')}
             multiline
             fullWidth
             rows={6}
@@ -43,7 +43,7 @@ export default function SettingForm() {
       <Grid container spacing={3}>
         <Grid item xs={12}>
           <TextField
-            label={t('Code')}
+            label={t('code')}
             multiline
             fullWidth
             rows={20}

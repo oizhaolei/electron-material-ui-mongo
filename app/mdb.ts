@@ -7,6 +7,7 @@ import fs from 'fs';
 import dayjs from 'dayjs';
 import json2csv from 'json2csv';
 
+mongoose.pluralize(null);
 mongoose.set('debug', (coll, method, query, doc, options) => {
   log.info(
     `${coll}.${method}.(${JSON.stringify(query)})`,

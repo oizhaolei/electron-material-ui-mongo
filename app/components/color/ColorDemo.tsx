@@ -69,12 +69,12 @@ function ColorDemo(props) {
               edge="start"
               className={classes.menuButton}
               color="inherit"
-              aria-label={t('Menu')}
+              aria-label={t('menu')}
             >
               <MenuIcon />
             </IconButton>
             <Typography component="div" variant="h6" color="inherit">
-              {t('Color')}
+              {t('color')}
             </Typography>
           </Toolbar>
         </AppBar>
@@ -89,7 +89,7 @@ function ColorDemo(props) {
         <Fab
           className={classes.fab}
           style={{ backgroundColor: secondary.main }}
-          aria-label={t('Add')}
+          aria-label={t('add')}
         >
           <AddIcon htmlColor={secondary.contrastText} />
         </Fab>

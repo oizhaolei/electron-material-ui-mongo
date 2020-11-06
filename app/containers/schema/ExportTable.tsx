@@ -25,7 +25,7 @@ export default function ExportTable({ dataState }) {
   return (
     <div className={classes.root}>
       <Typography variant="body2" gutterBottom>
-        {t('ExportTable demo')}
+        {t('exporttable demo')}
       </Typography>
       <Button
         variant="contained"
@@ -47,7 +47,7 @@ export default function ExportTable({ dataState }) {
             });
         }}
       >
-        {t('Export to CSV')}
+        {t('export to csv')}
       </Button>
       <Typography variant="body2" gutterBottom>
         {text}

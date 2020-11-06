@@ -56,7 +56,7 @@ const ConfirmDialog = ({ open, onClose, onOK }) => {
           </List>
         </DialogContent>
         <DialogActions>
-          <Button onClick={onClose}>{t('Cancel')}</Button>
+          <Button onClick={onClose}>{t('cancel')}</Button>
           <Button
             onClick={() => {
               onOK();
@@ -64,7 +64,7 @@ const ConfirmDialog = ({ open, onClose, onOK }) => {
             }}
             color="primary"
           >
-            {t('Ok')}
+            {t('ok')}
           </Button>
         </DialogActions>
       </Dialog>
@@ -134,9 +134,9 @@ const DetailDialog = ({ list, open, onClose, onChange }) => {
           <DetailForm list={list} />
         </DialogContent>
         <DialogActions>
-          <Button onClick={onClose}>{t('Cancel')}</Button>
+          <Button onClick={onClose}>{t('cancel')}</Button>
           <Button onClick={handleSave} color="primary">
-            {t('Ok')}
+            {t('ok')}
           </Button>
         </DialogActions>
       </Dialog>
@@ -197,6 +197,7 @@ export default function DataTable() {
           title={dataState.name}
           options={{
             exportButton: true,
+            exportAllData: true,
             search: false,
             pageSize,
             selection: true,
@@ -246,7 +247,7 @@ export default function DataTable() {
           actions={[
             {
               icon: 'add',
-              tooltip: t('Add'),
+              tooltip: t('add'),
               isFreeAction: true,
               onClick: () => {
                 setSelected([]);
@@ -254,7 +255,7 @@ export default function DataTable() {
               },
             },
             {
-              tooltip: t('Edit Selected Rows'),
+              tooltip: t('edit selected rows'),
               icon: 'edit',
               onClick: (event, rows) => {
                 log.info(`You want to edit ${rows.length} rows`);
@@ -263,7 +264,7 @@ export default function DataTable() {
               },
             },
             {
-              tooltip: t('Remove Selected Rows'),
+              tooltip: t('remove selected rows'),
               icon: 'delete',
               onClick: (event, rows) => {
                 log.info(`You want to delete ${rows.length} rows`);

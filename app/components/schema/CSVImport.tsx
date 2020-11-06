@@ -37,11 +37,12 @@ const DefinitionTable = ({ columns, data, dispatch }) => {
 
   return (
     <MaterialTable
-      title={t('Schema')}
+      title={t('schema')}
       columns={columns}
       data={data}
       options={{
         exportButton: true,
+        exportAllData: true,
         search: false,
         paging: false,
       }}
@@ -71,9 +72,10 @@ const CSVDataTable = ({ columns, data }) => {
     <MaterialTable
       options={{
         exportButton: true,
+        exportAllData: true,
         search: false,
       }}
-      title={t('Data')}
+      title={t('data')}
       columns={columns}
       data={data}
     />
@@ -94,36 +96,45 @@ const useStyles = makeStyles((theme) => ({
 
 export default function CSVImport({ dataState, dispatch }) {
   const { t } = useTranslation();
-  const [loading, setLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(false);
   const classes = useStyles();
 
   return (
     <>
       <Typography variant="body2" gutterBottom>
-        {t('schema CSVImport demo')}
-        {t('schema CSVImport demo2')}
+        {t('schema csvimport demo')}
+        {t('schema csvimport demo2')}
       </Typography>
-      {loading && <CircularProgress />}
+      {isLoading && <CircularProgress />}
       <List disablePadding>
         <ListItem className={classes.listItem}>
-          <ListItemText primary={t('Name')} />
+          <ListItemText primary={t('name')} />
           <Typography variant="subtitle1" className={classes.total}>
             {dataState.name}
           </Typography>
         </ListItem>
       </List>
       <DropzoneArea
-        acceptedFiles={['text/csv']}
+        acceptedFiles={[
+          '.csv',
+          'text/csv',
+          'application/vnd.ms-excel',
+          'application/csv',
+          'text/x-csv',
+          'application/x-csv',
+          'text/comma-separated-values',
+          'text/x-comma-separated-values',
+        ]}
         maxFileSize={50000000}
-        dropzoneText={t('Drag and drop an CSV here or click')}
+        dropzoneText={t('drag and drop an csv here or click')}
         onChange={(files) => {
           if (files && files.length > 0) {
-            setLoading(true);
+            setIsLoading(true);
             ipcRenderer
               .invoke('csv-read', files[0].path)
               .then(({ definition, data }) => {
-                setLoading(false);
+                setIsLoading(false);
                 dispatch({
                   type: 'SCHEMA_WIZARD_INIT',
                   payload: {

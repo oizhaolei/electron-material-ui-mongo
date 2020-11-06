@@ -96,9 +96,9 @@ export default function SchemaPage() {
           textColor="primary"
         >
           <Tab label={t('data')} {...a11yProps(0)} />
-          <Tab label={t('Structure')} {...a11yProps(1)} />
-          <Tab label={t('Export')} {...a11yProps(2)} />
-          <Tab label={t('Import')} {...a11yProps(3)} />
+          <Tab label={t('structure')} {...a11yProps(1)} />
+          <Tab label={t('export')} {...a11yProps(2)} />
+          <Tab label={t('import')} {...a11yProps(3)} />
         </Tabs>
         <TabPanel value={tab} index={0}>
           <DataTable />

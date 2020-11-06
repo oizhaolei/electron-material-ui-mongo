@@ -11,10 +11,9 @@ export default function NameForm({ dataState, dispatch }) {
   const { t } = useTranslation();
 
   const [name, setName] = useState(dataState.name);
-  const [memo, setMemo] = useState(dataState.name);
+  const [memo, setMemo] = useState(dataState.memo);
   const [queryNames, setQuerynames] = useState([]);
-  const [error, setError] = useState(false);
-  const [helperText, setHelperText] = useState();
+  const [helperText, setHelperText] = useState('');
 
   useEffect(() => {
     ipcRenderer.invoke('queries').then((qs) => {
@@ -26,9 +25,14 @@ export default function NameForm({ dataState, dispatch }) {
     setName(v);
 
     const plural = pluralize(v.toLowerCase());
-    const err = queryNames.includes(plural);
-    setError(err);
-    setHelperText(err && 'duplicated name');
+    let err = '';
+    if (!/^[A-Za-z0-9]{1,15}$/.test(plural)) {
+      err = '最大１５桁英数';
+    } else if (queryNames.includes(plural)) {
+      err = '名前が既存と重複';
+    }
+
+    setHelperText(err);
     dispatch({
       type: 'QUERY_WIZARD_DEFINITION_CHANGE',
       payload: {
@@ -51,10 +55,10 @@ export default function NameForm({ dataState, dispatch }) {
   return (
     <>
       <Typography variant="h6" gutterBottom>
-        {t('Query Name')}
+        {t('query name')}
       </Typography>
       <Typography variant="body2" gutterBottom>
-        {t('query NameForm demo')}
+        {t('query nameform demo')}
       </Typography>
       <Grid container spacing={3}>
         <Grid item xs={12}>
@@ -62,12 +66,12 @@ export default function NameForm({ dataState, dispatch }) {
             required
             id="name"
             name="name"
-            label={t('Query Name')}
+            label={t('query name')}
             fullWidth
             autoComplete="input unique query please"
             value={name}
             onChange={(event) => handleNameChange(event.target.value)}
-            error={error}
+            error={!!helperText}
             helperText={helperText}
           />
         </Grid>
@@ -75,7 +79,7 @@ export default function NameForm({ dataState, dispatch }) {
           <TextField
             id="memo"
             name="memo"
-            label={t('Memo')}
+            label={t('memo')}
             fullWidth
             autoComplete="memo"
             value={memo}

@@ -65,10 +65,10 @@ export const TableListItems = ({ current }) => {
   return (
     <>
       <ListSubheader inset>
-        {t('Tables')}
+        {t('tables')}
         <ListItemSecondaryAction>
           <Link to="/schema-wizard" className={classes.link}>
-            <IconButton aria-label={t('Add Table')} size="small">
+            <IconButton aria-label={t('add table')} size="small">
               <AddIcon fontSize="inherit" />
             </IconButton>
           </Link>
@@ -84,7 +84,7 @@ export const TableListItems = ({ current }) => {
             {current === s.name && (
               <ListItemSecondaryAction>
                 <IconButton
-                  aria-label={t('Drop Table')}
+                  aria-label={t('drop table')}
                   size="small"
                   onClick={() => dropSchema(s.name)}
                 >
@@ -107,7 +107,7 @@ export const TableListItems = ({ current }) => {
               size="small"
               onClick={(e) => handleClose(e, 'confirmed')}
             >
-              {t('Ok')}
+              {t('ok')}
             </Button>
             <IconButton
               size="small"
@@ -164,10 +164,10 @@ export const QueryListItems = ({ current }) => {
   return (
     <>
       <ListSubheader inset>
-        {t('Query')}
+        {t('query')}
         <ListItemSecondaryAction>
           <Link to="/query-wizard" className={classes.link}>
-            <IconButton aria-label={t('Add Query')} size="small">
+            <IconButton aria-label={t('add query')} size="small">
               <AddIcon fontSize="inherit" />
             </IconButton>
           </Link>
@@ -183,7 +183,7 @@ export const QueryListItems = ({ current }) => {
             {current === q.name && (
               <ListItemSecondaryAction>
                 <IconButton
-                  aria-label={t('Drop Query')}
+                  aria-label={t('drop query')}
                   size="small"
                   onClick={() => dropQuery(q.name)}
                 >
@@ -206,7 +206,7 @@ export const QueryListItems = ({ current }) => {
               size="small"
               onClick={(e) => handleClose(e, 'confirmed')}
             >
-              {t('Ok')}
+              {t('ok')}
             </Button>
             <IconButton
               size="small"

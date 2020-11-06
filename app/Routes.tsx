@@ -11,7 +11,6 @@ import QueryWizard from './containers/QueryWizard';
 import QueryPage from './containers/QueryPage';
 import SchemaPage from './containers/SchemaPage';
 import HomePage from './containers/HomePage';
-import Color from './containers/ColorPage';
 import PinCode from './containers/PinCode';
 import SettingPage from './containers/SettingPage';
 
@@ -44,7 +43,6 @@ export default function Routes() {
         <PrivateRoute path="/query-wizard" exact component={QueryWizard} />
         <PrivateRoute path="/query/:name" exact component={QueryPage} />
         <PrivateRoute path="/table/:name" exact component={SchemaPage} />
-        <PrivateRoute path="/color" exact component={Color} />
         <PrivateRoute path="/setting" exact component={SettingPage} />
         <PrivateRoute path="/" exact component={HomePage} />
       </Switch>

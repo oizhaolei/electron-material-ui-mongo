@@ -30,7 +30,7 @@ function Dashboard() {
   return (
     <GenericTemplate title={t('dashboard')} id="dashboard">
       <Typography variant="body2" gutterBottom>
-        {t('Dashboard demo')}
+        {t('dashboard demo')}
       </Typography>
       <Grid container spacing={3}>
         <Grid item xs={6}>

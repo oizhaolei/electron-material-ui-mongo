@@ -7,11 +7,9 @@
  - インストール
  - MongoDBサービスを常に起動を設定
 
-*** dumpデータのインポート、下記のファイルをクリックして実行する（隣には「dump」というフォルダが必要）
+*** dumpデータのインポート
 #+begin_src sh
-./restore-db.sh
-# OR
-./restore-db.bat
+<MONGO_PATH>/bin/mongorestore --drop -d perm2 dump/perm2
 #+end_src
 
 ** PersonalDBをダウンロードしてインストール

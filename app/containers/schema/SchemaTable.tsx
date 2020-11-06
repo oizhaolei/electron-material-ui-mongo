@@ -71,12 +71,13 @@ export default function SchemaTable({ dataState, dispatch }) {
   return (
     <>
       <Typography variant="body2" gutterBottom>
-        {t('SchemaTable demo')}
+        {t('schematable demo')}
       </Typography>
       <MaterialTable
         title={dataState.name}
         options={{
           exportButton: true,
+          exportAllData: true,
           search: false,
           paging: false,
         }}
@@ -115,7 +116,7 @@ export default function SchemaTable({ dataState, dispatch }) {
         onClose={handleSnackbarClose}
       >
         <Alert onClose={handleSnackbarClose} severity="success">
-          {t('Saved')}
+          {t('saved')}
         </Alert>
       </Snackbar>
       <Typography color="error" variant="body1" gutterBottom>

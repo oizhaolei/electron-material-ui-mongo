@@ -10,7 +10,6 @@ import {
   ThemeProvider,
   createMuiTheme,
   makeStyles,
-  withStyles,
   createStyles,
 } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -32,7 +31,6 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import SettingsIcon from '@material-ui/icons/Settings';
 import TranslateIcon from '@material-ui/icons/Translate';
-import PaletteIcon from '@material-ui/icons/Palette';
 
 import Copyright from '../components/Copyright';
 import { QueryListItems, TableListItems } from './listItems';
@@ -222,26 +220,19 @@ const GenericTemplate = ({ children, title, id }) => {
             >
               {t('personal db')}
             </Typography>
-            <Tooltip title={t('Toggle en/ja language')}>
+            <Tooltip title={t('toggle en/ja language')}>
               <IconButton color="inherit" onClick={changeLanguage}>
                 <TranslateIcon />
               </IconButton>
             </Tooltip>
-            <Tooltip title={t('Setting')}>
+            <Tooltip title={t('setting')}>
               <Link to="/setting" className={classes.link}>
                 <IconButton color="inherit">
                   <SettingsIcon />
                 </IconButton>
               </Link>
             </Tooltip>
-            <Tooltip title={t('Change Colors')}>
-              <Link to="/color" className={classes.link}>
-                <IconButton color="inherit">
-                  <PaletteIcon />
-                </IconButton>
-              </Link>
-            </Tooltip>
-            <Tooltip title={t('Lock Screen')}>
+            <Tooltip title={t('lock screen')}>
               <IconButton
                 color="inherit"
                 onClick={() =>

@@ -32,13 +32,13 @@ export default function Tables() {
 
   return (
     <>
-      <Title>{t('Tables')}</Title>
+      <Title>{t('tables')}</Title>
       <Table size="small">
         <TableHead>
           <TableRow>
-            <TableCell>{t('Name')}</TableCell>
-            <TableCell>{t('Row Count')}</TableCell>
-            <TableCell>{t('Column Count')}</TableCell>
+            <TableCell>{t('name')}</TableCell>
+            <TableCell>{t('row count')}</TableCell>
+            <TableCell>{t('column count')}</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>

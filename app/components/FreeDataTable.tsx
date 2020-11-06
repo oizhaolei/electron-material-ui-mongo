@@ -37,6 +37,7 @@ export default function FreeDataTable({ title, data: { data, columns } }) {
       data={data}
       options={{
         exportButton: true,
+        exportAllData: true,
         search: false,
         pageSize: data.length > 10 ? 10 : data.length,
       }}

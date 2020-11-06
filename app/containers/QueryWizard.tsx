@@ -77,8 +77,8 @@ function QueryWizard() {
     history.replace(`/query/${dataState.name}`);
   };
 
-  const steps = [t('Query Name'), t('Code')];
-  const stepLabels = [t('Next'), t('Create Query')];
+  const steps = [t('query name'), t('code')];
+  const stepLabels = [t('next'), t('create query')];
 
   const stepActions = [
     () => {}, // 'Next'
@@ -125,10 +125,10 @@ function QueryWizard() {
   };
 
   return (
-    <GenericTemplate title={t('Create Query')} id="create-wizard">
+    <GenericTemplate title={t('create query')} id="create-wizard">
       <Paper className={classes.paper}>
         <Typography component="h1" variant="h4" align="center">
-          {t('Create Query')}
+          {t('create query')}
         </Typography>
         <Stepper activeStep={activeStep} className={classes.stepper}>
           {steps.map((label) => (
@@ -141,7 +141,7 @@ function QueryWizard() {
           {activeStep === steps.length ? (
             <>
               <Typography variant="h5" gutterBottom>
-                {t('Congratulations')}
+                {t('congratulations')}
               </Typography>
               <Typography variant="subtitle1">{t('create succeed')}</Typography>
             </>
@@ -155,7 +155,7 @@ function QueryWizard() {
                     onClick={handleBack}
                     className={classes.button}
                   >
-                    {t('Back')}
+                    {t('back')}
                   </Button>
                 )}
                 <Button
@@ -181,7 +181,7 @@ function QueryWizard() {
           onClose={handleSnackClose}
         >
           <Alert onClose={handleSnackClose} severity="success">
-            {t('Query created redirect')}
+            {t('query created redirect')}
           </Alert>
         </Snackbar>
       </Paper>

@@ -76,8 +76,8 @@ function SchemaWizard() {
     history.replace(`/table/${pluralize(dataState.name)}`);
   };
 
-  const steps = [t('Table Name'), t('Upload Data')];
-  const stepLabels = [t('Next'), t('Create Table')];
+  const steps = [t('table name'), t('upload data')];
+  const stepLabels = [t('next'), t('create table')];
 
   const stepActions = [
     () => {}, // 'Next'
@@ -128,7 +128,7 @@ function SchemaWizard() {
     <GenericTemplate title="Create Table" id="create-wizard">
       <Paper className={classes.paper}>
         <Typography component="h1" variant="h4" align="center">
-          {t('Create Table')}
+          {t('create table')}
         </Typography>
         <Stepper activeStep={activeStep} className={classes.stepper}>
           {steps.map((label) => (
@@ -141,7 +141,7 @@ function SchemaWizard() {
           {activeStep === steps.length ? (
             <>
               <Typography variant="h5" gutterBottom>
-                {t('Congratulations')}
+                {t('congratulations')}
               </Typography>
               <Typography variant="subtitle1">{t('create succeed')}</Typography>
             </>
@@ -155,7 +155,7 @@ function SchemaWizard() {
                     onClick={handleBack}
                     className={classes.button}
                   >
-                    {t('Back')}
+                    {t('back')}
                   </Button>
                 )}
                 <Button
@@ -178,7 +178,7 @@ function SchemaWizard() {
           onClose={handleSnackClose}
         >
           <Alert onClose={handleSnackClose} severity="success">
-            {t('Table created, redirect')}
+            {t('table created, redirect')}
           </Alert>
         </Snackbar>
       </Paper>

@@ -96,7 +96,10 @@ function ColorTool({ classes, onChange }) {
     primary: store.get('palette.primary.main', defaults.primary.main),
     secondary: store.get('palette.secondary.main', defaults.secondary.main),
     primaryInput: store.get('palette.primary.main', defaults.primary.main),
-    secondaryInput: store.get('palette.secondary.main', defaults.secondary.main),
+    secondaryInput: store.get(
+      'palette.secondary.main',
+      defaults.secondary.main
+    ),
     primaryHue: 'blue',
     secondaryHue: 'pink',
     primaryShade: 4,
@@ -283,8 +286,9 @@ function ColorTool({ classes, onChange }) {
         <Button
           variant="contained"
           color="secondary"
-          onClick={handleChangeDocsColors}>
-          {t('Set Colors')}
+          onClick={handleChangeDocsColors}
+        >
+          {t('set colors')}
         </Button>
       </Grid>
     </Grid>

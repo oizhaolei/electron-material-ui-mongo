@@ -67,7 +67,7 @@ export default function PinCode() {
             <LockOutlinedIcon />
           </Avatar>
           <Typography component="h1" variant="h5">
-            {t('Input Pincode to Login')}
+            {t('input pincode to login')}
           </Typography>
           <ReactCodeInput
             type="password"
@@ -90,7 +90,7 @@ export default function PinCode() {
           </Typography>
         </Paper>
         <Typography variant="body2" gutterBottom>
-          {t('PinCode demo')}
+          {t('pincode demo')}
         </Typography>
         <Box mt={8}>
           <Copyright />
