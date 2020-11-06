@@ -106,7 +106,7 @@ export default class Mdb {
     this.getAllSchemaModels();
   }
 
-  // name: plural, lowercased
+  // name: lowercased
   async createSchema(name, definition, etc) {
     const schemaDoc = await this.changeSchema(name, definition, etc);
     return schemaDoc;

@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import log from 'electron-log';
 import { ipcRenderer } from 'electron';
 import { useTranslation } from 'react-i18next';
-import pluralize from 'pluralize';
 
 import Typography from '@material-ui/core/Typography';
 import MuiAlert, { AlertProps } from '@material-ui/lab/Alert';
@@ -51,7 +50,7 @@ export default function SchemaTable({ dataState, dispatch }) {
   const saveSchemaDefinition = (definition) => {
     ipcRenderer
       .invoke('schema-post', {
-        name: pluralize(dataState.name),
+        name: dataState.name,
         definition,
       })
       .then((newSchema) => {

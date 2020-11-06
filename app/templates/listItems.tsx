@@ -3,7 +3,6 @@ import { ipcRenderer } from 'electron';
 import log from 'electron-log';
 import { useTranslation } from 'react-i18next';
 import { useHistory, Link } from 'react-router-dom';
-import pluralize from 'pluralize';
 
 import { makeStyles, createStyles } from '@material-ui/core/styles';
 import ListItem from '@material-ui/core/ListItem';
@@ -34,13 +33,13 @@ export const TableListItems = ({ current }) => {
   const { t } = useTranslation();
   const [schemas, setSchemas] = useState([]);
   const history = useHistory();
-  const [open, setOpen] = useState();
+  const [selected, setSelected] = useState();
 
   const handleClose = (event, reason) => {
     if (reason === 'confirmed') {
       ipcRenderer
         .invoke('schema-drop', {
-          name: pluralize(open),
+          name: selected,
         })
         .then((results) => {
           log.info('schema-drop:', results);
@@ -51,7 +50,7 @@ export const TableListItems = ({ current }) => {
         });
     }
 
-    setOpen(false);
+    setSelected(false);
   };
 
   useEffect(() => {
@@ -59,7 +58,7 @@ export const TableListItems = ({ current }) => {
   }, []);
 
   const dropSchema = (name) => {
-    setOpen(name);
+    setSelected(name);
   };
 
   return (
@@ -96,7 +95,7 @@ export const TableListItems = ({ current }) => {
         </Link>
       ))}
       <Snackbar
-        open={!!open}
+        open={!!selected}
         autoHideDuration={6000}
         onClose={handleClose}
         message={t('confirm delete schema')}
@@ -129,17 +128,17 @@ export const QueryListItems = ({ current }) => {
   const { t } = useTranslation();
   const [queries, setQueries] = useState([]);
   const history = useHistory();
-  const [open, setOpen] = useState();
+  const [selected, setSelected] = useState();
 
   const handleClick = () => {
-    setOpen(true);
+    setSelected(true);
   };
 
   const handleClose = (event, reason) => {
     if (reason === 'confirmed') {
       ipcRenderer
         .invoke('query-drop', {
-          name: pluralize(open),
+          name: selected,
         })
         .then((results) => {
           log.info('query-drop:', results);
@@ -150,7 +149,7 @@ export const QueryListItems = ({ current }) => {
         });
     }
 
-    setOpen(false);
+    setSelected(false);
   };
 
   useEffect(() => {
@@ -158,7 +157,7 @@ export const QueryListItems = ({ current }) => {
   }, []);
 
   const dropQuery = (name) => {
-    setOpen(name);
+    setSelected(name);
   };
 
   return (
@@ -195,7 +194,7 @@ export const QueryListItems = ({ current }) => {
         </Link>
       ))}
       <Snackbar
-        open={!!open}
+        open={!!selected}
         autoHideDuration={6000}
         onClose={handleClose}
         message={t('confirm delete query')}

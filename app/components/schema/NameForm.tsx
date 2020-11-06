@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ipcRenderer } from 'electron';
 import { useTranslation } from 'react-i18next';
-import pluralize from 'pluralize';
 
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
@@ -17,18 +16,18 @@ export default function NameForm({ dataState, dispatch }) {
 
   useEffect(() => {
     ipcRenderer.invoke('schemas').then((ss) => {
-      setSchemaNames(ss.map((s) => pluralize(s.name.toLowerCase())));
+      setSchemaNames(ss.map((s) => s.name.toLowerCase()));
     });
   }, []);
 
   const handleNameChange = (v) => {
     setName(v);
 
-    const plural = pluralize(v.toLowerCase());
+    const lCase = v.toLowerCase();
     let err = '';
-    if (!/^[A-Za-z0-9]{1,15}$/.test(plural)) {
+    if (!/^[A-Za-z0-9]{1,15}$/.test(lCase)) {
       err = '最大１５桁英数';
-    } else if (schemaNames.includes(plural)) {
+    } else if (schemaNames.includes(lCase)) {
       err = '名前が既存と重複';
     }
 
@@ -36,7 +35,7 @@ export default function NameForm({ dataState, dispatch }) {
     dispatch({
       type: 'SCHEMA_WIZARD_INIT',
       payload: {
-        name: plural,
+        name: lCase,
         error: !!err,
       },
     });

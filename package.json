@@ -296,7 +296,6 @@
     "material-table": "^1.69.0",
     "material-ui-dropzone": "^3.4.0",
     "mongoose": "^5.10.7",
-    "pluralize": "^8.0.0",
     "react": "^16.13.1",
     "react-code-input": "^3.10.0",
     "react-dom": "^16.12.0",

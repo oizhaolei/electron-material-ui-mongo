@@ -2,7 +2,6 @@ import React, { useState, useContext } from 'react';
 import log from 'electron-log';
 import { ipcRenderer } from 'electron';
 import { useTranslation } from 'react-i18next';
-import pluralize from 'pluralize';
 
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
@@ -62,7 +61,7 @@ export default function SettingForm() {
           onClick={() => {
             ipcRenderer
               .invoke('query-post', {
-                name: pluralize(dataState.name),
+                name: dataState.name,
                 data: {
                   code,
                   params: [

@@ -3,7 +3,6 @@ import log from 'electron-log';
 import { ipcRenderer } from 'electron';
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
-import pluralize from 'pluralize';
 
 import { makeStyles } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
@@ -86,7 +85,7 @@ function QueryWizard() {
       // 'Create Query'
       ipcRenderer
         .invoke('query-post', {
-          name: pluralize(dataState.name),
+          name: dataState.name,
           data: {
             memo: dataState.memo,
             code: dataState.code,
