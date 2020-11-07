@@ -7,13 +7,16 @@
  - インストール
  - MongoDBサービスを常に起動を設定
 
-#+begin_src 
+#+begin_src sh
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
 
 brew tap mongodb/brew
 
 brew install mongodb-community@4.4
 
+brew services restart mongodb-community
+
+brew services list
 
 #+end_src
 *** dumpデータのインポート
