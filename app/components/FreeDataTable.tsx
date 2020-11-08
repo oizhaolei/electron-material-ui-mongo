@@ -3,25 +3,34 @@ import React from 'react';
 import MaterialTable from 'material-table';
 
 export default function FreeDataTable({ title, data: { data, columns } }) {
-  // let columns = [];
-  // if (data.length > 0) {
-  //   const longestData = data.reduce((r, v) => {
-  //     if (Object.keys(r) < Object.keys(v)) {
-  //       return v;
-  //     }
-  //     return r;
-  //   }, {});
-  //   columns = Object.keys(longestData)
-  //     .filter((col) => typeof longestData[col] === 'string')
-  //     .map((col) => ({
-  //       key: col,
-  //       field: col,
-  //       title: col,
-  //       headerStyle: {
-  //         whiteSpace: 'nowrap',
-  //       },
-  //     }));
-  // }
+  let cols =
+    columns &&
+    columns.map((col) => ({
+      key: col,
+      field: col,
+      title: col,
+      headerStyle: {
+        whiteSpace: 'nowrap',
+      },
+    }));
+  if (data.length > 0 && !cols) {
+    const longestData = data.reduce((r, v) => {
+      if (Object.keys(r) < Object.keys(v)) {
+        return v;
+      }
+      return r;
+    }, {});
+    cols = Object.keys(longestData)
+      .filter((col) => typeof longestData[col] === 'string')
+      .map((col) => ({
+        key: col,
+        field: col,
+        title: col,
+        headerStyle: {
+          whiteSpace: 'nowrap',
+        },
+      }));
+  }
 
   return (
     <MaterialTable

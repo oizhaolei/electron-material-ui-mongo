@@ -121,8 +121,12 @@ file:./images/qw2.png
         },
       }).lean();
       callback(false, {
-        patient: patient ? [patient] : [],
-        diseases,
+        patient: {
+          data: patient ? [patient] : [],
+        },
+        diseases: {
+          data: diseases,
+        },
       });
     } catch (e) {
       log.info('e:', e);
@@ -146,7 +150,9 @@ file:./images/qw2.png
         '処理日': filter['処理日'],
       }).lean();
       callback(false, {
-        diseases,
+        diseases: {
+          data: diseases,
+        },
       });
     } catch (e) {
       log.info('e:', e);
