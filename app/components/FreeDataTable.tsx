@@ -35,14 +35,7 @@ export default function FreeDataTable({ title, data: { data, columns } }) {
   return (
     <MaterialTable
       title={title}
-      columns={columns.map((col) => ({
-        key: col,
-        field: col,
-        title: col,
-        headerStyle: {
-          whiteSpace: 'nowrap',
-        },
-      }))}
+      columns={cols}
       data={data}
       options={{
         exportButton: true,
