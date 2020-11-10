@@ -5,7 +5,7 @@
   "back": "前へ",
   "cancel": "キャンセル",
   "change colors": "色変更",
-  "change db need restart": "データベースの変更は再起動が必要です。",
+  "change db need restart": "データベースの変更後、システムの再起動が必要です。",
   "clear all before import": "既存データを全部消後、データをインポートしてください。",
   "close": "閉じる",
   "code": "コード",
