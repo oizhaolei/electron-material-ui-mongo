@@ -142,10 +142,9 @@ export default class Mdb {
         mongoose.connection.db.dropCollection(name, (err, result) => {
           log.info('err, result:', err, result);
           if (err) {
-            reject(err);
-          } else {
-            resolve(result);
+            log.error('err:', err);
           }
+          resolve();
         });
       });
     await dropCollection(name);
