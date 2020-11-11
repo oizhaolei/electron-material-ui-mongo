@@ -5,7 +5,7 @@
  https://www.mongodb.com/try/download/community
 
  - インストール
- - MongoDBサービスを常に起動を設定
+ - MongoDBサービスを常に起動に設定
 
 #+begin_src sh
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
@@ -19,6 +19,7 @@ brew services restart mongodb-community
 brew services list
 
 #+end_src
+
 *** dumpデータのインポート
 #+begin_src sh
 <MONGO_PATH>/bin/mongorestore --drop -d perm2 dump/perm2
