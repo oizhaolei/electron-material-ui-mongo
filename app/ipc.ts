@@ -37,6 +37,7 @@ export default function ipc() {
       if (docs && docs.length > 0) {
         const Model = await mdb.getSchemaModel(name);
         await Model.insertMany(docs);
+        mdb.reIndexSuggests(Model, name);
       }
       return newSchema;
     }
@@ -116,6 +117,7 @@ export default function ipc() {
     await newDoc.save();
     return newDoc;
   });
+
   ipcMain.handle(
     'insert-many',
     async (event, { name, docs, cleanData = false }) => {
@@ -125,6 +127,7 @@ export default function ipc() {
         await Model.deleteMany({});
       }
       const newDocs = await Model.insertMany(docs);
+      mdb.reIndexSuggests(Model, name);
       return newDocs;
     }
   );
@@ -143,6 +146,7 @@ export default function ipc() {
     log.debug('remove', name, filter, options);
     const Model = await mdb.getSchemaModel(name);
     const numRemoved = await Model.deleteMany(filter, options);
+    mdb.reIndexSuggests(Model, name);
     return numRemoved;
   });
 

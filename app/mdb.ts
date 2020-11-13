@@ -253,29 +253,31 @@ export default class Mdb {
       return r;
     }, {});
     this.models = models;
-
-    this.reIndexSuggests(models);
   }
 
-  async reIndexSuggests(models) {
+  async reIndexSuggests(Model, name) {
+    const schema = await this.SchemaModel.findOne({
+      name,
+    }).lean();
+    const fields = Object.keys(schema.definition);
+    const docs = await Model.find();
+    const suggests = getSuggests(fields, docs);
+
+    await this.SchemaModel.findOneAndUpdate(
+      {
+        name,
+      },
+      {
+        suggests,
+      }
+    );
+  }
+
+  async reIndexAllSuggests(models) {
     const all = await Promise.all(
       Object.keys(models).map(async (name) => {
         const Model = models[name];
-        const schema = await this.SchemaModel.findOne({
-          name,
-        }).lean();
-        const fields = Object.keys(schema.definition);
-        const docs = await Model.find();
-        const suggests = getSuggests(fields, docs);
-
-        await this.SchemaModel.findOneAndUpdate(
-          {
-            name,
-          },
-          {
-            suggests,
-          }
-        );
+        await this.reIndexSuggests(Model);
       })
     );
     return all;
