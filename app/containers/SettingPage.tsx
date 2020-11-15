@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { ipcRenderer } from 'electron';
 import { useTranslation } from 'react-i18next';
 
+import { makeStyles } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
@@ -14,7 +15,16 @@ import ColorTool from '../components/color/ColorTool';
 
 import GenericTemplate from '../templates/GenericTemplate';
 
+const useStyles = makeStyles((theme) => ({
+  root: {
+    '& > *': {
+      margin: theme.spacing(1),
+    },
+  },
+}));
+
 export default function SettingPage() {
+  const classes = useStyles();
   const { t } = useTranslation();
 
   const [open, setOpen] = useState(false);
@@ -47,10 +57,10 @@ export default function SettingPage() {
 
   return (
     <GenericTemplate title={t('setting')} id="setting">
-      <Paper square>
+      <Paper square className={classes.root}>
         <ColorTool onChange={onColorChange} />
       </Paper>
-      <Paper square>
+      <Paper square className={classes.root}>
         <Button variant="contained" color="secondary" onClick={handleClickOpen}>
           {t('mongo uri')}
         </Button>

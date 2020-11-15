@@ -1,7 +1,9 @@
-import { app, ipcMain, shell } from 'electron';
+import { app, ipcMain, shell, dialog } from 'electron';
 import log from 'electron-log';
 import path from 'path';
-import csv from 'csvtojson';
+import fs from 'fs';
+import csvtojson from 'csvtojson';
+import json2csv from 'json2csv';
 
 import Mdb, { genSchemaDefinition } from './mdb';
 import config from './config';
@@ -74,7 +76,7 @@ export default function ipc() {
   ipcMain.handle('csv-read', async (event, file) => {
     log.debug('csv-read', file);
     return new Promise((resolve, reject) => {
-      csv()
+      csvtojson()
         .fromFile(file)
         .then((data) => {
           const definition = genSchemaDefinition(data);
@@ -194,5 +196,30 @@ export default function ipc() {
     const data = await mdb.queryCode(code, filter);
     log.debug('data:', data);
     return data;
+  });
+
+  // query-code-save
+  ipcMain.handle('query-code-save', async (event, { filter = {}, code }) => {
+    log.debug('query-code', code, filter);
+    const options = {
+      title: 'Save to',
+      filters: [
+        {
+          name: 'query',
+          extensions: ['csv'],
+        },
+      ],
+    };
+    const file = dialog.showSaveDialogSync(options);
+    const data = await mdb.queryCode(code, filter);
+    const files = Object.keys(data).map((v) => {
+      const opts = { fields: data[v].columns };
+      const parser = new json2csv.Parser(opts);
+      const csv = parser.parse(data[v].data);
+      const cf = `${file}-${v}.csv`;
+      fs.writeFileSync(cf, csv);
+      return cf;
+    });
+    return files;
   });
 }
