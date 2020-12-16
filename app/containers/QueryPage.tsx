@@ -18,8 +18,8 @@ import StoreContext from '../store/StoreContext';
 
 interface TabPanelProps {
   children?: React.ReactNode;
-  index: any;
-  value: any;
+  index: unknown;
+  value: unknown;
 }
 
 function TabPanel(props: TabPanelProps) {
@@ -38,7 +38,7 @@ function TabPanel(props: TabPanelProps) {
   );
 }
 
-function a11yProps(index: any) {
+function a11yProps(index: unknown) {
   return {
     id: `simple-tab-${index}`,
     'aria-controls': `simple-tabpanel-${index}`,

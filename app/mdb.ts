@@ -1,11 +1,16 @@
 import mongoose from 'mongoose';
 import log from 'electron-log';
-
 import vm from 'vm';
-
 import fs from 'fs';
-import dayjs from 'dayjs';
 import json2csv from 'json2csv';
+
+import {
+  FilterType,
+  SchemaDefinitionType,
+  SchemaEtcType,
+  DataRowType,
+  QueryDataType,
+} from './types';
 
 mongoose.pluralize(null);
 mongoose.set('debug', (coll, method, query, doc, options) => {
@@ -26,6 +31,16 @@ const defOptions = {
   },
 };
 
+interface SuggestsType {
+  [key: string]: string[];
+}
+interface SchemaType extends Document {
+  name: string;
+  memo: string;
+  definition: SchemaDefinitionType;
+  suggests: SuggestsType;
+}
+
 const schemaDef = {
   name: String,
   memo: String,
@@ -33,6 +48,12 @@ const schemaDef = {
   suggests: mongoose.Schema.Types.Mixed,
 };
 
+interface QueryType extends Document {
+  name: string;
+  memo: string;
+  params: string[];
+  code: string;
+}
 const queryDef = {
   name: String,
   memo: String,
@@ -40,7 +61,11 @@ const queryDef = {
   code: String,
 };
 
-const getType = (field, row) => {
+interface ModelsType {
+  [key: string]: mongoose.Model;
+}
+
+const getType = (_field: string, _row: DataRowType) => {
   // const cell = row[field];
   // if (cell) {
   //   if (typeof cell === 'number') {
@@ -57,8 +82,8 @@ const getType = (field, row) => {
   return 'String';
 };
 
-const getSuggests = (field, docs) =>
-  field
+const getSuggests = (fields: string[], docs: DataRowType[]) =>
+  fields
     .map((f) => {
       const colUniqData = [...new Set(docs.map((r) => r[f]).filter(Boolean))];
       if (colUniqData.length < 50 && docs.length / colUniqData.length > 10) {
@@ -67,6 +92,7 @@ const getSuggests = (field, docs) =>
           suggest: colUniqData,
         };
       }
+      return null;
     })
     .reduce((r, v) => {
       if (v && v.suggest && v.suggest.length > 0) {
@@ -75,13 +101,13 @@ const getSuggests = (field, docs) =>
       return r;
     }, {});
 
-export const genSchemaDefinition = (docs) => {
+export const genSchemaDefinition = (docs: DataRowType[]) => {
   if (!docs || docs.length === 0) {
     return [];
   }
   const fields = [...new Set(docs.map((doc) => Object.keys(doc)).flat())]
     .map((f) => ({
-      field: [f],
+      field: f,
       type: getType(f, docs[0]),
     }))
     .reduce((r, v) => {
@@ -94,26 +120,41 @@ export const genSchemaDefinition = (docs) => {
 };
 
 export default class Mdb {
+  SchemaModel: mongoose.Model<SchemaType>;
+  QueryModel: mongoose.Model<QueryType>;
+  models: ModelsType = {};
+
   constructor() {
     // scheme
-    const schemaSchema = mongoose.Schema(schemaDef, defOptions);
+    const schemaSchema: mongoose.Schema = mongoose.Schema(
+      schemaDef,
+      defOptions
+    );
     this.SchemaModel = mongoose.model('s_c_h_e_m_a_s', schemaSchema);
 
     // query
-    const querySchema = mongoose.Schema(queryDef, defOptions);
+    const querySchema: mongoose.Schema = mongoose.Schema(queryDef, defOptions);
     this.QueryModel = mongoose.model('q_u_e_r_y_s', querySchema);
 
     this.getAllSchemaModels();
   }
 
   // name: lowercased
-  async createSchema(name, definition, etc) {
+  async createSchema(
+    name: string,
+    definition: SchemaDefinitionType,
+    etc: SchemaEtcType
+  ) {
     const schemaDoc = await this.changeSchema(name, definition, etc);
     return schemaDoc;
   }
 
-  async changeSchema(name, definition, etc = {}) {
-    const schemaDoc = await this.SchemaModel.findOneAndUpdate(
+  async changeSchema(
+    name: string,
+    definition: SchemaDefinitionType,
+    etc: SchemaEtcType = {}
+  ) {
+    const schemaDoc: SchemaType = await this.SchemaModel.findOneAndUpdate(
       {
         name,
       },
@@ -136,16 +177,19 @@ export default class Mdb {
     return schemaDoc;
   }
 
-  async dropSchema(name) {
-    const dropCollection = async (name) =>
-      new Promise((resolve, reject) => {
-        mongoose.connection.db.dropCollection(name, (err, result) => {
-          log.info('err, result:', err, result);
-          if (err) {
-            log.error('err:', err);
+  async dropSchema(name: string) {
+    const dropCollection = async (name: string) =>
+      new Promise((resolve, _reject) => {
+        mongoose.connection.db.dropCollection(
+          name,
+          (err: unknown, result: unknown) => {
+            log.info('err, result:', err, result);
+            if (err) {
+              log.error('err:', err);
+            }
+            resolve();
           }
-          resolve();
-        });
+        );
       });
     await dropCollection(name);
     const result = await this.SchemaModel.deleteMany({
@@ -162,7 +206,7 @@ export default class Mdb {
     //
   }
 
-  async writeCSV(name, file) {
+  async writeCSV(name: string, file: string) {
     const Model = await this.getSchemaModel(name);
     const docs = await Model.find().lean();
 
@@ -175,7 +219,7 @@ export default class Mdb {
   }
 
   // all docs
-  async analysisSchema(name, save = false) {
+  async analysisSchema(name: string, save = false) {
     const Model = await this.getSchemaModel(name);
     const docs = await Model.find().lean();
 
@@ -188,14 +232,14 @@ export default class Mdb {
   }
 
   async getSchemas() {
-    const schemas = await this.SchemaModel.find().lean();
+    const schemas: [SchemaType] = await this.SchemaModel.find().lean();
     return schemas;
   }
 
   async getDashboardSchemas() {
-    const schemas = await this.SchemaModel.find().lean();
+    const schemas: [SchemaType] = await this.SchemaModel.find().lean();
     const dashboardSchemas = await Promise.all(
-      schemas.map(async (schema) => {
+      schemas.map(async (schema: SchemaType) => {
         const Model = await this.getSchemaModel(schema.name);
         const rowCount = await Model.countDocuments();
         return {
@@ -213,27 +257,31 @@ export default class Mdb {
     return schemas.map((s) => s.name);
   }
 
-  async getSchema(name) {
-    const schema = await this.SchemaModel.findOne({
+  async getSchema(name: string) {
+    const schema: SchemaType = await this.SchemaModel.findOne({
       name,
     }).lean();
     return schema;
   }
 
-  _createModel(name, definition) {
-    const sampleSchema = new mongoose.Schema(definition, defOptions, {
-      strict: false,
-    });
+  _createModel(name: string, definition: SchemaDefinitionType) {
+    const sampleSchema: mongoose.Schema = new mongoose.Schema(
+      definition,
+      defOptions,
+      {
+        strict: false,
+      }
+    );
     const model = mongoose.model(name, sampleSchema);
     return model;
   }
 
-  async getSchemaModel(name) {
+  async getSchemaModel(name: string) {
     if (this.models[name]) {
       return this.models[name];
     }
 
-    const schemaData = await this.SchemaModel.findOne({
+    const schemaData: SchemaType = await this.SchemaModel.findOne({
       name,
     }).lean();
 
@@ -243,7 +291,7 @@ export default class Mdb {
   }
 
   async getAllSchemaModels() {
-    const schemaDatas = await this.SchemaModel.find().lean();
+    const schemaDatas: [SchemaType] = await this.SchemaModel.find().lean();
 
     const models = schemaDatas.reduce((r, schemaData) => {
       r[schemaData.name] = this._createModel(
@@ -255,8 +303,8 @@ export default class Mdb {
     this.models = models;
   }
 
-  async reIndexSuggests(Model, name) {
-    const schema = await this.SchemaModel.findOne({
+  async reIndexSuggests(Model: mongoose.Model, name: String) {
+    const schema: SchemaType = await this.SchemaModel.findOne({
       name,
     }).lean();
     const fields = Object.keys(schema.definition);
@@ -273,17 +321,17 @@ export default class Mdb {
     );
   }
 
-  async reIndexAllSuggests(models) {
+  async reIndexAllSuggests(models: ModelsType) {
     const all = await Promise.all(
       Object.keys(models).map(async (name) => {
         const Model = models[name];
-        await this.reIndexSuggests(Model);
+        await this.reIndexSuggests(Model, name);
       })
     );
     return all;
   }
 
-  async createQuery(name, data = {}) {
+  async createQuery(name: string, data = {}) {
     const queryDoc = await this.QueryModel.findOneAndUpdate(
       {
         name,
@@ -301,7 +349,7 @@ export default class Mdb {
     return queryDoc;
   }
 
-  async dropQuery(name) {
+  async dropQuery(name: string) {
     const result = await this.QueryModel.deleteMany({
       name,
     });
@@ -310,21 +358,21 @@ export default class Mdb {
   }
 
   async getQueries() {
-    const queries = await this.QueryModel.find().lean();
+    const queries: QueryType = await this.QueryModel.find().lean();
     return queries;
   }
 
-  async getQuery(name) {
+  async getQuery(name: string) {
     const query = await this.QueryModel.findOne({
       name,
     }).lean();
     return query;
   }
 
-  async queryCode(code, filter) {
+  async queryCode(code: string, filter: FilterType) {
     const { models } = this;
     return new Promise((resolve, reject) => {
-      const callback = (err, data) => {
+      const callback = (err: unknown, data: QueryDataType) => {
         if (err) {
           reject(err);
         } else {

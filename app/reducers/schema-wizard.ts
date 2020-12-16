@@ -1,4 +1,21 @@
 import { mongo2Material } from '../utils/utils';
+import { MaterialTableColumnType } from '../types';
+
+interface PayloadType {
+  error: boolean;
+  name: string;
+  memo: string;
+  definition: unknown;
+  suggests: unknown;
+  materialDefinition: [MaterialTableColumnType];
+  data: unknown;
+  field: string;
+  type: string;
+}
+interface ActionType {
+  type: string;
+  payload: PayloadType;
+}
 
 export const initialState = {
   error: false,
@@ -9,7 +26,7 @@ export const initialState = {
   materialDefinition: [],
   data: {},
 };
-export default (state = initialState, { type, payload }) => {
+export default (state = initialState, { type, payload }: ActionType) => {
   let newState;
   switch (type) {
     case 'SCHEMA_WIZARD_CLEAN':

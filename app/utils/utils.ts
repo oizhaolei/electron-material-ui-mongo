@@ -1,6 +1,8 @@
+import { MaterialTableColumnType } from '../types';
+
 // 'boolean', 'numeric', 'date', 'datetime', 'time', 'currency'
 //
-export const mongo2MaterialType = (from) => {
+export const mongo2MaterialType = (from: string) => {
   const mongo = ['Boolean', 'Number', 'Date', 'Date', 'Date', 'Number'];
   const mt = ['boolean', 'numeric', 'date', 'datetime', 'time', 'currency'];
 
@@ -18,11 +20,14 @@ const ID_COLUMN = {
 };
 // from: mongo schema { definition, suggests }
 // to: material table columns definition
-export const mongo2Material = ({ definition, suggests }) =>
+export const mongo2Material: [MaterialTableColumnType] = ({
+  definition,
+  suggests,
+}) =>
   Object.keys(definition)
     .map((k) => ({
-      title: k,
       field: k,
+      title: k,
       type: mongo2MaterialType(definition[k].type),
       headerStyle: {
         whiteSpace: 'nowrap',

@@ -1,4 +1,11 @@
-import { app, ipcMain, shell, dialog } from 'electron';
+import {
+  app,
+  ipcMain,
+  IpcMainEvent,
+  IpcMainInvokeEvent,
+  shell,
+  dialog,
+} from 'electron';
 import log from 'electron-log';
 import path from 'path';
 import fs from 'fs';
@@ -7,6 +14,14 @@ import json2csv from 'json2csv';
 
 import Mdb, { genSchemaDefinition } from './mdb';
 import config from './config';
+import {
+  FilterType,
+  OptionsType,
+  SchemaDefinitionType,
+  SchemaEtcType,
+  DataRowType,
+  QueryDataType,
+} from './types';
 
 export default function ipc() {
   const mdb = new Mdb();
@@ -15,13 +30,13 @@ export default function ipc() {
   mdb.snapshot();
 
   // paletteColors
-  ipcMain.on('paletteColors', (event, paletteColors) => {
+  ipcMain.on('paletteColors', (event: IpcMainEvent, paletteColors: string) => {
     log.debug('paletteColors');
     event.reply('paletteColors', paletteColors);
   });
 
   // uri
-  ipcMain.handle('uri', (event, uri) => {
+  ipcMain.handle('uri', (_event: IpcMainInvokeEvent, uri: string) => {
     log.debug('uri', uri);
     if (uri) {
       config.mongoose.setUri(uri);
@@ -30,10 +45,18 @@ export default function ipc() {
     return config.mongoose.uri();
   });
 
-  // schemaNames: add / update
+  interface SchemaPostArgsType {
+    name: string;
+    definition: SchemaDefinitionType;
+    etc: SchemaEtcType;
+    docs: DataRowType[];
+  }
   ipcMain.handle(
     'schema-post',
-    async (event, { name, definition, etc, docs }) => {
+    async (
+      _event: IpcMainInvokeEvent,
+      { name, definition, etc, docs }: SchemaPostArgsType
+    ) => {
       log.debug('schema-post', name, definition, docs);
       const newSchema = await mdb.createSchema(name, definition, etc);
       if (docs && docs.length > 0) {
@@ -45,62 +68,86 @@ export default function ipc() {
     }
   );
 
-  ipcMain.handle('schemas', async (event) => {
+  ipcMain.handle('schemas', async (_event: IpcMainInvokeEvent) => {
     log.debug('schemas');
     const schemas = await mdb.getSchemas();
     return schemas;
   });
 
-  ipcMain.handle('dashboard-schemas', async (event) => {
+  ipcMain.handle('dashboard-schemas', async (_event: IpcMainInvokeEvent) => {
     log.debug('dashboard-schemas');
     const schemas = await mdb.getDashboardSchemas();
     return schemas;
   });
 
   // mdb.schema
-  ipcMain.handle('schema', async (event, { name }) => {
-    log.debug('schema', name);
-    const schema = await mdb.getSchema(name);
-    return schema;
-  });
+  interface SchemaArgsType {
+    name: string;
+  }
+  ipcMain.handle(
+    'schema',
+    async (_event: IpcMainInvokeEvent, { name }: SchemaArgsType) => {
+      log.debug('schema', name);
+      const schema = await mdb.getSchema(name);
+      return schema;
+    }
+  );
 
   // mdb.schema delete
-  ipcMain.handle('schema-drop', async (event, { name }) => {
-    log.debug('schema-drop', name);
-    const result = await mdb.dropSchema(name);
-    log.debug('result:', result);
-    return result;
-  });
+  interface SchemaDropArgsType {
+    name: string;
+  }
+  ipcMain.handle(
+    'schema-drop',
+    async (_event: IpcMainInvokeEvent, { name }: SchemaDropArgsType) => {
+      log.debug('schema-drop', name);
+      const result = await mdb.dropSchema(name);
+      log.debug('result:', result);
+      return result;
+    }
+  );
 
   // csv-read
-  ipcMain.handle('csv-read', async (event, file) => {
-    log.debug('csv-read', file);
-    return new Promise((resolve, reject) => {
-      csvtojson()
-        .fromFile(file)
-        .then((data) => {
-          const definition = genSchemaDefinition(data);
-          log.debug('definition:', definition);
-          resolve({
-            definition,
-            data,
-          });
-        })
-        .catch(reject);
-    });
-  });
+  ipcMain.handle(
+    'csv-read',
+    async (_event: IpcMainInvokeEvent, file: string) => {
+      log.debug('csv-read', file);
+      return new Promise((resolve, reject) => {
+        csvtojson()
+          .fromFile(file)
+          .then((data: DataRowType[]) => {
+            const definition = genSchemaDefinition(data);
+            log.debug('definition:', definition);
+            resolve({
+              definition,
+              data,
+            });
+          })
+          .catch(reject);
+      });
+    }
+  );
 
   // mdb.find
+  interface FindArgsType {
+    name: string;
+    filter: FilterType;
+    projection: unknown;
+    options: OptionsType;
+  }
   ipcMain.handle(
     'find',
-    async (event, { name, filter = {}, projection, options }) => {
+    async (
+      _event: IpcMainInvokeEvent,
+      { name, filter = {}, projection, options }: FindArgsType
+    ) => {
       log.debug('find', name, filter, projection, options);
       const Model = await mdb.getSchemaModel(name);
       const data = await Model.find(filter, projection, options).lean();
       const totalCount = await Model.countDocuments(filter);
 
       const result = {
-        data: data.map((d) => ({
+        data: data.map((d: unknown) => ({
           ...d,
           _id: d._id.toString(),
         })),
@@ -112,17 +159,32 @@ export default function ipc() {
   );
 
   // mdb.insert
-  ipcMain.handle('insert', async (event, { name, doc }) => {
-    log.debug('insert', name);
-    const Model = await mdb.getSchemaModel(name);
-    const newDoc = new Model(doc);
-    await newDoc.save();
-    return newDoc;
-  });
+  interface InsertArgsType {
+    name: string;
+    doc: DataRowType;
+  }
+  ipcMain.handle(
+    'insert',
+    async (_event: IpcMainInvokeEvent, { name, doc }: InsertArgsType) => {
+      log.debug('insert', name);
+      const Model = await mdb.getSchemaModel(name);
+      const newDoc = new Model(doc);
+      await newDoc.save();
+      return newDoc;
+    }
+  );
 
+  interface InsertManyArgsType {
+    name: string;
+    docs: DataRowType[];
+    cleanData: boolean;
+  }
   ipcMain.handle(
     'insert-many',
-    async (event, { name, docs, cleanData = false }) => {
+    async (
+      _event: IpcMainInvokeEvent,
+      { name, docs, cleanData = false }: InsertManyArgsType
+    ) => {
       log.debug('insert', name);
       const Model = await mdb.getSchemaModel(name);
       if (cleanData) {
@@ -135,91 +197,157 @@ export default function ipc() {
   );
 
   // mdb.update
-  ipcMain.handle('update', async (event, { name, filter, doc, options }) => {
-    log.debug('update', name, filter, doc, options);
-    const Model = await mdb.getSchemaModel(name);
-    const numAffected = await Model.updateMany(filter, doc, options);
+  interface UpdateArgsType {
+    name: string;
+    filter: FilterType;
+    doc: DataRowType;
+    options: OptionsType;
+  }
+  ipcMain.handle(
+    'update',
+    async (
+      _event: IpcMainInvokeEvent,
+      { name, filter, doc, options }: UpdateArgsType
+    ) => {
+      log.debug('update', name, filter, doc, options);
+      const Model = await mdb.getSchemaModel(name);
+      const numAffected = await Model.updateMany(filter, doc, options);
 
-    return numAffected;
-  });
+      return numAffected;
+    }
+  );
 
   // mdb.remove
-  ipcMain.handle('remove', async (event, { name, filter, options }) => {
-    log.debug('remove', name, filter, options);
-    const Model = await mdb.getSchemaModel(name);
-    const numRemoved = await Model.deleteMany(filter, options);
-    mdb.reIndexSuggests(Model, name);
-    return numRemoved;
-  });
+  interface RemoveArgsType {
+    name: string;
+    filter: FilterType;
+    options: OptionsType;
+  }
+  ipcMain.handle(
+    'remove',
+    async (
+      _event: IpcMainInvokeEvent,
+      { name, filter, options }: RemoveArgsType
+    ) => {
+      log.debug('remove', name, filter, options);
+      const Model = await mdb.getSchemaModel(name);
+      const numRemoved = await Model.deleteMany(filter, options);
+      mdb.reIndexSuggests(Model, name);
+      return numRemoved;
+    }
+  );
 
   // mdb.export
-  ipcMain.handle('export-csv', async (event, { name }) => {
-    log.debug('export-csv', name);
-    const file = path.resolve(
-      app.getPath('home'),
-      `${name}-${new Date().getDate()}.csv`
-    );
-    await mdb.writeCSV(name, file);
-    shell.showItemInFolder(file);
-    return file;
-  });
+  interface ExportCSVArgsType {
+    name: string;
+  }
+  ipcMain.handle(
+    'export-csv',
+    async (_event: IpcMainInvokeEvent, { name }: ExportCSVArgsType) => {
+      log.debug('export-csv', name);
+      const file = path.resolve(
+        app.getPath('home'),
+        `${name}-${new Date().getDate()}.csv`
+      );
+      await mdb.writeCSV(name, file);
+      shell.showItemInFolder(file);
+      return file;
+    }
+  );
 
-  ipcMain.handle('queries', async (event) => {
+  ipcMain.handle('queries', async (_event: IpcMainInvokeEvent) => {
     log.debug('queries');
     const queries = await mdb.getQueries();
     return queries;
   });
 
   // mdb.query
-  ipcMain.handle('query', async (event, { name }) => {
-    log.debug('query', name);
-    const query = await mdb.getQuery(name);
-    return query;
-  });
+  interface QueryArgsType {
+    name: string;
+  }
+  ipcMain.handle(
+    'query',
+    async (_event: IpcMainInvokeEvent, { name }: QueryArgsType) => {
+      log.debug('query', name);
+      const query = await mdb.getQuery(name);
+      return query;
+    }
+  );
 
-  ipcMain.handle('query-post', async (event, { name, data }) => {
-    log.debug('query-post', name, data);
-    const newQuery = await mdb.createQuery(name, data);
-    return newQuery;
-  });
+  interface QueryPostArgsType {
+    name: string;
+    data: unknown;
+  }
+  ipcMain.handle(
+    'query-post',
+    async (_event: IpcMainInvokeEvent, { name, data }: QueryPostArgsType) => {
+      log.debug('query-post', name, data);
+      const newQuery = await mdb.createQuery(name, data);
+      return newQuery;
+    }
+  );
 
   // mdb.query delete
-  ipcMain.handle('query-drop', async (event, { name }) => {
-    log.debug('query-drop', name);
-    const result = await mdb.dropQuery(name);
-    return result;
-  });
+  interface QueryDropArgsType {
+    name: string;
+  }
+  ipcMain.handle(
+    'query-drop',
+    async (_event: IpcMainInvokeEvent, { name }: QueryDropArgsType) => {
+      log.debug('query-drop', name);
+      const result = await mdb.dropQuery(name);
+      return result;
+    }
+  );
 
   // query-code
-  ipcMain.handle('query-code', async (event, { filter = {}, code }) => {
-    log.debug('query-code', code, filter);
-    const data = await mdb.queryCode(code, filter);
-    log.debug('data:', data);
-    return data;
-  });
+  interface QueryCodeArgsType {
+    filter: FilterType;
+    code: string;
+  }
+  ipcMain.handle(
+    'query-code',
+    async (
+      _event: IpcMainInvokeEvent,
+      { filter = {}, code }: QueryCodeArgsType
+    ) => {
+      log.debug('query-code', code, filter);
+      const data = await mdb.queryCode(code, filter);
+      log.debug('data:', data);
+      return data;
+    }
+  );
 
   // query-code-save
-  ipcMain.handle('query-code-save', async (event, { filter = {}, code }) => {
-    log.debug('query-code', code, filter);
-    const options = {
-      title: 'Save to',
-      filters: [
-        {
-          name: 'query',
-          extensions: ['csv'],
-        },
-      ],
-    };
-    const file = dialog.showSaveDialogSync(options);
-    const data = await mdb.queryCode(code, filter);
-    const files = Object.keys(data).map((v) => {
-      const opts = { fields: data[v].columns };
-      const parser = new json2csv.Parser(opts);
-      const csv = parser.parse(data[v].data);
-      const cf = `${file}-${v}.csv`;
-      fs.writeFileSync(cf, csv);
-      return cf;
-    });
-    return files;
-  });
+  ipcMain.handle(
+    'query-code-save',
+    async (
+      _event: IpcMainInvokeEvent,
+      { filter = {}, code }: QueryCodeArgsType
+    ) => {
+      log.debug('query-code', code, filter);
+      const options = {
+        title: 'Save to',
+        filters: [
+          {
+            name: 'query',
+            extensions: ['csv'],
+          },
+        ],
+      };
+      const file = dialog.showSaveDialogSync(options);
+      const data: QueryDataType = await mdb.queryCode(code, filter);
+      const files = Object.keys(data).map((v) => {
+        const opts = {
+          fields: data[v].columns,
+        };
+        const parser = new json2csv.Parser(opts);
+        const csv = parser.parse(data[v].data);
+        const cf = `${file}-${v}.csv`;
+        fs.writeFileSync(cf, csv);
+        return cf;
+      });
+      return files;
+    }
+  );
 }

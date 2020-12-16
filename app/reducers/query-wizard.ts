@@ -1,3 +1,16 @@
+interface StateType {
+  error: boolean;
+  tested: boolean;
+  name: string;
+  memo: string;
+  params: string[];
+  code: string;
+}
+interface ActionType {
+  type: string;
+  payload: StateType;
+}
+
 export const initialState = {
   error: false,
   tested: false,
@@ -7,7 +20,7 @@ export const initialState = {
   code: '',
 };
 
-export default (state = initialState, action) => {
+export default (state = initialState, action: ActionType) => {
   switch (action.type) {
     case 'QUERY_WIZARD_CLEAN':
       return {

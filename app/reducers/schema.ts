@@ -1,15 +1,34 @@
 import { mongo2Material } from '../utils/utils';
+import { MaterialTableColumnType } from '../types';
+
+interface PayloadType {
+  error: boolean;
+  name: string;
+  memo: string;
+  definition: unknown;
+  suggests: unknown;
+  changeList: unknown[];
+  changes: unknown;
+  materialDefinition: [MaterialTableColumnType];
+  field: string;
+  value: string;
+}
+interface ActionType {
+  type: string;
+  payload: PayloadType;
+}
 
 export const initialState = {
   error: false,
   name: '',
+  memo: '',
   definition: {},
   suggests: {},
   changeList: [],
   changes: {},
   materialDefinition: [],
 };
-export default (state = initialState, { type, payload }) => {
+export default (state = initialState, { type, payload }: ActionType) => {
   let newState;
   // let newDefinition;
   switch (type) {

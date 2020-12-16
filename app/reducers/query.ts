@@ -1,3 +1,18 @@
+interface PayloadType {
+  error: boolean;
+  name: string;
+  memo: string;
+  params: string[];
+  code: string;
+  filter: unknown;
+  definition: unknown;
+  data: unknown;
+}
+interface ActionType {
+  type: string;
+  payload: PayloadType;
+}
+
 export const initialState = {
   error: false,
   name: '',
@@ -8,7 +23,7 @@ export const initialState = {
   definition: {},
   data: {},
 };
-export default (state = initialState, { type, payload }) => {
+export default (state = initialState, { type, payload }: ActionType) => {
   switch (type) {
     case 'QUERY_INIT':
       return {
