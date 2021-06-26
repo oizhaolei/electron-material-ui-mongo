@@ -8,7 +8,7 @@ jobs:
 
     strategy:
       matrix:
-        os: [macos-10.14, windows-2019, ubuntu-18.04]
+        os: [macos-latest, windows-latest, ubuntu-latest]
 
     steps:
       - name: Check out Git repository
@@ -17,21 +17,17 @@ jobs:
       - name: Install Node.js, NPM and Yarn
         uses: actions/setup-node@v1
         with:
-          node-version: 14
+          node-version: 15
 
       - name: yarn install
         run: |
-          yarn install --frozen-lockfile
+          yarn install --frozen-lockfile --network-timeout 300000
 
       - name: yarn test
-        uses: GabrielBB/xvfb-action@v1.2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          run: |
-            yarn package-ci
-            yarn lint
-            yarn tsc
-            yarn test
-            yarn build-e2e
-            yarn test-e2e
+        run: |
+          yarn package
+          yarn lint
+          yarn tsc
+          yarn test

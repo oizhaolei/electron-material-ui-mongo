@@ -59,5 +59,5 @@ mongoose.connect(config.mongoose.connect, config.mongoose.options).then(() => {
     console.log('err:', err);
     mongoose.disconnect();
     process.exit();
-  });
+    });
 });
