@@ -29,7 +29,7 @@ i18n
     react: {
       wait: true,
     },
-    resources: resources,
+    resources,
   });
 
 export default i18n;

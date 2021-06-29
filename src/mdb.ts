@@ -121,7 +121,9 @@ export const genSchemaDefinition = (docs: DataRowType[]) => {
 
 export default class Mdb {
   SchemaModel: mongoose.Model<SchemaType>;
+
   QueryModel: mongoose.Model<QueryType>;
+
   models: ModelsType = {};
 
   constructor() {
@@ -200,10 +202,6 @@ export default class Mdb {
       delete this.models[name];
     }
     return result;
-  }
-
-  async snapshot() {
-    //
   }
 
   async writeCSV(name: string, file: string) {
@@ -303,7 +301,7 @@ export default class Mdb {
     this.models = models;
   }
 
-  async reIndexSuggests(Model: mongoose.Model, name: String) {
+  async reIndexSuggests(Model: mongoose.Model, name: string) {
     const schema: SchemaType = await this.SchemaModel.findOne({
       name,
     }).lean();

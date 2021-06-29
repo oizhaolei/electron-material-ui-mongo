@@ -121,7 +121,7 @@ const useStyles = makeStyles((theme) =>
 const GenericTemplate = ({ children, title, id }) => {
   const classes = useStyles();
   const { t, i18n } = useTranslation();
-  const [{ auth }, dispatch] = useContext(StoreContext);
+  const [{ mongodb }, dispatch] = useContext(StoreContext);
   const history = useHistory();
 
   const changeLanguage = () => {
@@ -165,10 +165,10 @@ const GenericTemplate = ({ children, title, id }) => {
   };
 
   useEffect(() => {
-    if (!auth.isAuthenticated) {
+    if (!mongodb.isConnected) {
       history.replace('/pincode');
     }
-  }, [auth]);
+  }, [mongodb]);
 
   useEffect(() => {
     const paletteColorsListener = (event, arg) => {
@@ -237,7 +237,7 @@ const GenericTemplate = ({ children, title, id }) => {
                 color="inherit"
                 onClick={() =>
                   dispatch({
-                    type: 'SIGNOUT',
+                    type: 'DISCONNECT',
                   })
                 }
               >

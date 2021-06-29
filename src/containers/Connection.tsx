@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
+import { ipcRenderer } from 'electron';
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
 import dayjs from 'dayjs';
@@ -15,7 +16,8 @@ import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
 import Paper from '@material-ui/core/Paper';
-import ReactCodeInput from 'react-code-input';
+import Button from '@material-ui/core/Button';
+import TextField from '@material-ui/core/TextField';
 
 import StoreContext from '../store/StoreContext';
 
@@ -35,20 +37,13 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const PINCODE_LENGTH = 4;
-
-export default function PinCode() {
+export default function Connection() {
   const classes = useStyles();
   const { t } = useTranslation();
   const history = useHistory();
-  const [value, setValue] = useState('');
-  const [{ auth }, dispatch] = useContext(StoreContext);
-
-  useEffect(() => {
-    if (auth.isAuthenticated) {
-      history.replace('/');
-    }
-  }, [auth]);
+  const [uri, setUri] = useState('');
+  const [err, setErr] = useState('');
+  const [_, dispatch] = useContext(StoreContext);
 
   const theme = createMuiTheme({
     palette: {
@@ -58,6 +53,27 @@ export default function PinCode() {
           : 'dark',
     },
   });
+
+  const handleConnect = () => {
+    ipcRenderer.invoke('connect', uri).then(
+      () => {
+        dispatch({
+          type: 'CONNECTED',
+        });
+        return history.replace('/');
+      },
+      (err) => {
+        setErr(err);
+      }
+    );
+  };
+
+  useEffect(() => {
+    ipcRenderer.invoke('uri').then((u) => {
+      setUri(u);
+    });
+  }, []);
+
   return (
     <ThemeProvider theme={theme}>
       <Container component="main" maxWidth="xs">
@@ -67,31 +83,25 @@ export default function PinCode() {
             <LockOutlinedIcon />
           </Avatar>
           <Typography component="h1" variant="h5">
-            {t('input pincode to login')}
+            Connect to database.
           </Typography>
-          <ReactCodeInput
-            type="password"
-            value={value}
-            fields={PINCODE_LENGTH}
-            onChange={(v) => {
-              setValue(v);
-              if (v.length === PINCODE_LENGTH) {
-                dispatch({
-                  type: 'AUTHENTICATE',
-                  payload: {
-                    value: v,
-                  },
-                });
-              }
-            }}
+          <TextField
+            autoFocus
+            margin="dense"
+            id="uri"
+            label={t('mongo uri')}
+            type="text"
+            value={uri}
+            onChange={(event) => setUri(event.target.value)}
+            fullWidth
           />
           <Typography color="error" variant="h5" display="block" gutterBottom>
-            {auth.error}
+            {err}
           </Typography>
+          <Button onClick={handleConnect} color="primary">
+            {t('save')}
+          </Button>
         </Paper>
-        <Typography variant="body2" gutterBottom>
-          {t('pincode demo')}
-        </Typography>
         <Box mt={8}>
           <Copyright />
         </Box>

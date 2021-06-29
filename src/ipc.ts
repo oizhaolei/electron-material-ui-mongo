@@ -9,6 +9,7 @@ import {
 import log from 'electron-log';
 import path from 'path';
 import fs from 'fs';
+import mongoose from 'mongoose';
 import csvtojson from 'csvtojson';
 import json2csv from 'json2csv';
 
@@ -25,9 +26,6 @@ import {
 
 export default function ipc() {
   const mdb = new Mdb();
-
-  // snapshot at startup
-  mdb.snapshot();
 
   // paletteColors
   ipcMain.on('paletteColors', (event: IpcMainEvent, paletteColors: string) => {
@@ -49,6 +47,26 @@ export default function ipc() {
     }
 
     return config.mongoose.uri();
+  });
+
+  //
+  ipcMain.handle('connect', async (_event: IpcMainInvokeEvent, uri: string) => {
+    log.debug('connect', uri);
+    return new Promise<void>((resolve, reject) => {
+      mongoose
+        .connect(uri, config.mongoose.options)
+        .then(() => resolve())
+        .catch(reject);
+    });
+  });
+
+  //
+  ipcMain.handle('disconnect', () => {
+    return mongoose.disconnect();
+  });
+
+  ipcMain.handle('readyState', () => {
+    return mongoose.connect.readyState;
   });
 
   interface SchemaPostArgsType {
@@ -74,13 +92,13 @@ export default function ipc() {
     }
   );
 
-  ipcMain.handle('schemas', async (_event: IpcMainInvokeEvent) => {
+  ipcMain.handle('schemas', async () => {
     log.debug('schemas');
     const schemas = await mdb.getSchemas();
     return schemas;
   });
 
-  ipcMain.handle('dashboard-schemas', async (_event: IpcMainInvokeEvent) => {
+  ipcMain.handle('dashboard-schemas', async () => {
     log.debug('dashboard-schemas');
     const schemas = await mdb.getDashboardSchemas();
     return schemas;
@@ -261,7 +279,7 @@ export default function ipc() {
     }
   );
 
-  ipcMain.handle('queries', async (_event: IpcMainInvokeEvent) => {
+  ipcMain.handle('queries', async () => {
     log.debug('queries');
     const queries = await mdb.getQueries();
     return queries;

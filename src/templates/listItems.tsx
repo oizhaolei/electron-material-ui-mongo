@@ -100,7 +100,7 @@ export const TableListItems = ({ current }) => {
         onClose={handleClose}
         message={t('confirm delete schema')}
         action={
-          <React.Fragment>
+          <>
             <Button
               color="secondary"
               size="small"
@@ -116,7 +116,7 @@ export const TableListItems = ({ current }) => {
             >
               <CloseIcon fontSize="small" />
             </IconButton>
-          </React.Fragment>
+          </>
         }
       />
     </>
@@ -199,7 +199,7 @@ export const QueryListItems = ({ current }) => {
         onClose={handleClose}
         message={t('confirm delete query')}
         action={
-          <React.Fragment>
+          <>
             <Button
               color="secondary"
               size="small"
@@ -215,7 +215,7 @@ export const QueryListItems = ({ current }) => {
             >
               <CloseIcon fontSize="small" />
             </IconButton>
-          </React.Fragment>
+          </>
         }
       />
     </>

@@ -113,18 +113,6 @@ const createWindow = async () => {
     }
   });
 
-  mainWindow.on('ready-to-show', () => {
-    // IPC
-    mongoose.connect(config.mongoose.uri(), config.mongoose.options).then(
-      () => {
-        ipc();
-      },
-      (err) => {
-        dialog.showErrorBox('Error', 'No MongoDB is not found.');
-        throw new Error('No MongoDB is not found.');
-      }
-    );
-  });
   mainWindow.on('closed', () => {
     mainWindow = null;
     mongoose.disconnect();
@@ -156,6 +144,8 @@ app.on('window-all-closed', () => {
   }
 });
 
+// IPC
+ipc();
 app.whenReady().then(createWindow).catch(console.log);
 
 app.on('activate', () => {

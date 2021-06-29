@@ -1,5 +1,3 @@
-import dayjs from 'dayjs';
-
 interface PayloadType {
   value: string;
 }
@@ -9,22 +7,20 @@ interface ActionType {
 }
 
 export const initialState = {
-  isAuthenticated: false,
+  isConnected: false,
   error: '',
 };
 export default (state = initialState, { type, payload }: ActionType) => {
   switch (type) {
-    case 'AUTHENTICATE':
-      const isAuthenticated = payload.value === dayjs().format('MMDD');
+    case 'CONNECTED':
       return {
         ...state,
-        isAuthenticated,
-        error: isAuthenticated ? '' : 'wrong password.',
+        isConnected: true,
       };
-    case 'SIGNOUT':
+    case 'DISCONNECT':
       return {
         ...state,
-        isAuthenticated: false,
+        isConnected: false,
         error: '',
       };
     default:

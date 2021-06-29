@@ -2,7 +2,7 @@ import queryWizard from './query-wizard';
 import schemaWizard from './schema-wizard';
 import schema from './schema';
 import query from './query';
-import auth from './auth';
+import mongodb from './mongodb';
 
 export default (state = {}, action = {}) => {
   return {
@@ -10,6 +10,6 @@ export default (state = {}, action = {}) => {
     schemaWizard: schemaWizard(state.schemaWizard, action),
     schema: schema(state.schema, action),
     query: query(state.query, action),
-    auth: auth(state.auth, action),
+    mongodb: mongodb(state.mongodb, action),
   };
 };

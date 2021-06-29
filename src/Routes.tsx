@@ -9,16 +9,16 @@ import QueryWizard from './containers/QueryWizard';
 import QueryPage from './containers/QueryPage';
 import SchemaPage from './containers/SchemaPage';
 import HomePage from './containers/HomePage';
-import PinCode from './containers/PinCode';
+import Connection from './containers/Connection';
 import SettingPage from './containers/SettingPage';
 
 function PrivateRoute({ component: Component, ...rest }) {
-  const [{ auth }] = useContext(StoreContext);
+  const [{ mongodb }] = useContext(StoreContext);
   return (
     <Route
       {...rest}
       render={(props) =>
-        auth.isAuthenticated ? (
+        mongodb.isConnected ? (
           <Component {...props} />
         ) : (
           <Redirect
@@ -36,7 +36,7 @@ export default function Routes() {
   return (
     <HashRouter>
       <Switch>
-        <Route path="/pincode" exact component={PinCode} />
+        <Route path="/pincode" exact component={Connection} />
         <PrivateRoute path="/schema-wizard" exact component={SchemaWizard} />
         <PrivateRoute path="/query-wizard" exact component={QueryWizard} />
         <PrivateRoute path="/query/:name" exact component={QueryPage} />
