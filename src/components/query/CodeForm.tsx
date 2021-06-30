@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useContext, useMemo } from 'react';
 import { ipcRenderer } from 'electron';
 import { useTranslation } from 'react-i18next';
 
@@ -9,9 +9,12 @@ import Button from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
 
 import FreeDataTable from '../FreeDataTable';
+import StoreContext from '../../store/StoreContext';
 
-export default function CodeForm({ dataState, dispatch }) {
+export default function CodeForm() {
   const { t } = useTranslation();
+  const [_, dispatch] = useContext(StoreContext);
+
   const [errorCode, setErrorCode] = useState(false);
   const [input, setInput] = useState('');
   const [filter, setFilter] = useState({});
@@ -92,8 +95,8 @@ export default function CodeForm({ dataState, dispatch }) {
                   code,
                   filter,
                 })
-                .then((data) => {
-                  setData(data);
+                .then((result) => {
+                  setData(result);
                   dispatch({
                     type: 'QUERY_WIZARD_DEFINITION_CHANGE',
                     payload: {

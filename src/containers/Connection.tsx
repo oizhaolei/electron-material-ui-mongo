@@ -42,7 +42,7 @@ export default function Connection() {
   const { t } = useTranslation();
   const history = useHistory();
   const [uri, setUri] = useState('');
-  const [err, setErr] = useState('');
+  const [error, setError] = useState('');
   const [_, dispatch] = useContext(StoreContext);
 
   const theme = createMuiTheme({
@@ -63,7 +63,7 @@ export default function Connection() {
         return history.replace('/');
       },
       (err) => {
-        setErr(err);
+        setError(err);
       }
     );
   };
@@ -96,7 +96,7 @@ export default function Connection() {
             fullWidth
           />
           <Typography color="error" variant="h5" display="block" gutterBottom>
-            {err}
+            {error}
           </Typography>
           <Button onClick={handleConnect} color="primary">
             {t('save')}

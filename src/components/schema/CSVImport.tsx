@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import log from 'electron-log';
 import { ipcRenderer } from 'electron';
 import { useTranslation } from 'react-i18next';
@@ -12,6 +12,8 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 
 import { DropzoneArea } from 'material-ui-dropzone';
 import MaterialTable from 'material-table';
+
+import StoreContext from '../../store/StoreContext';
 
 const MATERIAL_DEFINITION = [
   {
@@ -32,8 +34,9 @@ const MATERIAL_DEFINITION = [
   },
 ];
 
-const DefinitionTable = ({ columns, data, dispatch }) => {
+const DefinitionTable = ({ columns, data }) => {
   const { t } = useTranslation();
+  const [_, dispatch] = useContext(StoreContext);
 
   return (
     <MaterialTable
@@ -94,10 +97,12 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function CSVImport({ dataState, dispatch }) {
+export default function CSVImport() {
   const { t } = useTranslation();
+  const [{ schemaWizard: dataState }, dispatch] = useContext(StoreContext);
+
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(false);
+  const [error, setError] = useState('');
   const classes = useStyles();
 
   return (
@@ -157,7 +162,6 @@ export default function CSVImport({ dataState, dispatch }) {
             field: k,
             type: dataState.definition[k].type,
           }))}
-          dispatch={dispatch}
         />
       )}
 

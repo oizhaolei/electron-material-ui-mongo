@@ -66,7 +66,7 @@ export default function ipc() {
   });
 
   ipcMain.handle('readyState', () => {
-    return mongoose.connect.readyState;
+    return mongoose.connection.readyState;
   });
 
   interface SchemaPostArgsType {

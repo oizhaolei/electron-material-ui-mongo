@@ -104,13 +104,13 @@ export default function SchemaPage() {
           <DataTable />
         </TabPanel>
         <TabPanel value={tab} index={1}>
-          <SchemaTable dataState={dataState} dispatch={dispatch} />
+          <SchemaTable />
         </TabPanel>
         <TabPanel value={tab} index={2}>
           <ExportTable dataState={dataState} />
         </TabPanel>
         <TabPanel value={tab} index={3}>
-          <ImportTable dispatch={dispatch} dataState={dataState} />
+          <ImportTable />
         </TabPanel>
       </Paper>
     </GenericTemplate>

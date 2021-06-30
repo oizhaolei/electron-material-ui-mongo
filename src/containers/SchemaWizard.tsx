@@ -115,9 +115,9 @@ function SchemaWizard() {
   const getStepContent = (step) => {
     switch (step) {
       case 0:
-        return <NameForm dataState={dataState} dispatch={dispatch} />;
+        return <NameForm />;
       case 1:
-        return <CSVImport dataState={dataState} dispatch={dispatch} />;
+        return <CSVImport />;
       default:
         throw new Error('Unknown step');
     }

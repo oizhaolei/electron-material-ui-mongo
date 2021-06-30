@@ -115,9 +115,9 @@ function QueryWizard() {
   const getStepContent = (step) => {
     switch (step) {
       case 0:
-        return <NameForm dataState={dataState} dispatch={dispatch} />;
+        return <NameForm />;
       case 1:
-        return <CodeForm dataState={dataState} dispatch={dispatch} />;
+        return <CodeForm />;
       default:
         throw new Error('Unknown step');
     }

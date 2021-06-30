@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { ipcRenderer } from 'electron';
 import { useTranslation } from 'react-i18next';
 
@@ -6,8 +6,11 @@ import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import TextField from '@material-ui/core/TextField';
 
-export default function NameForm({ dataState, dispatch }) {
+import StoreContext from '../../store/StoreContext';
+
+export default function NameForm() {
   const { t } = useTranslation();
+  const [{ schemaWizard: dataState }, dispatch] = useContext(StoreContext);
 
   const [name, setName] = useState(dataState.name);
   const [memo, setMemo] = useState(dataState.memo);

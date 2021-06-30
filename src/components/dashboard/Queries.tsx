@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 
 import { makeStyles } from '@material-ui/core/styles';
+import Typography from '@material-ui/core/Typography';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -23,10 +24,14 @@ const useStyles = makeStyles((theme) => ({
 export default function Queries() {
   const classes = useStyles();
   const { t } = useTranslation();
+  const [error, setError] = useState('');
   const [queries, setQueries] = useState([]);
 
   useEffect(() => {
-    ipcRenderer.invoke('queries').then(setQueries);
+    ipcRenderer
+      .invoke('queries')
+      .then(setQueries)
+      .catch((e) => setError(e.toString()));
   }, []);
 
   return (
@@ -54,6 +59,9 @@ export default function Queries() {
           ))}
         </TableBody>
       </Table>
+      <Typography color="error" variant="body1" gutterBottom>
+        {error}
+      </Typography>
     </>
   );
 }

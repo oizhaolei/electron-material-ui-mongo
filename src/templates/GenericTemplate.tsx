@@ -168,7 +168,7 @@ const GenericTemplate = ({ children, title, id }) => {
     if (!mongodb.isConnected) {
       history.replace('/pincode');
     }
-  }, [mongodb]);
+  }, [mongodb.isConnected]);
 
   useEffect(() => {
     const paletteColorsListener = (event, arg) => {

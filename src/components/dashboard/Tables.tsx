@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 
 import { makeStyles } from '@material-ui/core/styles';
-import Button from '@material-ui/core/Button';
+import Typography from '@material-ui/core/Typography';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -24,10 +24,14 @@ const useStyles = makeStyles((theme) => ({
 export default function Tables() {
   const classes = useStyles();
   const { t } = useTranslation();
+  const [err, setErr] = useState('');
   const [schemas, setSchemas] = useState([]);
 
   useEffect(() => {
-    ipcRenderer.invoke('dashboard-schemas').then(setSchemas);
+    ipcRenderer
+      .invoke('dashboard-schemas')
+      .then(setSchemas)
+      .catch((e) => setErr(e.toString()));
   }, []);
 
   return (
@@ -42,23 +46,26 @@ export default function Tables() {
           </TableRow>
         </TableHead>
         <TableBody>
-          {schemas.map((t) => (
-            <TableRow key={t.name}>
+          {schemas.map((s) => (
+            <TableRow key={s.name}>
               <TableCell>
                 <Link
-                  key={t.name}
-                  to={`/table/${t.name}`}
+                  key={s.name}
+                  to={`/table/${s.name}`}
                   className={classes.link}
                 >
-                  {t.name}
+                  {s.name}
                 </Link>
               </TableCell>
-              <TableCell align="right">{t.rowCount}</TableCell>
-              <TableCell align="right">{t.colCount}</TableCell>
+              <TableCell align="right">{s.rowCount}</TableCell>
+              <TableCell align="right">{s.colCount}</TableCell>
             </TableRow>
           ))}
         </TableBody>
       </Table>
+      <Typography color="error" variant="body1" gutterBottom>
+        {err}
+      </Typography>
     </>
   );
 }

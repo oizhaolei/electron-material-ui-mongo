@@ -1,8 +1,10 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import Typography from '@material-ui/core/Typography';
 import MaterialTable from 'material-table';
+
+import StoreContext from '../../store/StoreContext';
 
 const columns = [
   {
@@ -20,8 +22,9 @@ const columns = [
     },
   },
 ];
-export default function SchemaTable({ dataState, dispatch }) {
+export default function SchemaTable() {
   const { t } = useTranslation();
+  const [{ schema: dataState }] = useContext(StoreContext);
 
   const data = Object.keys(dataState.definition).map((k) => ({
     field: k,

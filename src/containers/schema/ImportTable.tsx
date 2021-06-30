@@ -1,5 +1,4 @@
-import React, { useState } from 'react';
-import log from 'electron-log';
+import React, { useState, useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ipcRenderer } from 'electron';
 
@@ -21,6 +20,7 @@ import Snackbar from '@material-ui/core/Snackbar';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 
+import StoreContext from '../../store/StoreContext';
 import { mongo2Material } from '../../utils/utils';
 
 const Alert = (props: AlertProps) => {
@@ -86,8 +86,9 @@ const CSVDataTable = ({ columns, data }) => {
   );
 };
 
-export default function ImportTable({ dispatch, dataState }) {
+export default function ImportTable() {
   const classes = useStyles();
+  const [{ schema: dataState }] = useContext(StoreContext);
   const { t } = useTranslation();
   const [error, setError] = useState();
   const [isLoading, setIsLoading] = useState(false);
